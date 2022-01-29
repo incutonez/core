@@ -1,0 +1,20 @@
+{
+  "name": "@incutonez/core-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": false,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/incutonez/core-ui.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/incutonez/core-ui/issues"
+  },
+  "homepage": "https://github.com/incutonez/core-ui#readme"
+}
