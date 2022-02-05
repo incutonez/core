@@ -40,3 +40,29 @@ export const MONTHS = new Enum([
   "November",
   "December",
 ]);
+
+/**
+ * @property {Number} SUNDAY
+ * @property {String} SUNDAY_DISPLAY
+ * @property {Number} MONDAY
+ * @property {String} MONDAY_DISPLAY
+ * @property {Number} TUESDAY
+ * @property {String} TUESDAY_DISPLAY
+ * @property {Number} WEDNESDAY
+ * @property {String} WEDNESDAY_DISPLAY
+ * @property {Number} THURSDAY
+ * @property {String} THURSDAY_DISPLAY
+ * @property {Number} FRIDAY
+ * @property {String} FRIDAY_DISPLAY
+ * @property {Number} SATURDAY
+ * @property {String} SATURDAY_DISPLAY
+ */
+export const DAYS = new Enum([
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+]);

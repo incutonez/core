@@ -6,7 +6,8 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "ui": "cd ui && npm start"
+    "ui": "cd ui && npm start",
+    "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx jest"
   },
   "repository": {
     "type": "git",
@@ -39,5 +40,8 @@
         "always-multiline"
       ]
     }
+  },
+  "devDependencies": {
+    "jest": "^27.5.0"
   }
 }

@@ -1,7 +1,34 @@
-﻿import { MONTHS } from "../Enums.js";
+﻿import {
+  MONTHS,
+  DAYS,
+} from "../Enums.js";
 
 const proto = Date.prototype;
 const totalMonths = MONTHS.DECEMBER + 1;
+
+proto.getWeekStart = function(config = {}) {
+  let {
+    year = this.getFullYear(),
+    yearOffset = 0,
+    month = this.getMonth(),
+    monthOffset = 0,
+    date = this.getDate(),
+    dateOffset = 0,
+    // 1 signifies Monday, as JavaScript considers Sunday to be 0
+    weekStart = DAYS.MONDAY,
+    isEnd = false,
+  } = config;
+  const temp = new Date(year + yearOffset, month + monthOffset, date + dateOffset);
+  // If this day comes before the weekStart, we need to go backwards
+  while (temp.getDay() !== weekStart) {
+    temp.setDate(temp.getDate() - 1);
+  }
+  if (isEnd) {
+    temp.setDate(temp.getDate() + 6);
+  }
+  return temp;
+};
+
 proto.getMonthStart = function(config = {}) {
   let {
     year = this.getFullYear(),
