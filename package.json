@@ -1,20 +1,43 @@
 {
-  "name": "@incutonez/core-ui",
+  "name": "@incutonez/core",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "private": false,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ui": "cd ui && npm start"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/incutonez/core-ui.git"
+    "url": "git+https://github.com/incutonez/core.git"
   },
-  "author": "",
+  "author": "incutonez",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/incutonez/core-ui/issues"
+    "url": "https://github.com/incutonez/core/issues"
   },
-  "homepage": "https://github.com/incutonez/core-ui#readme"
+  "workspaces": [
+    "ui"
+  ],
+  "homepage": "https://github.com/incutonez/core#readme",
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended"
+    ],
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "rules": {
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ]
+    }
+  }
 }
