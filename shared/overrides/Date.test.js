@@ -14,12 +14,12 @@ describe("Quarters", () => {
 
   test("Quarter Start Past", () => {
     let previous;
-    const date = new Date().getYearStart();
-    for (let i = -1; i > -1000; i--) {
-      if (Math.abs(i) % 3 === 1) {
-        previous = date.getQuarterStart({ monthOffset: i }).getTime();
+    const date = new Date().getYearEnd({ yearOffset: -1 });
+    for (let i = 0; i < 1000; i++) {
+      if (i % 3 === 0) {
+        previous = date.getQuarterStart({ monthOffset: -i }).getTime();
       }
-      expect(date.getQuarterStart({ monthOffset: i }).getTime()).toBe(previous);
+      expect(date.getQuarterStart({ monthOffset: -i }).getTime()).toBe(previous);
     }
   });
 
@@ -36,12 +36,12 @@ describe("Quarters", () => {
 
   test("Quarter End Past", () => {
     let previous;
-    const date = new Date().getYearStart();
-    for (let i = -1; i > -1000; i--) {
-      if (Math.abs(i) % 3 === 1) {
-        previous = date.getQuarterEnd({ monthOffset: i }).getTime();
+    const date = new Date().getYearEnd({ yearOffset: -1 });
+    for (let i = 0; i < 1000; i++) {
+      if (i % 3 === 0) {
+        previous = date.getQuarterEnd({ monthOffset: -i }).getTime();
       }
-      expect(date.getQuarterEnd({ monthOffset: i }).getTime()).toBe(previous);
+      expect(date.getQuarterEnd({ monthOffset: -i }).getTime()).toBe(previous);
     }
   });
 });
@@ -79,7 +79,7 @@ describe("Weeks", () => {
     }
   });
 
-  test("Week End", () => {
+  test("Week End Future", () => {
     let expected;
     let start = new Date().getWeekStart();
     for (let i = 0; i < 1000; i++) {
