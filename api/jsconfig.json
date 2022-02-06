@@ -2,11 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "#ui/*": [
-        "./src/*"
+      "#api/*": [
+        "./*"
       ],
       "#shared/*": [
-        "../shared/*"
+        "../utils/*"
       ]
     }
   }

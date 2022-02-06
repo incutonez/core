@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "ui": "cd ui && npm start",
+    "api": "cd api && npm start",
     "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx jest"
   },
   "repository": {
@@ -19,7 +20,8 @@
     "url": "https://github.com/incutonez/core/issues"
   },
   "workspaces": [
-    "ui"
+    "ui",
+    "api"
   ],
   "homepage": "https://github.com/incutonez/core#readme",
   "eslintConfig": {
