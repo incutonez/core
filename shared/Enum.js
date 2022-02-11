@@ -1,4 +1,4 @@
-﻿import "./overrides/String.js";
+﻿import "shared/overrides/String.js";
 
 const DISPLAY_INDEX = "_DISPLAY";
 

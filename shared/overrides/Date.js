@@ -1,7 +1,7 @@
 ﻿import {
   MONTHS,
   DAYS,
-} from "../Enums.js";
+} from "shared/Enums.js";
 
 const proto = Date.prototype;
 const totalMonths = MONTHS.DECEMBER + 1;
@@ -16,10 +16,16 @@ proto.getWeekStart = function(config = {}) {
     monthOffset = 0,
     date = this.getDate(),
     dateOffset = 0,
+    // This is for the end of the month
     isEnd = false,
     startingDay = DAYS.MONDAY,
     isWeek = true,
   } = config;
+  // Weeks deal with getting their end date differently than months
+  if (!isWeek && isEnd) {
+    monthOffset = 1;
+    date = 0;
+  }
   const weekDate = new Date(year + yearOffset, month + monthOffset, date + dateOffset);
   if (isWeek) {
     const day = weekDate.getDay();
@@ -41,6 +47,7 @@ proto.getWeekStart = function(config = {}) {
 
 proto.getMonthStart = function(config = {}) {
   config.isWeek = config.isWeek || false;
+  config.date = 1;
   return this.getWeekStart(config);
 };
 

@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { indexRouter } from "#api/routes/index.js";
-import "../shared/overrides/index.js";
+import { indexRouter } from "api/routes/index.js";
+import "shared/overrides/index.js";
 
 const App = express();
 const port = process.env.PORT || 3001;

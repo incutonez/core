@@ -1,4 +1,4 @@
-﻿import "./Date.js";
+﻿import "shared/overrides/Date.js";
 
 describe("Quarters", () => {
   test("Quarter Start Future", () => {

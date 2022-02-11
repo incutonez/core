@@ -1,2 +1,2 @@
-﻿import "./Date.js";
-import "./String.js";
+﻿import "shared/overrides/Date.js";
+import "shared/overrides/String.js";

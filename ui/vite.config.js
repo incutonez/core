@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      "#ui": path.resolve(path.resolve(), "./src"),
-      "#shared": path.resolve(path.resolve(), "../shared"),
+      "ui": path.resolve(path.resolve(), "./src"),
+      "shared": path.resolve(path.resolve(), "../shared"),
     },
   },
 });

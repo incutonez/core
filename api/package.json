@@ -4,15 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon --experimental-modules app.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "~4.16.1",
     "nodemon": "^2.0.15"
-  },
-  "imports": {
-    "#api/*": "./*",
-    "#shared/*": "../shared/*"
   }
 }
