@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
-import postcss from "./postcss.config.js";
+import postcss from "ui/postcss.config.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
