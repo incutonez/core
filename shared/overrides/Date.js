@@ -101,3 +101,7 @@ proto.getQuarterEnd = function(config = {}) {
   config.isEnd = true;
   return this.getQuarterStart(config);
 };
+
+proto.toMMDDYYYY = function() {
+  return Intl.DateTimeFormat("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }).format(this);
+};
