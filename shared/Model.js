@@ -132,6 +132,10 @@ export class Model {
     }
   }
 
+  clone() {
+    return new this.constructor(this.getData());
+  }
+
   getData(options = {}) {
     const data = {};
     this.fields.forEach((field) => {

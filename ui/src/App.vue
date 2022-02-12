@@ -31,7 +31,7 @@ export default {
       collection2: [
         {
           name: "Child 2",
-          date: "02/29/2022",
+          date: "02/20/2022",
         },
       ],
       model: {

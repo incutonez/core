@@ -7,14 +7,10 @@ import { Model } from "shared/Model.js";
 export class Collection extends Array {
   isCollection = true;
 
-  get model() {
-    return this._model || Model;
-  }
-
-  constructor(data, model) {
+  constructor(data, model = Model) {
     super();
-    if (model) {
-      this._model = model;
+    if (!this.model) {
+      this.model = model;
     }
     this.add(data);
   }
@@ -46,7 +42,11 @@ export class Collection extends Array {
 
   getData(options) {
     const data = [];
-    this.map((record) => data.push(record.getData(options)));
+    this.forEach((record) => data.push(record.getData(options)));
     return data;
+  }
+
+  clone() {
+    return new this.constructor(this.getData(), this.model);
   }
 }
