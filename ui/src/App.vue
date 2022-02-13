@@ -6,6 +6,7 @@
 
 <script>
 import { TestModel } from "shared/models/TestModel.js";
+import json from "shared/data.js";
 
 export default {
   name: "App",
@@ -15,30 +16,7 @@ export default {
     };
   },
   mounted() {
-    this.record.set({
-      name: "Jef",
-      date: "01/02/2022",
-      bool: "false",
-      int: "20.5",
-      decimal: "20.556",
-      array: [1, 2, 3],
-      collection: [
-        {
-          name: "Child 1",
-          date: "02/29/2022",
-        },
-      ],
-      collection2: [
-        {
-          name: "Child 2",
-          date: "02/20/2022",
-        },
-      ],
-      model: {
-        name: "Child 3",
-        date: "02/29/2020",
-      },
-    });
+    this.record.set(json);
     console.log(this.record);
   },
 };

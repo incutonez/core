@@ -2,7 +2,9 @@
   isArray,
   isEmpty,
 } from "shared/utilities.js";
-import { Model } from "shared/Model.js";
+import {
+  Model,
+} from "shared/Model.js";
 
 export class Collection extends Array {
   isCollection = true;
@@ -65,10 +67,35 @@ export class Collection extends Array {
   }
 
   /**
+   * @param {String|String[]} names
+   */
+  removeFilters(names) {
+    if (!names) {
+      return;
+    }
+    const filters = this.filters;
+    names = isArray(names) ? names : [names];
+    names.forEach((name) => {
+      const found = filters.findIndex((filter) => filter.name === name);
+      if (found !== -1) {
+        filters.splice(found, 1);
+      }
+    });
+    this.clearFilters();
+    this.addFilters(filters);
+  }
+
+  /**
    * @typedef CollectionFilter
    * @property {String} name
    * @property {String} property
    * @property {*} value
+   * @property {Boolean} [exact=false]
+   * This is for checking to see if the value is contained in the search instead of exact match.
+   * By default, it's not an exact match.
+   * @property {Boolean} [insensitive=true]
+   * This is for case sensitivity.
+   * By default, it's a case insensitive search.
    * @property {Function} fn
    */
   /**
@@ -85,24 +112,31 @@ export class Collection extends Array {
     if (!isArray(filters)) {
       filters = [filters];
     }
-    const data = [];
     this.filters = this.filters.concat(filters);
-    filters.forEach((filter) => {
-      if (filter.fn) {
-        this.forEach((record) => {
-          if (filter.fn(record)) {
-            data.push(record);
-          }
-        });
+    let data = [];
+    let source = this;
+    filters.forEach((filter, index) => {
+      // If we have multiple filters, we have to make some swaps
+      if (index !== 0) {
+        source = data;
+        data = [];
       }
-      else {
-        const { property, value } = filter;
-        this.forEach((record) => {
-          if (record[property] === value) {
-            data.push(record);
+      let filterFn = filter.fn;
+      if (!filterFn) {
+        const { property, value, exact = false, insensitive = true } = filter;
+        filterFn = (record) => {
+          let recordValue = record[property];
+          if (insensitive) {
+            recordValue = recordValue?.toLowerCase();
           }
-        });
+          return exact ? recordValue === value : recordValue?.includes(value);
+        };
       }
+      source.forEach((record) => {
+        if (filterFn(record)) {
+          data.push(record);
+        }
+      });
     });
     this.add(data, true);
   }
