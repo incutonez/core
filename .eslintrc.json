@@ -12,7 +12,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "indent": ["error", 2],
+    "indent": ["error", 2, {"SwitchCase": 1}],
     "semi": [2, "always"],
     "quotes": ["error", "double"],
     "comma-dangle": [
@@ -32,7 +32,10 @@
     "object-curly-newline": [
       "error",
       {
-        "ObjectExpression": "always",
+        "ObjectExpression": {
+          "multiline": true,
+          "minProperties": 1
+        },
         "ObjectPattern": "never"
       }
     ],
@@ -40,6 +43,19 @@
       "error",
       "always"
     ],
-    "no-trailing-spaces": ["error"]
+    "object-property-newline": "error",
+    "no-trailing-spaces": ["error"],
+    "arrow-spacing": "error",
+    "no-duplicate-imports": "error",
+    "arrow-parens": "error",
+    "computed-property-spacing": ["error", "never"],
+    "func-call-spacing": ["error", "never"],
+    "new-parens": "error",
+    "no-tabs": "error",
+    "prefer-const": "error",
+    "array-bracket-spacing": ["error", "never"],
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "array-element-newline": ["error", "consistent"],
+    "key-spacing": "error"
   }
 }

@@ -51,10 +51,27 @@ export class Collection extends Array {
     });
   }
 
+  remove(records) {
+    if (isEmpty(records)) {
+      return;
+    }
+    records = isArray(records) ? records : [records];
+    records.forEach((record) => {
+      const foundIndex = this.indexOf(record);
+      if (foundIndex !== -1) {
+        this.splice(foundIndex, 1);
+      }
+    });
+  }
+
   getData(options) {
     const data = [];
     this.forEach((record) => data.push(record.getData(options)));
     return data;
+  }
+
+  sum(field) {
+    return this.reduce((value, currentValue) => value + currentValue[field]);
   }
 
   clone() {
@@ -93,9 +110,6 @@ export class Collection extends Array {
    * @property {Boolean} [exact=false]
    * This is for checking to see if the value is contained in the search instead of exact match.
    * By default, it's not an exact match.
-   * @property {Boolean} [insensitive=true]
-   * This is for case sensitivity.
-   * By default, it's a case insensitive search.
    * @property {Function} fn
    */
   /**
@@ -109,9 +123,7 @@ export class Collection extends Array {
     if (isEmpty(this.filters)) {
       this._dataSource = this.slice();
     }
-    if (!isArray(filters)) {
-      filters = [filters];
-    }
+    filters = isArray(filters) ? filters : [filters];
     this.filters = this.filters.concat(filters);
     let data = [];
     let source = this;
@@ -123,13 +135,14 @@ export class Collection extends Array {
       }
       let filterFn = filter.fn;
       if (!filterFn) {
-        const { property, value, exact = false, insensitive = true } = filter;
+        let { value } = filter;
+        const { property, exact = false } = filter;
+        if (!exact) {
+          value = new RegExp(value, "i");
+        }
         filterFn = (record) => {
-          let recordValue = record[property];
-          if (insensitive) {
-            recordValue = recordValue?.toLowerCase();
-          }
-          return exact ? recordValue === value : recordValue?.includes(value);
+          const recordValue = record[property];
+          return exact ? recordValue === value : value.test(recordValue);
         };
       }
       source.forEach((record) => {
@@ -139,5 +152,16 @@ export class Collection extends Array {
       });
     });
     this.add(data, true);
+  }
+
+  /**
+   * When using the native methods of an array that return a new array, like slice, map, filter, etc.,
+   * we don't want to try and instantiate a new Collection, as we have a different constructor
+   * signature, so we defer to using Array.  This is basically saying use any native methods that
+   * return a new array AT YOUR OWN RISK.
+   * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/species#using_species
+   */
+  static get [Symbol.species]() {
+    return Array;
   }
 }

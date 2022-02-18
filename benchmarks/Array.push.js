@@ -15,6 +15,8 @@ suite.add("Spread", () => {
   arr.push(...data);
 });
 suite.on("complete", function() {
-  console.log(this.filter("slowest").map("name"));
+  console.log(this.filter("fastest").map("name"));
 });
-suite.run({ async: true });
+suite.run({
+  async: true,
+});

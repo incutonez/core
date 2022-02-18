@@ -42,17 +42,7 @@ import { Collection } from "shared/Collection.js";
  * @property {Number} ARRAY
  * @property {String} ARRAY_DISPLAY
  */
-export const FieldType = new Enum([
-  "String",
-  "Integer",
-  "Decimal",
-  "Boolean",
-  "Date",
-  "Model",
-  "Collection",
-  // Different from collection in that it's a flat array, whereas a collection is an array of objects (models)
-  "Array",
-]);
+export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array"]);
 
 /**
  * @param {*} value
@@ -86,6 +76,7 @@ function parseValue(value, field) {
       value = getValue(parseString(value), field, "");
       break;
   }
+
   return value;
 }
 
@@ -100,6 +91,9 @@ export class Model {
   isModel = true;
 
   constructor(data) {
+    if (!data) {
+      this.init();
+    }
     this.set(data, true);
   }
 
@@ -112,8 +106,12 @@ export class Model {
   }
 
   clear() {
+    this.init(undefined);
+  }
+
+  init(value = null) {
     this.fields.forEach((field) => {
-      this[field.name] = undefined;
+      this[field.name] = parseValue(value, field);
     });
   }
 
