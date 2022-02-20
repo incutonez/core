@@ -1,5 +1,4 @@
 ﻿{
-  "root": true,
   "extends": [
     "eslint:recommended",
     "plugin:vue/vue3-strongly-recommended"
@@ -13,9 +12,6 @@
     "sourceType": "module"
   },
   "rules": {
-    "comma-dangle": [
-      "error",
-      "always-multiline"
-    ]
+    "vue/attributes-order": "error"
   }
 }

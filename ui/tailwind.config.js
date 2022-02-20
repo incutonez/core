@@ -4,4 +4,9 @@ export default {
     extend: {},
   },
   plugins: [],
+  safelist: [{
+    pattern: /^space-.*/,
+  }, {
+    pattern: /^text-.*/,
+  }],
 };

@@ -91,9 +91,6 @@ export class Model {
   isModel = true;
 
   constructor(data) {
-    if (!data) {
-      this.init();
-    }
     this.set(data, true);
   }
 
@@ -106,21 +103,17 @@ export class Model {
   }
 
   clear() {
-    this.init(undefined);
-  }
-
-  init(value = null) {
     this.fields.forEach((field) => {
-      this[field.name] = parseValue(value, field);
+      this[field.name] = parseValue(undefined, field);
     });
   }
 
   set(data, clear = false) {
-    if (!data) {
-      return;
-    }
     if (clear) {
       this.clear();
+    }
+    if (!data) {
+      return;
     }
     for (const key in data) {
       const found = this.fields.find((field) => field.name === key);

@@ -11,6 +11,7 @@
   "parserOptions": {
     "sourceType": "module"
   },
+  "plugins": ["eslint-plugin-import"],
   "rules": {
     "indent": ["error", 2, {"SwitchCase": 1}],
     "semi": [2, "always"],
@@ -56,6 +57,8 @@
     "array-bracket-spacing": ["error", "never"],
     "comma-spacing": ["error", { "before": false, "after": true }],
     "array-element-newline": ["error", "consistent"],
-    "key-spacing": "error"
+    "key-spacing": "error",
+    "import/newline-after-import": ["error", { "count": 1 }],
+    "space-infix-ops": "error"
   }
 }

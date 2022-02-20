@@ -2,33 +2,48 @@
   <div class="bg-blue-100">
     Hi {{ record.fullName }}!
   </div>
+  <div
+    v-for="child in record.collection"
+    :key="child.name"
+  >
+    {{ child.name }}
+  </div>
+  <FieldText
+    v-model="record.name"
+    label="Name"
+    class="w-36"
+    :required="isRequired"
+  />
 </template>
 
 <script>
 import { TestModel } from "shared/models/TestModel.js";
-import json from "shared/data.js";
+import FieldText from "ui/FieldText.vue";
 
 export default {
   name: "App",
+  components: {
+    FieldText,
+  },
   data() {
     return {
-      record: new TestModel(),
+      isRequired: false,
+      record: new TestModel({
+        name: "Jef",
+        date: new Date(),
+      }),
     };
   },
   mounted() {
-    this.record.set(json);
-    console.log(this.record);
+    console.log(this);
   },
 };
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

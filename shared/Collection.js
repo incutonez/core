@@ -38,10 +38,8 @@ export class Collection extends Array {
     if (isEmpty(data)) {
       return;
     }
-    if (!isArray(data)) {
-      data = [data];
-    }
-    data.map((item) => {
+    data = isArray(data) ? data : [data];
+    data.forEach((item) => {
       if (item.isModel) {
         this.push(item);
       }
@@ -81,6 +79,7 @@ export class Collection extends Array {
   clearFilters() {
     this.filters = [];
     this.add(this._dataSource, true);
+    this._dataSource = null;
   }
 
   /**
