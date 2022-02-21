@@ -5,16 +5,13 @@
   >
     <FieldLabel :value="label" />
     <input
-      ref="inputEl"
       class="field-text"
       :value="value"
       :class="inputCls"
-      :type="inputType"
-      :required="required"
-      :minlength="minLength"
-      :maxlength="maxLength"
+      v-bind="inputAttrs"
       @focus="onFocusField"
       @input="onInputField"
+      @blur="onBlurField"
     >
     <div
       v-for="(fieldError, index) in fieldErrors"
@@ -28,12 +25,18 @@
 <script>
 import FieldLabel from "ui/FieldLabel.vue";
 import {
+  useFieldCls,
+  useFieldRules,
+  useInputAttrs,
+  useInputCls,
+} from "ui/composables/useBaseField.js";
+import { useField } from "vee-validate";
+import {
   computed,
   nextTick,
-  ref,
   watch,
 } from "vue";
-import { useField } from "vee-validate";
+import { parseString } from "shared/utilities.js";
 
 export default {
   name: "FieldText",
@@ -68,60 +71,93 @@ export default {
     },
     minLength: {
       type: Number,
-      default: null,
+      default: undefined,
     },
     maxLength: {
       type: Number,
-      default: null,
+      default: undefined,
+    },
+    /**
+     * Only used in number and date like fields.  We have to have it in here, so we can consume it
+     * in the configuration methods that are called.  If we didn't have it, the value would always
+     * be undefined.
+     */
+    minValue: {
+      type: Number,
+      default: undefined,
+    },
+    /**
+     * Only used in number and date like fields.  We have to have it in here, so we can consume it
+     * in the configuration methods that are called.  If we didn't have it, the value would always
+     * be undefined.
+     */
+    maxValue: {
+      type: Number,
+      default: undefined,
+    },
+    /**
+     * Only used in number like fields.  We have to have it in here, so we can consume it in the
+     * configuration methods that are called.  If we didn't have it, the value would always be
+     * undefined.
+     */
+    step: {
+      type: Number,
+      default: undefined,
     },
     validateOnInit: {
       type: Boolean,
       default: true,
     },
+    inputAttrsCfg: {
+      type: Function,
+      default: (props) => {
+        return {
+          ...useInputAttrs(props),
+          minlength: props.minLength,
+          maxlength: props.maxLength,
+        };
+      },
+    },
+    rulesCfg: {
+      type: Function,
+      default: (props) => {
+        return {
+          ...useFieldRules(props),
+          minLength: props.minLength ? [props.minLength] : false,
+          maxLength: props.maxLength ? [props.maxLength] : false,
+        };
+      },
+    },
+    parseValue: {
+      type: Function,
+      default: parseString,
+    },
+    inputHandler: {
+      type: Function,
+      default: undefined,
+    },
   },
   setup(props, { emit }) {
-    const inputEl = ref(null);
-    const containerCls = computed(() => {
-      const { labelAlign } = props;
-      return {
-        "flex-col label-vertical": labelAlign === "top",
-        "flex-row-reverse label-horizontal": labelAlign === "right",
-        "flex-col-reverse label-vertical": labelAlign === "bottom",
-        "flex-row label-horizontal": labelAlign === "left",
-      };
-    });
-    const inputCls = computed(() => {
-      return {
-        "field-invalid": (field.meta.touched || props.validateOnInit) && field.meta.valid === false,
-      };
-    });
-    const fieldRules = computed(() => {
-      return {
-        required: props.required ? [inputEl] : false,
-        whitespace: !props.allowEmptyWhitespace,
-        minLength: props.minLength ? [props.minLength] : false,
-        maxLength: props.maxLength ? [props.maxLength] : false,
-      };
-    });
+    const fieldRules = computed(() => props.rulesCfg(props));
     const field = useField("test", fieldRules, {
       initialValue: props.modelValue,
       validateOnMount: props.validateOnInit,
     });
+    function updateValue(value) {
+      emit("update:modelValue", value);
+    }
+    watch(computed(() => props.modelValue), (value) => {
+      field.setTouched(true);
+      field.handleChange(value, false);
+    });
+    const containerCls = computed(() => useFieldCls(props));
+    const inputCls = computed(() => useInputCls(props, field));
     watch(fieldRules, async (value) => {
       if (value) {
         // We have to wait for the field to receive its new rules before validating
         await nextTick();
         await field.validate();
       }
-    });
-    watch(computed(() => props.modelValue), (value) => {
-      field.setTouched(true);
-      field.handleChange(value, false);
-      /* For some reason, let the call stack finish updating the input el before we validate, as
-       * we require the input element's validity state to be updated */
-      setTimeout(() => {
-        field.validate();
-      });
     });
     watch(computed(() => field.meta.valid), (valid) => {
       if (field.meta.touched || props.validateOnInit) {
@@ -137,19 +173,25 @@ export default {
       return field.errors.value;
     });
     function onInputField(event) {
-      emit("update:modelValue", event.target.value);
+      updateValue(event.target.value);
     }
     function onFocusField() {
       field.setTouched(true);
     }
+    // We have to make sure that when we lose focus that we parse the value appropriately
+    function onBlurField() {
+      updateValue(props.parseValue(props.modelValue));
+    }
     return {
-      value: field.value,
+      field,
       containerCls,
-      inputEl,
       inputCls,
       fieldErrors,
-      onFocusField,
       onInputField,
+      onFocusField,
+      onBlurField,
+      value: field.value,
+      inputAttrs: props.inputAttrsCfg(props),
     };
   },
 };

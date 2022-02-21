@@ -1,6 +1,6 @@
 ﻿import { defineRule, configure } from "vee-validate";
-import { unref } from "vue";
 import { localize } from "@vee-validate/i18n";
+import { isEmpty } from "shared/utilities.js";
 
 const WHITESPACE_RE = /^\s+$/;
 
@@ -18,13 +18,8 @@ configure({
   }),
 });
 
-function getValidity(inputEl) {
-  const { validity = {} } = unref(inputEl) || {};
-  return validity;
-}
-
-defineRule("required", (value, [inputEl]) => {
-  return getValidity(inputEl).valueMissing === false;
+defineRule("required", (value) => {
+  return isEmpty(value) === false;
 });
 
 defineRule("minLength", (value, [minLength]) => {
@@ -32,15 +27,15 @@ defineRule("minLength", (value, [minLength]) => {
 });
 
 defineRule("maxLength", (value, [maxLength]) => {
-  return value.length >= maxLength;
+  return value.length <= maxLength;
 });
 
-defineRule("minValue", (value, [inputEl]) => {
-  return getValidity(inputEl).rangeUnderflow === false;
+defineRule("minValue", (value, [minValue]) => {
+  return value >= minValue;
 });
 
-defineRule("maxValue", (value, [inputEl]) => {
-  return getValidity(inputEl).rangeOverflow === false;
+defineRule("maxValue", (value, [maxValue]) => {
+  return value <= maxValue;
 });
 
 defineRule("whitespace", (value) => {
