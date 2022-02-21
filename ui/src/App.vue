@@ -12,7 +12,10 @@
     v-model="record.name"
     label="Name"
     class="w-36"
-    :required="isRequired"
+    required
+    :min-length="5"
+    @change:validity="onChangeValidity"
+    @change:dirty="onChangeDirty"
   />
 </template>
 
@@ -36,6 +39,14 @@ export default {
   },
   mounted() {
     console.log(this);
+  },
+  methods: {
+    onChangeValidity() {
+      console.log("onChangeValidity");
+    },
+    onChangeDirty() {
+      console.log("onChangeDirty");
+    },
   },
 };
 </script>

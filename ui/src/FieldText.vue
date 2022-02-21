@@ -6,11 +6,15 @@
     <FieldLabel :value="label" />
     <input
       ref="inputEl"
-      v-model="value"
       class="field-text"
+      :value="value"
       :class="inputCls"
       :type="inputType"
       :required="required"
+      :minlength="minLength"
+      :maxlength="maxLength"
+      @focus="onFocusField"
+      @input="onInputField"
     >
     <div
       v-for="(fieldError, index) in fieldErrors"
@@ -28,7 +32,6 @@ import {
   nextTick,
   ref,
   watch,
-  watchEffect,
 } from "vue";
 import { useField } from "vee-validate";
 
@@ -37,7 +40,7 @@ export default {
   components: {
     FieldLabel,
   },
-  emits: ["update:modelValue", "validation:change"],
+  emits: ["update:modelValue", "change:validity", "change:dirty"],
   props: {
     label: {
       type: String,
@@ -63,6 +66,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    minLength: {
+      type: Number,
+      default: null,
+    },
+    maxLength: {
+      type: Number,
+      default: null,
+    },
+    validateOnInit: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props, { emit }) {
     const inputEl = ref(null);
@@ -77,16 +92,20 @@ export default {
     });
     const inputCls = computed(() => {
       return {
-        "field-invalid": field.meta.valid === false,
+        "field-invalid": (field.meta.touched || props.validateOnInit) && field.meta.valid === false,
       };
     });
     const fieldRules = computed(() => {
       return {
         required: props.required ? [inputEl] : false,
+        whitespace: !props.allowEmptyWhitespace,
+        minLength: props.minLength ? [props.minLength] : false,
+        maxLength: props.maxLength ? [props.maxLength] : false,
       };
     });
     const field = useField("test", fieldRules, {
       initialValue: props.modelValue,
+      validateOnMount: props.validateOnInit,
     });
     watch(fieldRules, async (value) => {
       if (value) {
@@ -95,21 +114,42 @@ export default {
         await field.validate();
       }
     });
-    watchEffect(() => {
-      emit("update:modelValue", field.value);
+    watch(computed(() => props.modelValue), (value) => {
+      field.setTouched(true);
+      field.handleChange(value, false);
+      /* For some reason, let the call stack finish updating the input el before we validate, as
+       * we require the input element's validity state to be updated */
+      setTimeout(() => {
+        field.validate();
+      });
     });
-    watchEffect(() => {
-      emit("validation:change", field.meta.valid);
+    watch(computed(() => field.meta.valid), (valid) => {
+      if (field.meta.touched || props.validateOnInit) {
+        emit("change:validity", valid);
+      }
+    });
+    watch(computed(() => field.meta.dirty), (dirty) => {
+      if (field.meta.touched) {
+        emit("change:dirty", dirty);
+      }
     });
     const fieldErrors = computed(() => {
       return field.errors.value;
     });
+    function onInputField(event) {
+      emit("update:modelValue", event.target.value);
+    }
+    function onFocusField() {
+      field.setTouched(true);
+    }
     return {
       value: field.value,
       containerCls,
       inputEl,
       inputCls,
       fieldErrors,
+      onFocusField,
+      onInputField,
     };
   },
 };
