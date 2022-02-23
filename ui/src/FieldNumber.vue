@@ -4,6 +4,7 @@
     v-bind="$props"
     class="field-number"
     input-type="number"
+    :parse-value="parseNumber"
     @keydown.down.prevent
     @keydown.up.prevent
     @wheel.prevent
@@ -51,10 +52,11 @@ export default {
         };
       },
     },
-    parseValue: {
-      type: Function,
-      default: parseNumber,
-    },
+  },
+  setup() {
+    return {
+      parseNumber,
+    };
   },
 };
 </script>

@@ -4,20 +4,20 @@
     :class="containerCls"
   >
     <FieldLabel :value="label" />
-    <input
-      class="field-text"
-      :value="value"
-      :class="inputCls"
-      v-bind="inputAttrs"
-      @focus="onFocusField"
-      @input="onInputField"
-      @blur="onBlurField"
-    >
-    <div
-      v-for="(fieldError, index) in fieldErrors"
-      :key="index"
-    >
-      {{ fieldError }}
+    <div>
+      <input
+        class="field-text"
+        :value="value"
+        :class="inputCls"
+        v-bind="inputAttrs"
+        @focus="onFocusField"
+        @input="onInputField"
+        @blur="onBlurField"
+      >
+      <IconBase
+        :icon="Icons.ALERT_TRIANGLE"
+        :tooltip="fieldErrors"
+      />
     </div>
   </div>
 </template>
@@ -37,10 +37,13 @@ import {
   watch,
 } from "vue";
 import { parseString } from "shared/utilities.js";
+import Icons from "ui/Icons.js";
+import IconBase from "ui/IconBase.vue";
 
 export default {
   name: "FieldText",
   components: {
+    IconBase,
     FieldLabel,
   },
   emits: ["update:modelValue", "change:validity", "change:dirty"],
@@ -170,7 +173,7 @@ export default {
       }
     });
     const fieldErrors = computed(() => {
-      return field.errors.value;
+      return "<ul><li>" + field.errors.value.join("</li><li>") + "</li></ul>";
     });
     function onInputField(event) {
       updateValue(event.target.value);
@@ -192,6 +195,7 @@ export default {
       onBlurField,
       value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
+      Icons,
     };
   },
 };

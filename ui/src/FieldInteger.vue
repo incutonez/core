@@ -2,6 +2,7 @@
   <FieldNumber
     v-bind="$props"
     :step="1"
+    :parse-value="parseInteger"
   />
 </template>
 
@@ -14,11 +15,10 @@ export default {
   components: {
     FieldNumber,
   },
-  props: {
-    parseValue: {
-      type: Function,
-      default: parseInteger,
-    },
+  setup() {
+    return {
+      parseInteger,
+    };
   },
 };
 </script>
