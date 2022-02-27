@@ -3,12 +3,17 @@
 const DISPLAY_INDEX = "_DISPLAY";
 
 export class Enum {
-  constructor(values) {
+  constructor(values, useIndex = true) {
     if (Array.isArray(values)) {
       values.forEach((value, index) => {
         const key = this.valueToKey(value);
-        this[key] = index;
-        this[`${key}${DISPLAY_INDEX}`] = value;
+        if (useIndex) {
+          this[key] = index;
+          this[`${key}${DISPLAY_INDEX}`] = value;
+        }
+        else {
+          this[key] = value;
+        }
       });
     }
   }

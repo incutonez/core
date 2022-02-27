@@ -1,9 +1,11 @@
 ﻿<template>
   <div
     :class="icon"
-    class="group relative"
+    class="relative"
   >
-    <TooltipBase :value="tooltip" />
+    <slot>
+      <TooltipBase :value="tooltip" />
+    </slot>
   </div>
 </template>
 

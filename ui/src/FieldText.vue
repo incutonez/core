@@ -15,9 +15,20 @@
         @blur="onBlurField"
       >
       <IconBase
+        v-show="fieldErrors.length"
         :icon="Icons.ALERT_TRIANGLE"
-        :tooltip="fieldErrors"
-      />
+      >
+        <TooltipBase :position="tooltipPosition">
+          <ul>
+            <li
+              v-for="(fieldError, index) in fieldErrors"
+              :key="index"
+            >
+              {{ fieldError }}
+            </li>
+          </ul>
+        </TooltipBase>
+      </IconBase>
     </div>
   </div>
 </template>
@@ -39,10 +50,12 @@ import {
 import { parseString } from "shared/utilities.js";
 import Icons from "ui/Icons.js";
 import IconBase from "ui/IconBase.vue";
+import TooltipBase, { TooltipPositions } from "ui/TooltipBase.vue";
 
 export default {
   name: "FieldText",
   components: {
+    TooltipBase,
     IconBase,
     FieldLabel,
   },
@@ -111,6 +124,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    tooltipPosition: {
+      type: String,
+      default: TooltipPositions.RIGHT_MIDDLE,
+    },
     inputAttrsCfg: {
       type: Function,
       default: (props) => {
@@ -173,7 +190,7 @@ export default {
       }
     });
     const fieldErrors = computed(() => {
-      return "<ul><li>" + field.errors.value.join("</li><li>") + "</li></ul>";
+      return field.errors.value;
     });
     function onInputField(event) {
       updateValue(event.target.value);
