@@ -11,7 +11,9 @@
   "parserOptions": {
     "sourceType": "module"
   },
+  "plugins": ["eslint-plugin-tailwindcss"],
   "rules": {
-    "vue/attributes-order": "error"
+    "vue/attributes-order": "error",
+    "tailwindcss/classnames-order": "error"
   }
 }

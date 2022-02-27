@@ -3,31 +3,32 @@
     class="flex"
     :class="containerCls"
   >
-    <FieldLabel :value="label" />
-    <div>
+    <FieldLabel
+      :value="label"
+      :class="labelWidth"
+    />
+    <div class="relative">
       <input
         class="field-text"
         :value="value"
         :class="inputCls"
         v-bind="inputAttrs"
-        @focus="onFocusField"
         @input="onInputField"
         @blur="onBlurField"
       >
       <IconBase
-        v-show="fieldErrors.length"
+        v-show="showErrors"
         :icon="Icons.ALERT_TRIANGLE"
+        class="text-red-800"
       >
-        <TooltipBase :position="tooltipPosition">
-          <ul>
-            <li
-              v-for="(fieldError, index) in fieldErrors"
-              :key="index"
-            >
-              {{ fieldError }}
-            </li>
-          </ul>
-        </TooltipBase>
+        <ul>
+          <li
+            v-for="(fieldError, index) in fieldErrors"
+            :key="index"
+          >
+            {{ fieldError }}
+          </li>
+        </ul>
       </IconBase>
     </div>
   </div>
@@ -64,6 +65,10 @@ export default {
     label: {
       type: String,
       default: "",
+    },
+    labelWidth: {
+      type: String,
+      default: "w-16",
     },
     modelValue: {
       type: [String, Number, Boolean],
@@ -122,7 +127,7 @@ export default {
     },
     validateOnInit: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     tooltipPosition: {
       type: String,
@@ -163,11 +168,11 @@ export default {
       initialValue: props.modelValue,
       validateOnMount: props.validateOnInit,
     });
+    field.setTouched(props.validateOnInit);
     function updateValue(value) {
       emit("update:modelValue", value);
     }
     watch(computed(() => props.modelValue), (value) => {
-      field.setTouched(true);
       field.handleChange(value, false);
     });
     const containerCls = computed(() => useFieldCls(props));
@@ -180,7 +185,7 @@ export default {
       }
     });
     watch(computed(() => field.meta.valid), (valid) => {
-      if (field.meta.touched || props.validateOnInit) {
+      if (field.meta.touched) {
         emit("change:validity", valid);
       }
     });
@@ -189,26 +194,26 @@ export default {
         emit("change:dirty", dirty);
       }
     });
-    const fieldErrors = computed(() => {
-      return field.errors.value;
+    const fieldErrors = computed(() => field.errors.value);
+    const showErrors = computed(() => {
+      return field.meta.touched && fieldErrors.value.length;
     });
     function onInputField(event) {
       updateValue(event.target.value);
     }
-    function onFocusField() {
-      field.setTouched(true);
-    }
     // We have to make sure that when we lose focus that we parse the value appropriately
     function onBlurField() {
+      field.setTouched(true);
       updateValue(props.parseValue(props.modelValue));
+      field.validate();
     }
     return {
       field,
       containerCls,
       inputCls,
       fieldErrors,
+      showErrors,
       onInputField,
-      onFocusField,
       onBlurField,
       value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
@@ -220,9 +225,12 @@ export default {
 
 <style scoped lang="scss">
 .label-horizontal {
-  @apply items-center space-x-2;
+  @apply space-x-2;
   &.flex-row-reverse {
     @apply space-x-reverse;
+  }
+  label {
+    @apply leading-6;
   }
 }
 .label-vertical {

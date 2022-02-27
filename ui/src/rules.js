@@ -31,11 +31,11 @@ defineRule("maxLength", (value, [maxLength]) => {
 });
 
 defineRule("minValue", (value, [minValue]) => {
-  return value >= minValue;
+  return isEmpty(value) || value >= minValue;
 });
 
 defineRule("maxValue", (value, [maxValue]) => {
-  return value <= maxValue;
+  return isEmpty(value) || value <= maxValue;
 });
 
 defineRule("whitespace", (value) => {

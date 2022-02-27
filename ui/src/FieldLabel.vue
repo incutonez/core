@@ -1,5 +1,5 @@
 ﻿<template>
-  <label class="uppercase text-sm text-slate-600 font-semibold">{{ value }}{{ separator }}</label>
+  <label class="text-sm font-semibold text-slate-600 uppercase">{{ value }}{{ separator }}</label>
 </template>
 
 <script>

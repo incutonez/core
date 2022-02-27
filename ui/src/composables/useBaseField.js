@@ -17,7 +17,7 @@ export function useFieldRules(props) {
 
 export function useInputCls(props, field) {
   return {
-    "field-invalid": (field.meta.touched || props.validateOnInit) && field.meta.valid === false,
+    "field-invalid": field.meta.touched && field.meta.valid === false,
   };
 }
 

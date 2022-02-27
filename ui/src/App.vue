@@ -1,36 +1,38 @@
 <template>
-  <div class="bg-blue-100">
-    Hi {{ record.fullName }}!
+  <div class="space-y-4">
+    <div class="bg-blue-100">
+      Hi {{ record.fullName }}!
+    </div>
+    <select v-model="selectedTooltip">
+      <option
+        v-for="(position, index) in TooltipPositions.keys"
+        :key="index"
+      >
+        {{ position }}
+      </option>
+    </select>
+    <FieldText
+      v-model="record.name"
+      label="Name"
+      :required="isRequired"
+      :min-length="minLength"
+      :max-length="maxLength"
+      :tooltip-position="tooltipPosition"
+      @change:validity="onChangeValidity"
+      @change:dirty="onChangeDirty"
+    />
+    <FieldInteger
+      v-model="record.int"
+      label="Integer"
+      :required="isRequired"
+      :min-value="minValue"
+    />
+    <FieldNumber
+      v-model="record.decimal"
+      label="Decimal"
+      :min-value="minValue"
+    />
   </div>
-  <select v-model="selectedTooltip">
-    <option
-      v-for="(position, index) in TooltipPositions.keys"
-      :key="index"
-    >
-      {{ position }}
-    </option>
-  </select>
-  <FieldText
-    v-model="record.int"
-    label="Name"
-    class="w-36"
-    :required="isRequired"
-    :min-length="minLength"
-    :max-length="maxLength"
-    :tooltip-position="tooltipPosition"
-    @change:validity="onChangeValidity"
-    @change:dirty="onChangeDirty"
-  />
-  <FieldInteger
-    v-model="record.int"
-    label="Integer"
-    :min-value="minValue"
-  />
-  <FieldNumber
-    v-model="record.decimal"
-    label="Decimal"
-    :min-value="minValue"
-  />
 </template>
 
 <script>
@@ -49,10 +51,10 @@ export default {
   },
   data() {
     return {
-      isRequired: false,
+      isRequired: true,
       tooltipPosition: TooltipPositions.MIDDLE,
       record: new TestModel({
-        name: "middle",
+        name: "John",
         date: new Date(),
       }),
       minLength: 4,

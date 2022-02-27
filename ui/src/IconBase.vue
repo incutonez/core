@@ -1,16 +1,20 @@
 ﻿<template>
-  <div
-    :class="icon"
-    class="relative"
-  >
-    <slot>
-      <TooltipBase :value="tooltip" />
-    </slot>
+  <div class="relative">
+    <span :class="icon" />
+    <div
+      v-if="hasInner"
+      class="inline-block pl-1"
+    >
+      <slot>
+        <TooltipBase :value="tooltip" />
+      </slot>
+    </div>
   </div>
 </template>
 
 <script>
 import TooltipBase from "ui/TooltipBase.vue";
+import { computed } from "vue";
 
 export default {
   name: "IconBase",
@@ -26,6 +30,12 @@ export default {
       type: String,
       default: "",
     },
+  },
+  setup(props, { slots }) {
+    const hasInner = computed(() => !!slots.default || props.tooltip);
+    return {
+      hasInner,
+    };
   },
 };
 </script>
