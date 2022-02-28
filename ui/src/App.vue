@@ -17,7 +17,6 @@
       :required="isRequired"
       :min-length="minLength"
       :max-length="maxLength"
-      :tooltip-position="tooltipPosition"
       @change:validity="onChangeValidity"
       @change:dirty="onChangeDirty"
     />

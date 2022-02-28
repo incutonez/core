@@ -8,14 +8,20 @@
       :class="labelWidth"
     />
     <div class="relative">
-      <input
-        class="field-text"
-        :value="value"
-        :class="inputCls"
-        v-bind="inputAttrs"
-        @input="onInputField"
-        @blur="onBlurField"
+      <div
+        class="flex relative field-text"
+        :class="inputWrapperCls"
       >
+        <slot name="beforeItems" />
+        <input
+          :value="value"
+          class="px-1"
+          v-bind="inputAttrs"
+          @input="onInputField"
+          @blur="onBlurField"
+        >
+        <slot name="afterItems" />
+      </div>
       <IconBase
         v-show="showErrors"
         :icon="Icons.ALERT_TRIANGLE"
@@ -51,12 +57,10 @@ import {
 import { parseString } from "shared/utilities.js";
 import Icons from "ui/Icons.js";
 import IconBase from "ui/IconBase.vue";
-import TooltipBase, { TooltipPositions } from "ui/TooltipBase.vue";
 
 export default {
   name: "FieldText",
   components: {
-    TooltipBase,
     IconBase,
     FieldLabel,
   },
@@ -129,10 +133,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    tooltipPosition: {
-      type: String,
-      default: TooltipPositions.RIGHT_MIDDLE,
-    },
     inputAttrsCfg: {
       type: Function,
       default: (props) => {
@@ -164,7 +164,7 @@ export default {
   },
   setup(props, { emit }) {
     const fieldRules = computed(() => props.rulesCfg(props));
-    const field = useField("test", fieldRules, {
+    const field = useField(props.label || "field-text", fieldRules, {
       initialValue: props.modelValue,
       validateOnMount: props.validateOnInit,
     });
@@ -176,7 +176,7 @@ export default {
       field.handleChange(value, false);
     });
     const containerCls = computed(() => useFieldCls(props));
-    const inputCls = computed(() => useInputCls(props, field));
+    const inputWrapperCls = computed(() => useInputCls(props, field));
     watch(fieldRules, async (value) => {
       if (value) {
         // We have to wait for the field to receive its new rules before validating
@@ -210,14 +210,14 @@ export default {
     return {
       field,
       containerCls,
-      inputCls,
+      inputWrapperCls,
       fieldErrors,
       showErrors,
       onInputField,
       onBlurField,
+      Icons,
       value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
-      Icons,
     };
   },
 };
@@ -241,14 +241,23 @@ export default {
 }
 
 .field-text {
-  @apply pl-1 bg-slate-100 rounded-sm border;
+  @apply bg-slate-100 rounded-sm border overflow-hidden;
+  input {
+    @apply bg-transparent;
+    &:focus {
+      @apply outline-none;
+    }
+  }
+  &:focus-within {
+    @apply outline-2 outline outline-blue-600;
+  }
 }
 
 .field-invalid {
-  &:not(:focus) {
+  &:not(:focus-within) {
     @apply border-red-500;
   }
-  &:focus {
+  &:focus-within {
     @apply outline-2 outline outline-red-500;
   }
 }
