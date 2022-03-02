@@ -15,7 +15,8 @@
         <slot name="beforeItems" />
         <input
           :value="value"
-          class="px-1"
+          class="field-text-input"
+          :class="inputCls"
           v-bind="inputAttrs"
           @input="onInputField"
           @blur="onBlurField"
@@ -72,7 +73,7 @@ export default {
     },
     labelWidth: {
       type: String,
-      default: "w-16",
+      default: "w-24",
     },
     modelValue: {
       type: [String, Number, Boolean],
@@ -81,6 +82,10 @@ export default {
     inputType: {
       type: String,
       default: "text",
+    },
+    inputCls: {
+      type: [Object, String],
+      default: null,
     },
     labelAlign: {
       type: String,
@@ -156,10 +161,6 @@ export default {
     parseValue: {
       type: Function,
       default: parseString,
-    },
-    inputHandler: {
-      type: Function,
-      default: undefined,
     },
   },
   setup(props, { emit }) {
@@ -243,7 +244,7 @@ export default {
 .field-text {
   @apply bg-slate-100 rounded-sm border overflow-hidden;
   input {
-    @apply bg-transparent;
+    @apply bg-transparent px-1;
     &:focus {
       @apply outline-none;
     }

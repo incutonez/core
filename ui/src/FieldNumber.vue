@@ -8,7 +8,17 @@
     @keydown.down.prevent
     @keydown.up.prevent
     @wheel.prevent
-  />
+  >
+    <template
+      v-for="(_, slot) of $slots"
+      #[slot]="scope"
+    >
+      <slot
+        :name="slot"
+        v-bind="scope"
+      />
+    </template>
+  </FieldText>
 </template>
 
 <script>

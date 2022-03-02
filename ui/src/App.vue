@@ -31,6 +31,15 @@
       label="Decimal"
       :min-value="minValue"
     />
+    <FieldCurrency
+      v-model="record.decimal"
+      label="Currency"
+    />
+    <FieldPercent
+      v-model="record.decimal"
+      label="Percent"
+      input-cls="w-14"
+    />
   </div>
 </template>
 
@@ -40,10 +49,14 @@ import FieldText from "ui/FieldText.vue";
 import FieldNumber from "ui/FieldNumber.vue";
 import FieldInteger from "ui/FieldInteger.vue";
 import { TooltipPositions } from "ui/TooltipBase.vue";
+import FieldCurrency from "ui/FieldCurrency.vue";
+import FieldPercent from "ui/FieldPercent.vue";
 
 export default {
   name: "App",
   components: {
+    FieldPercent,
+    FieldCurrency,
     FieldInteger,
     FieldNumber,
     FieldText,

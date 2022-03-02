@@ -7,7 +7,7 @@
  * By default, this is 2.
  * @property {Collection} [collection]
  * @property {Model} [model]
- * @property {*} [default=""]
+ * @property {*} [defaultValue=""]
  */
 import { Enum } from "shared/Enum.js";
 import {
@@ -20,6 +20,7 @@ import {
   parseDate,
   parseInteger,
   parseNumber,
+  parseObject,
   parseString,
 } from "shared/utilities.js";
 import { Collection } from "shared/Collection.js";
@@ -41,8 +42,10 @@ import { Collection } from "shared/Collection.js";
  * @property {String} COLLECTION_DISPLAY
  * @property {Number} ARRAY
  * @property {String} ARRAY_DISPLAY
+ * @property {Number} OBJECT
+ * @property {String} OBJECT_DISPLAY
  */
-export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array"]);
+export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array", "Object"]);
 
 /**
  * @param {*} value
@@ -71,6 +74,9 @@ function parseValue(value, field) {
     case FieldType.ARRAY:
       value = parseArray(value);
       break;
+    case FieldType.OBJECT:
+      value = getValue(parseObject(value), field, {});
+      break;
     case FieldType.STRING:
     default:
       value = getValue(parseString(value), field, "");
@@ -80,9 +86,9 @@ function parseValue(value, field) {
   return value;
 }
 
-function getValue(value, { default: fieldDefault }, defaultValue) {
+function getValue(value, field, defaultValue) {
   if (isEmpty(value)) {
-    value = isUndefined(fieldDefault) ? defaultValue : fieldDefault;
+    value = "defaultValue" in field ? field.defaultValue : defaultValue;
   }
   return value;
 }

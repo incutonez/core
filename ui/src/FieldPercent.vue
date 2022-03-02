@@ -1,7 +1,7 @@
 ﻿<template>
   <FieldNumber>
-    <template #beforeItems>
-      <span class="pl-1">$</span>
+    <template #afterItems>
+      <span class="pr-1">%</span>
     </template>
   </FieldNumber>
 </template>
@@ -10,7 +10,7 @@
 import FieldNumber from "ui/FieldNumber.vue";
 
 export default {
-  name: "FieldCurrency",
+  name: "FieldPercent",
   components: {
     FieldNumber,
   },
@@ -19,6 +19,6 @@ export default {
 
 <style scoped>
 :deep(.field-text .field-text-input) {
-  @apply pl-0.5 pr-1;
+  @apply pl-1 pr-0.5;
 }
 </style>

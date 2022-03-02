@@ -10,6 +10,10 @@ export function isNull(value) {
   return value === null;
 }
 
+export function isDefined(value) {
+  return value != null;
+}
+
 export function isEmpty(value) {
   return isUndefined(value) ||
     isNull(value) ||
@@ -44,13 +48,11 @@ export function isObject(value) {
 }
 
 export function parseNumber(value, precision = 2) {
-  if (isEmpty(value)) {
-    return value;
+  if (isDefined(value)) {
+    value = isNumber(value) ? value : parseFloat(value);
+    return +(value.toFixed(precision));
   }
-  if (!isNumber(value)) {
-    value = parseFloat(value);
-  }
-  return +(value.toFixed(precision));
+  return undefined;
 }
 
 export function parseInteger(value) {
@@ -72,7 +74,7 @@ export function parseDate(value) {
     return value;
   }
   value = new Date(value);
-  return isNaN(value) ? null : value;
+  return isNaN(value) ? undefined : value;
 }
 
 export function parseRaw(value) {
@@ -81,19 +83,29 @@ export function parseRaw(value) {
   }
   catch {
     console.error(`value could not be parse ${value}`);
-    return null;
+    return undefined;
   }
 }
 
 export function parseArray(value) {
-  if (isEmpty(value)) {
-    return [];
+  if (isDefined(value)) {
+    return isArray(value) ? value : parseRaw(value);
   }
-  return isArray(value) ? value : parseRaw(value);
+  return undefined;
+}
+
+export function parseObject(value) {
+  if (isDefined(value)) {
+    return isObject(value) ? value : parseRaw(value);
+  }
+  return undefined;
 }
 
 export function parseString(value) {
-  return isString(value) ? value : String(value);
+  if (isDefined(value)) {
+    return isString(value) ? value : String(value);
+  }
+  return undefined;
 }
 
 export function cloneDeep(value) {
