@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import TooltipBase from "ui/TooltipBase.vue";
 import { computed } from "vue";
+import { TooltipBase } from "ui/index.js";
 
 export default {
   name: "IconBase",

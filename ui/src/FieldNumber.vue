@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import FieldText from "ui/FieldText.vue";
 import {
   useFieldRules,
   useInputAttrs,
@@ -30,6 +29,7 @@ import {
 import {
   parseNumber,
 } from "shared/utilities.js";
+import { FieldText } from "ui/index.js";
 
 export default {
   name: "FieldNumber",

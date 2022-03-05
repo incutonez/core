@@ -7,7 +7,10 @@
       :value="label"
       :class="labelWidth"
     />
-    <div class="relative">
+    <div
+      class="relative"
+      :class="inputWidth"
+    >
       <div
         class="flex relative field-text"
         :class="inputWrapperCls"
@@ -15,9 +18,10 @@
         <slot name="beforeItems" />
         <input
           :value="value"
-          class="field-text-input"
+          class="w-full field-text-input"
           :class="inputCls"
           v-bind="inputAttrs"
+          @click="onClickField"
           @input="onInputField"
           @blur="onBlurField"
         >
@@ -42,7 +46,6 @@
 </template>
 
 <script>
-import FieldLabel from "ui/FieldLabel.vue";
 import {
   useFieldCls,
   useFieldRules,
@@ -56,8 +59,11 @@ import {
   watch,
 } from "vue";
 import { parseString } from "shared/utilities.js";
-import Icons from "ui/Icons.js";
-import IconBase from "ui/IconBase.vue";
+import {
+  FieldLabel,
+  IconBase,
+  Icons,
+} from "ui/index.js";
 
 export default {
   name: "FieldText",
@@ -65,7 +71,7 @@ export default {
     IconBase,
     FieldLabel,
   },
-  emits: ["update:modelValue", "change:validity", "change:dirty"],
+  emits: ["update:modelValue", "change:validity", "change:dirty", "click:field"],
   props: {
     label: {
       type: String,
@@ -86,6 +92,10 @@ export default {
     inputCls: {
       type: [Object, String],
       default: null,
+    },
+    inputWidth: {
+      type: String,
+      default: "flex-1",
     },
     labelAlign: {
       type: String,
@@ -199,6 +209,9 @@ export default {
     const showErrors = computed(() => {
       return field.meta.touched && fieldErrors.value.length;
     });
+    function onClickField(event) {
+      emit("click:field", event);
+    }
     function onInputField(event) {
       updateValue(event.target.value);
     }
@@ -216,6 +229,7 @@ export default {
       showErrors,
       onInputField,
       onBlurField,
+      onClickField,
       Icons,
       value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
@@ -242,7 +256,7 @@ export default {
 }
 
 .field-text {
-  @apply bg-slate-100 rounded-sm border overflow-hidden;
+  @apply bg-slate-100 rounded-sm border border-gray-300;
   input {
     @apply bg-transparent px-1;
     &:focus {
@@ -250,16 +264,14 @@ export default {
     }
   }
   &:focus-within {
-    @apply outline-2 outline outline-blue-600;
+    @apply outline-2 outline outline-blue-500;
   }
 }
 
 .field-invalid {
+  @apply focus-within:outline-2 focus-within:outline focus-within:outline-red-500;
   &:not(:focus-within) {
     @apply border-red-500;
-  }
-  &:focus-within {
-    @apply outline-2 outline outline-red-500;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div class="flex flex-col justify-items-stretch space-y-4 max-w-xs h-full">
     <div class="bg-blue-100">
       Hi {{ record.fullName }}!
     </div>
@@ -11,6 +11,11 @@
         {{ position }}
       </option>
     </select>
+    <FieldComboBox
+      label="Combo"
+      :options="listOptions"
+      value-field="name"
+    />
     <FieldText
       v-model="record.name"
       label="Name"
@@ -38,23 +43,28 @@
     <FieldPercent
       v-model="record.decimal"
       label="Percent"
-      input-cls="w-14"
+      input-width="w-14"
     />
   </div>
 </template>
 
 <script>
 import { TestModel } from "shared/models/TestModel.js";
-import FieldText from "ui/FieldText.vue";
-import FieldNumber from "ui/FieldNumber.vue";
-import FieldInteger from "ui/FieldInteger.vue";
-import { TooltipPositions } from "ui/TooltipBase.vue";
-import FieldCurrency from "ui/FieldCurrency.vue";
-import FieldPercent from "ui/FieldPercent.vue";
+import {
+  FieldCurrency,
+  FieldInteger,
+  FieldNumber,
+  FieldPercent,
+  FieldText,
+  TooltipPositions,
+} from "ui/index.js";
+import FieldComboBox from "ui/FieldComboBox.vue";
+import { names } from "shared/data/names.js";
 
 export default {
   name: "App",
   components: {
+    FieldComboBox,
     FieldPercent,
     FieldCurrency,
     FieldInteger,
@@ -73,6 +83,8 @@ export default {
       maxLength: 50,
       minValue: 2,
       TooltipPositions,
+      expand: true,
+      listOptions: names,
     };
   },
   methods: {

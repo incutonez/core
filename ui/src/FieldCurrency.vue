@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import FieldNumber from "ui/FieldNumber.vue";
+import { FieldNumber } from "ui/index.js";
 
 export default {
   name: "FieldCurrency",

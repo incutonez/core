@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import FieldNumber from "ui/FieldNumber.vue";
 import { parseInteger } from "shared/utilities.js";
+import { FieldNumber } from "ui/index.js";
 
 export default {
   name: "FieldInteger",
