@@ -2,6 +2,7 @@
   <FieldText
     ref="fieldEl"
     v-bind="$props"
+    v-model="displayValue"
     @click:field="onClickField"
   >
     <template #beforeItems>
@@ -20,9 +21,16 @@
         :icon="Icons.PICKER_DOWN"
         @click="onClickPicker"
       />
-      <slot name="list">
+      <slot
+        name="list"
+        :expanded="isExpanded"
+        :options="options"
+        :value-field="valueField"
+        :selection="selection"
+      >
         <ListBase
           v-show="isExpanded"
+          v-model="selection"
           class="absolute z-10 w-full h-36 indent-px bg-white shadow"
           :options="options"
           :value-field="valueField"
@@ -43,6 +51,7 @@ import {
   onUnmounted,
   ref,
   watch,
+  watchEffect,
 } from "vue";
 import ListBase from "ui/ListBase.vue";
 
@@ -57,8 +66,12 @@ export default {
     IconBase,
     FieldText,
   },
-  emits: ["update:expanded"],
+  emits: ["update:expanded", "update:modelValue"],
   props: {
+    modelValue: {
+      type: [String, Number],
+      default: null,
+    },
     multiSelect: {
       type: Boolean,
       default: false,
@@ -82,8 +95,25 @@ export default {
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
-    const selection = ref(null);
+    const selection = ref(props.options?.find((item) => item[props.idField] === props.modelValue));
     const isExpanded = ref(props.expanded);
+    const displayValue = ref(null);
+    watchEffect(() => {
+      const value = props.modelValue;
+      const foundRecord = props.options?.find((item) => item[props.idField] === value);
+      selection.value = foundRecord;
+      displayValue.value = foundRecord?.[props.valueField];
+    });
+    // Watch on the selection... this changes when a selection is made
+    watch(() => selection.value, (value) => {
+      emit("update:modelValue", value?.[props.idField]);
+      updateExpanded(false);
+    });
+    // Watch on the modelValue... this changes when the value is set outside of this component
+    watch(() => props.modelValue, (value) => {
+      emit("update:modelValue", value);
+      updateExpanded(false);
+    });
     watch(() => props.expanded, (value) => {
       updateExpanded(value);
     });
@@ -119,6 +149,7 @@ export default {
       onBlurField,
       isExpanded,
       fieldEl,
+      displayValue,
     };
   },
 };

@@ -12,6 +12,7 @@
       </option>
     </select>
     <FieldComboBox
+      v-model="selectedName"
       label="Combo"
       :options="listOptions"
       value-field="name"
@@ -85,6 +86,7 @@ export default {
       TooltipPositions,
       expand: true,
       listOptions: names,
+      selectedName: 1,
     };
   },
   methods: {
@@ -94,9 +96,6 @@ export default {
     onChangeDirty() {
       console.log("onChangeDirty");
     },
-  },
-  mounted() {
-    console.log(this);
   },
   computed: {
     selectedTooltip: {
