@@ -3,16 +3,9 @@
     <div class="bg-blue-100">
       Hi {{ record.fullName }}!
     </div>
-    <select v-model="selectedTooltip">
-      <option
-        v-for="(position, index) in TooltipPositions.keys"
-        :key="index"
-      >
-        {{ position }}
-      </option>
-    </select>
     <FieldComboBox
       v-model="selectedName"
+      multi-select
       label="Combo"
       :options="listOptions"
       value-field="name"
@@ -57,7 +50,6 @@ import {
   FieldNumber,
   FieldPercent,
   FieldText,
-  TooltipPositions,
 } from "ui/index.js";
 import FieldComboBox from "ui/FieldComboBox.vue";
 import { names } from "shared/data/names.js";
@@ -75,7 +67,6 @@ export default {
   data() {
     return {
       isRequired: true,
-      tooltipPosition: TooltipPositions.MIDDLE,
       record: new TestModel({
         name: "John",
         date: new Date(),
@@ -83,10 +74,9 @@ export default {
       minLength: 4,
       maxLength: 50,
       minValue: 2,
-      TooltipPositions,
       expand: true,
       listOptions: names,
-      selectedName: 1,
+      selectedName: [1],
     };
   },
   methods: {
@@ -97,16 +87,10 @@ export default {
       console.log("onChangeDirty");
     },
   },
-  computed: {
-    selectedTooltip: {
-      get() {
-        return this.tooltipPosition;
-      },
-      set(value) {
-        console.log(value);
-        this.tooltipPosition = value;
-      },
-    },
+  mounted() {
+    setTimeout(() => {
+      this.selectedName = [4, 20];
+    }, 5000);
   },
 };
 </script>

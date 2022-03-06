@@ -16,9 +16,13 @@ export function useFieldRules(props) {
 }
 
 export function useInputCls(props, field) {
-  return {
+  const inputCls = {
     "field-invalid": field.meta.touched && field.meta.valid === false,
   };
+  if (props.inputWrapperClasses) {
+    inputCls[props.inputWrapperClasses] = true;
+  }
+  return inputCls;
 }
 
 export function useInputAttrs(props) {

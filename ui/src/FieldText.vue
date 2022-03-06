@@ -93,6 +93,10 @@ export default {
       type: [Object, String],
       default: null,
     },
+    inputWrapperClasses: {
+      type: [Object, String],
+      default: null,
+    },
     inputWidth: {
       type: String,
       default: "flex-1",

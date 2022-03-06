@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="relative">
+  <div>
     <span :class="icon" />
     <div
       v-if="hasInner"

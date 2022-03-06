@@ -3,39 +3,43 @@
     ref="fieldEl"
     v-bind="$props"
     v-model="displayValue"
+    input-wrapper-classes="flex-wrap"
+    @keydown.delete="onKeyBackspace"
     @click:field="onClickField"
   >
     <template #beforeItems>
-      <ul v-if="multiSelect">
-        <li
-          v-for="(item, index) in selection"
-          :key="index"
-        >
-          {{ item }}
-        </li>
-      </ul>
+      <ItemsBase
+        v-if="multiSelect"
+        :selections="selections"
+        :value-field="valueField"
+        @remove:selection="onClickItemRemove"
+      />
     </template>
     <template #afterItems>
       <IconBase
-        class="box-border pr-2 text-xs leading-6 cursor-pointer"
+        class="field-combo-box-picker"
         :icon="Icons.PICKER_DOWN"
         @click="onClickPicker"
       />
-      <slot
-        name="list"
-        :expanded="isExpanded"
-        :options="options"
-        :value-field="valueField"
-        :selection="selection"
+      <div
+        v-show="isExpanded"
+        class="field-combo-box-list-wrapper"
       >
-        <ListBase
-          v-show="isExpanded"
-          v-model="selection"
-          class="absolute z-10 w-full h-36 indent-px bg-white shadow"
+        <slot
+          name="list"
+          :expanded="isExpanded"
           :options="options"
           :value-field="valueField"
-        />
-      </slot>
+          :selections="selections"
+        >
+          <ListBase
+            :selections="selections"
+            :options="options"
+            :value-field="valueField"
+            @update:selections="onUpdateSelections"
+          />
+        </slot>
+      </div>
     </template>
   </FieldText>
 </template>
@@ -51,9 +55,13 @@ import {
   onUnmounted,
   ref,
   watch,
-  watchEffect,
 } from "vue";
 import ListBase from "ui/ListBase.vue";
+import {
+  isArray,
+  isEmpty,
+} from "shared/utilities.js";
+import ItemsBase from "ui/ItemsBase.vue";
 
 /**
  * Implementation concept taken from Atlassian
@@ -62,6 +70,7 @@ import ListBase from "ui/ListBase.vue";
 export default {
   name: "FieldComboBox",
   components: {
+    ItemsBase,
     ListBase,
     IconBase,
     FieldText,
@@ -69,7 +78,7 @@ export default {
   emits: ["update:expanded", "update:modelValue"],
   props: {
     modelValue: {
-      type: [String, Number],
+      type: [String, Number, Array],
       default: null,
     },
     multiSelect: {
@@ -95,34 +104,56 @@ export default {
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
-    const selection = ref(props.options?.find((item) => item[props.idField] === props.modelValue));
+    const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
     const displayValue = ref(null);
-    watchEffect(() => {
-      const value = props.modelValue;
-      const foundRecord = props.options?.find((item) => item[props.idField] === value);
-      selection.value = foundRecord;
-      displayValue.value = foundRecord?.[props.valueField];
-    });
-    // Watch on the selection... this changes when a selection is made
-    watch(() => selection.value, (value) => {
-      emit("update:modelValue", value?.[props.idField]);
+    function getSelections() {
+      const selections = [];
+      const { idField } = props;
+      let { modelValue } = props;
+      if (isEmpty(modelValue)) {
+        return selections;
+      }
+      modelValue = isArray(modelValue) ? modelValue : [modelValue];
+      modelValue.forEach((selectedValue) => {
+        const foundOption = props.options?.find((option) => option[idField] === selectedValue);
+        if (foundOption) {
+          selections.push(foundOption);
+        }
+      });
+      return selections;
+    }
+    watch(() => props.modelValue, (() => {
+      const { multiSelect } = props;
+      const values = getSelections();
+      selections.value = values;
+      if (multiSelect || isEmpty(values)) {
+        displayValue.value = null;
+      }
+      else {
+        displayValue.value = values[0][props.valueField];
+      }
       updateExpanded(false);
-    });
-    // Watch on the modelValue... this changes when the value is set outside of this component
-    watch(() => props.modelValue, (value) => {
-      emit("update:modelValue", value);
-      updateExpanded(false);
+    }), {
+      immediate: true,
     });
     watch(() => props.expanded, (value) => {
       updateExpanded(value);
     });
     function updateExpanded(value = !isExpanded.value) {
-      emit("update:expanded", value);
       isExpanded.value = value;
+      emit("update:expanded", value);
     }
     function onBlurField() {
       updateExpanded(false);
+    }
+    function onKeyBackspace() {
+      let { modelValue } = props;
+      if (isEmpty(modelValue) || !isEmpty(displayValue.value)) {
+        return;
+      }
+      modelValue = props.multiSelect ? modelValue[modelValue.length - 1] : modelValue;
+      updateSelections(props.options?.find((item) => item[props.idField] === modelValue), true);
     }
     function onClickField() {
       updateExpanded();
@@ -130,10 +161,33 @@ export default {
     function onClickPicker() {
       updateExpanded();
     }
+    function onClickItemRemove(option) {
+      updateSelections(option, true);
+    }
     function onClickDocument(event) {
       if (!fieldEl.value.$el.contains(event.target)) {
         updateExpanded(false);
       }
+    }
+    function updateSelections(option, remove) {
+      let updateValue = null;
+      const { modelValue, multiSelect } = props;
+      const selectedId = option?.[props.idField];
+      if (multiSelect) {
+        if (remove) {
+          updateValue = modelValue.filter((item) => item !== selectedId);
+        }
+        else {
+          updateValue = modelValue.concat(selectedId);
+        }
+      }
+      else if( !remove) {
+        updateValue = selectedId;
+      }
+      emit("update:modelValue", updateValue);
+    }
+    function onUpdateSelections(option, remove) {
+      updateSelections(option, remove);
     }
     onMounted(() => {
       document.addEventListener("click", onClickDocument);
@@ -143,10 +197,13 @@ export default {
     });
     return {
       Icons,
-      selection,
+      selections,
       onClickPicker,
       onClickField,
       onBlurField,
+      onUpdateSelections,
+      onClickItemRemove,
+      onKeyBackspace,
       isExpanded,
       fieldEl,
       displayValue,
@@ -154,3 +211,17 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+@use "sass:math";
+$padding: 4px;
+.field-combo-box-list-wrapper {
+  @apply rounded overflow-auto absolute z-10 w-full h-36 indent-px bg-white border border-gray-300 shadow;
+  width: calc(100% + #{$padding});
+  left: -#{math.div($padding, 2)};
+  top: calc(100% + #{$padding});
+}
+.field-combo-box-picker {
+  @apply box-border absolute right-0 bottom-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
+}
+</style>

@@ -1,11 +1,11 @@
 ﻿<template>
-  <ul class="box-border overflow-auto border border-gray-300 list-base-container">
+  <ul>
     <li
       v-for="(option, index) in options"
       :key="index"
       class="list-base-item"
-      :class="isSelected(option, modelValue)"
-      @click="onClickListItem(option)"
+      :class="isSelected(option, selections)"
+      @click="onClickListItem($event, option)"
     >
       {{ valueField ? option[valueField] : option }}
     </li>
@@ -13,9 +13,10 @@
 </template>
 
 <script>
+const selectedCls = "list-base-item-selected";
 export default {
   name: "ListBase",
-  emits: ["update:modelValue"],
+  emits: ["update:selections"],
   props: {
     options: {
       type: Array,
@@ -29,17 +30,23 @@ export default {
       type: String,
       default: "value",
     },
-    modelValue: {
-      type: [Array, Object],
-      default: null,
+    selections: {
+      type: Array,
+      default: () => [],
     },
   },
   setup(props, { emit }) {
-    function onClickListItem(option) {
-      emit("update:modelValue", option);
+    function onClickListItem(event, option) {
+      emit("update:selections", option, event.target.classList.contains(selectedCls));
     }
-    function isSelected(option, selection) {
-      return option === selection ? "list-base-item-selected" : null;
+    function isSelected(option, selections) {
+      let cls = "";
+      for (const selection of selections) {
+        if (option === selection) {
+          cls = selectedCls;
+        }
+      }
+      return cls;
     }
     return {
       onClickListItem,
@@ -50,11 +57,6 @@ export default {
 </script>
 
 <style lang="scss">
-.list-base-container {
-  @apply top-7 rounded;
-  width: calc(100% + 4px);
-  left: -2px;
-}
 .list-base-item {
   @apply py-1 px-2 hover:bg-slate-100 cursor-pointer;
   &.list-base-item-selected,
