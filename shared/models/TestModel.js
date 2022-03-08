@@ -11,30 +11,30 @@ export class TestModel extends Model {
       name: "name",
     }, {
       name: "date",
-      type: FieldType.DATE,
+      type: FieldType.Date,
     }, {
       name: "bool",
-      type: FieldType.BOOLEAN,
+      type: FieldType.Boolean,
     }, {
       name: "int",
-      type: FieldType.INTEGER,
+      type: FieldType.Integer,
     }, {
       name: "decimal",
-      type: FieldType.DECIMAL,
+      type: FieldType.Decimal,
     }, {
       name: "array",
-      type: FieldType.ARRAY,
+      type: FieldType.Array,
     }, {
       name: "collection",
-      type: FieldType.COLLECTION,
+      type: FieldType.Collection,
       model: ChildModel,
     }, {
       name: "collection2",
-      type: FieldType.COLLECTION,
+      type: FieldType.Collection,
       collection: ChildCollection,
     }, {
       name: "model",
-      type: FieldType.MODEL,
+      type: FieldType.Model,
       model: ChildModel,
     }];
   }

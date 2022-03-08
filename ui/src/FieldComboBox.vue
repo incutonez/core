@@ -3,17 +3,26 @@
     ref="fieldEl"
     v-bind="$props"
     v-model="displayValue"
-    input-wrapper-classes="flex-wrap"
+    :input-wrapper-classes="inputWrapperCls"
+    :input-cls="inputCls"
     @keydown.delete="onKeyBackspace"
     @click:field="onClickField"
   >
     <template #beforeItems>
-      <ItemsBase
+      <div
         v-if="multiSelect"
-        :selections="selections"
-        :value-field="valueField"
-        @remove:selection="onClickItemRemove"
-      />
+        :class="itemsWrapperCls"
+      >
+        <slot name="itemsDisplay">
+          <ItemsBase
+            v-for="(selection, index) in selections"
+            :key="index"
+            @remove:selection="onClickItemRemove(selection)"
+          >
+            {{ selection[valueField] }}
+          </ItemsBase>
+        </slot>
+      </div>
     </template>
     <template #afterItems>
       <IconBase
@@ -51,6 +60,7 @@ import {
   Icons,
 } from "ui/index.js";
 import {
+  computed,
   onMounted,
   onUnmounted,
   ref,
@@ -62,7 +72,14 @@ import {
   isEmpty,
 } from "shared/utilities.js";
 import ItemsBase from "ui/ItemsBase.vue";
+import { Enum } from "shared/Enum.js";
 
+/**
+ * @property {Number} Above
+ * @property {Number} Below
+ * @property {Number} Pack
+ */
+export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 /**
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
@@ -101,12 +118,52 @@ export default {
       type: String,
       default: "value",
     },
+    tagsPosition: {
+      type: Number,
+      default: ComboBoxTagPositions.Above,
+    },
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
     const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
     const displayValue = ref(null);
+    const itemsWrapperCls = computed(() => {
+      let cls;
+      switch (props.tagsPosition) {
+        case ComboBoxTagPositions.Pack:
+          cls = "contents";
+          break;
+        case ComboBoxTagPositions.Below:
+        case ComboBoxTagPositions.Above:
+        default:
+          cls = "flex-wrap";
+          break;
+      }
+      return cls;
+    });
+    const inputCls = computed(() => {
+      const cls = ["flex-1 w-full"];
+      if (props.multiSelect) {
+        cls.push("mt-1");
+      }
+      return cls.join(" ");
+    });
+    const inputWrapperCls = computed(() => {
+      const cls = ["box-border flex-wrap pr-5"];
+      if (props.multiSelect) {
+        cls.push("pb-1 pl-1");
+      }
+      switch (props.tagsPosition) {
+        case ComboBoxTagPositions.Above:
+          cls.push("flex-col");
+          break;
+        case ComboBoxTagPositions.Below:
+          cls.push("flex-col-reverse");
+          break;
+      }
+      return cls.join(" ");
+    });
     function getSelections() {
       const selections = [];
       const { idField } = props;
@@ -204,9 +261,12 @@ export default {
       onUpdateSelections,
       onClickItemRemove,
       onKeyBackspace,
+      inputWrapperCls,
       isExpanded,
       fieldEl,
       displayValue,
+      itemsWrapperCls,
+      inputCls,
     };
   },
 };
@@ -222,6 +282,6 @@ $padding: 4px;
   top: calc(100% + #{$padding});
 }
 .field-combo-box-picker {
-  @apply box-border absolute right-0 bottom-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
+  @apply leading-7 box-border absolute top-0 right-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
 }
 </style>

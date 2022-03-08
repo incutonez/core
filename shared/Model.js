@@ -26,24 +26,24 @@ import {
 import { Collection } from "shared/Collection.js";
 
 /**
- * @property {Number} STRING
- * @property {String} STRING_DISPLAY
- * @property {Number} INTEGER
- * @property {String} INTEGER_DISPLAY
- * @property {Number} DECIMAL
- * @property {String} DECIMAL_DISPLAY
- * @property {Number} BOOLEAN
- * @property {String} BOOLEAN_DISPLAY
- * @property {Number} DATE
- * @property {String} DATE_DISPLAY
- * @property {Number} MODEL
- * @property {String} MODEL_DISPLAY
- * @property {Number} COLLECTION
- * @property {String} COLLECTION_DISPLAY
- * @property {Number} ARRAY
- * @property {String} ARRAY_DISPLAY
- * @property {Number} OBJECT
- * @property {String} OBJECT_DISPLAY
+ * @property {Number} String
+ * @property {String} String_DISPLAY
+ * @property {Number} Integer
+ * @property {String} Integer_DISPLAY
+ * @property {Number} Decimal
+ * @property {String} Decimal_DISPLAY
+ * @property {Number} Boolean
+ * @property {String} Boolean_DISPLAY
+ * @property {Number} Date
+ * @property {String} Date_DISPLAY
+ * @property {Number} Model
+ * @property {String} Model_DISPLAY
+ * @property {Number} Collection
+ * @property {String} Collection_DISPLAY
+ * @property {Number} Array
+ * @property {String} Array_DISPLAY
+ * @property {Number} Object
+ * @property {String} Object_DISPLAY
  */
 export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array", "Object"]);
 
@@ -53,31 +53,31 @@ export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "D
  */
 function parseValue(value, field) {
   switch (field.type) {
-    case FieldType.INTEGER:
+    case FieldType.Integer:
       value = getValue(parseInteger(value), field, 0);
       break;
-    case FieldType.DECIMAL:
+    case FieldType.Decimal:
       value = getValue(parseNumber(value, field.precision), field, 0);
       break;
-    case FieldType.BOOLEAN:
+    case FieldType.Boolean:
       value = getValue(parseBoolean(value), field, false);
       break;
-    case FieldType.DATE:
+    case FieldType.Date:
       value = getValue(parseDate(value), field, null);
       break;
-    case FieldType.COLLECTION:
+    case FieldType.Collection:
       value = field.collection ? new field.collection(value) : new Collection(value, field.model);
       break;
-    case FieldType.MODEL:
+    case FieldType.Model:
       value = new field.model(value);
       break;
-    case FieldType.ARRAY:
+    case FieldType.Array:
       value = parseArray(value);
       break;
-    case FieldType.OBJECT:
+    case FieldType.Object:
       value = getValue(parseObject(value), field, {});
       break;
-    case FieldType.STRING:
+    case FieldType.String:
     default:
       value = getValue(parseString(value), field, "");
       break;

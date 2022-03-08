@@ -4,6 +4,9 @@ export default {
     fontFamily: {
       sans: ["Open Sans"],
     },
+    minWidth: {
+      "16": "4rem",
+    },
   },
   safelist: [{
     pattern: /^space-.*/,

@@ -1,33 +1,20 @@
 ﻿import { Enum } from "shared/Enum.js";
 
 /**
- * @property {Number} JANUARY
- * @property {String} JANUARY_DISPLAY
- * @property {Number} FEBRUARY
- * @property {String} FEBRUARY_DISPLAY
- * @property {Number} MARCH
- * @property {String} MARCH_DISPLAY
- * @property {Number} APRIL
- * @property {String} APRIL_DISPLAY
- * @property {Number} MAY
- * @property {String} MAY_DISPLAY
- * @property {Number} JUNE
- * @property {String} JUNE_DISPLAY
- * @property {Number} JULY
- * @property {String} JULY_DISPLAY
- * @property {Number} AUGUST
- * @property {String} AUGUST_DISPLAY
- * @property {Number} SEPTEMBER
- * @property {String} SEPTEMBER_DISPLAY
- * @property {Number} OCTOBER
- * @property {String} OCTOBER_DISPLAY
- * @property {Number} NOVEMBER
- * @property {String} NOVEMBER_DISPLAY
- * @property {Number} DECEMBER
- * @property {String} DECEMBER_DISPLAY
+ * @property {Number} January
+ * @property {Number} February
+ * @property {Number} March
+ * @property {Number} April
+ * @property {Number} May
+ * @property {Number} June
+ * @property {Number} July
+ * @property {Number} August
+ * @property {Number} September
+ * @property {Number} October
+ * @property {Number} November
+ * @property {Number} December
  */
-export const MONTHS = new Enum([
-  "January",
+export const Month = new Enum(["January",
   "February",
   "March",
   "April",
@@ -38,31 +25,21 @@ export const MONTHS = new Enum([
   "September",
   "October",
   "November",
-  "December",
-]);
+  "December"]);
 
 /**
- * @property {Number} SUNDAY
- * @property {String} SUNDAY_DISPLAY
- * @property {Number} MONDAY
- * @property {String} MONDAY_DISPLAY
- * @property {Number} TUESDAY
- * @property {String} TUESDAY_DISPLAY
- * @property {Number} WEDNESDAY
- * @property {String} WEDNESDAY_DISPLAY
- * @property {Number} THURSDAY
- * @property {String} THURSDAY_DISPLAY
- * @property {Number} FRIDAY
- * @property {String} FRIDAY_DISPLAY
- * @property {Number} SATURDAY
- * @property {String} SATURDAY_DISPLAY
+ * @property {Number} Sunday
+ * @property {Number} Monday
+ * @property {Number} Tuesday
+ * @property {Number} Wednesday
+ * @property {Number} Thursday
+ * @property {Number} Friday
+ * @property {Number} Saturday
  */
-export const DAYS = new Enum([
-  "Sunday",
+export const Weekday = new Enum(["Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-]);
+  "Saturday"]);

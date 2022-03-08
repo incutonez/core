@@ -9,6 +9,11 @@
       label="Combo"
       :options="listOptions"
       value-field="name"
+      :tags-position="tagPosition"
+    />
+    <FieldInteger
+      v-model="tagPosition"
+      label="Tag Position"
     />
     <FieldText
       v-model="record.name"
@@ -51,7 +56,7 @@ import {
   FieldPercent,
   FieldText,
 } from "ui/index.js";
-import FieldComboBox from "ui/FieldComboBox.vue";
+import FieldComboBox, { ComboBoxTagPositions } from "ui/FieldComboBox.vue";
 import { names } from "shared/data/names.js";
 
 export default {
@@ -76,7 +81,8 @@ export default {
       minValue: 2,
       expand: true,
       listOptions: names,
-      selectedName: [1],
+      selectedName: [1, 5],
+      tagPosition: ComboBoxTagPositions.Above,
     };
   },
   methods: {
@@ -86,11 +92,6 @@ export default {
     onChangeDirty() {
       console.log("onChangeDirty");
     },
-  },
-  mounted() {
-    setTimeout(() => {
-      this.selectedName = [4, 20];
-    }, 5000);
   },
 };
 </script>

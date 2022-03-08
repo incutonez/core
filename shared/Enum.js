@@ -1,7 +1,5 @@
 ﻿import "shared/overrides/String.js";
 
-const DISPLAY_INDEX = "_DISPLAY";
-
 export class Enum {
   constructor(values, useIndex = true) {
     if (Array.isArray(values)) {
@@ -9,7 +7,6 @@ export class Enum {
         const key = this.valueToKey(value);
         if (useIndex) {
           this[key] = index;
-          this[`${key}${DISPLAY_INDEX}`] = value;
         }
         else {
           this[key] = value;
@@ -19,15 +16,19 @@ export class Enum {
   }
 
   valueToKey(value) {
-    return String(value).split(/(?=[A-Z])|-/).map((item) => item.toUpperCase()).join("_");
+    return String(value).split(/(?=[A-Z])|-/).map((item) => item.capitalize()).join("_");
+  }
+
+  get count() {
+    return this.keys.length;
   }
 
   get keys() {
-    return Object.keys(this).filter((key) => !key.includes(DISPLAY_INDEX)).map((key) => this[key]);
+    return Object.keys(this);
   }
 
   get values() {
-    return Object.keys(this).filter((key) => key.includes(DISPLAY_INDEX)).map((key) => this[key]);
+    return Object.keys(this).map((key) => this[key]);
   }
 
   toString() {

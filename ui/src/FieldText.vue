@@ -18,7 +18,7 @@
         <slot name="beforeItems" />
         <input
           :value="value"
-          class="w-full field-text-input"
+          class="field-text-input"
           :class="inputCls"
           v-bind="inputAttrs"
           @click="onClickField"
@@ -91,7 +91,7 @@ export default {
     },
     inputCls: {
       type: [Object, String],
-      default: null,
+      default: "w-full",
     },
     inputWrapperClasses: {
       type: [Object, String],

@@ -1,26 +1,23 @@
 ﻿import {
-  MONTHS,
-  DAYS,
+  Month,
+  Weekday,
 } from "shared/Enums.js";
 
 const proto = Date.prototype;
-const totalMonths = MONTHS.DECEMBER + 1;
-// Saturday is considered the last day in JavaScript, so we add 1 to it
-const totalDays = DAYS.SATURDAY + 1;
+const TotalMonths = Month.count;
+const TotalDays = Weekday.count;
 
 proto.getWeekStart = function(config = {}) {
-  let {
-    year = this.getFullYear(),
+  const { year = this.getFullYear(),
     yearOffset = 0,
     month = this.getMonth(),
-    monthOffset = 0,
-    date = this.getDate(),
     dateOffset = 0,
     // This is for the end of the month
     isEnd = false,
-    startingDay = DAYS.MONDAY,
-    isWeek = true,
-  } = config;
+    startingDay = Weekday.Monday,
+    isWeek = true } = config;
+  let { monthOffset = 0,
+    date = this.getDate() } = config;
   // Weeks deal with getting their end date differently than months
   if (!isWeek && isEnd) {
     monthOffset = 1;
@@ -36,10 +33,10 @@ proto.getWeekStart = function(config = {}) {
     /* If startingDay is later in the week, we need to subtract from the total number of days in a week
      * and add to our day */
     else if (startingDay > day) {
-      weekDate.setDate(weekDate.getDate() - (day + (totalDays - startingDay)));
+      weekDate.setDate(weekDate.getDate() - (day + (TotalDays - startingDay)));
     }
     if (isEnd) {
-      weekDate.setDate(weekDate.getDate() + DAYS.SATURDAY);
+      weekDate.setDate(weekDate.getDate() + Weekday.Saturday);
     }
   }
   return weekDate;
@@ -57,39 +54,40 @@ proto.getMonthEnd = function(config = {}) {
 };
 
 proto.getYearStart = function(config = {}) {
-  config.month = MONTHS.JANUARY;
+  config.month = Month.January;
   return this.getMonthStart(config);
 };
 
 proto.getYearEnd = function(config = {}) {
   config.isEnd = true;
-  config.month = MONTHS.DECEMBER;
+  config.month = Month.December;
   return this.getMonthStart(config);
 };
 
 proto.getQuarterStart = function(config = {}) {
-  let { month = this.getMonth(), isEnd = false } = config;
+  const { isEnd = false } = config;
+  let { month = this.getMonth() } = config;
   month = month + (config.monthOffset || 0);
   /* Check to see if we're no longer in this year, and if so, we need to determine the
    * yearOffset, as well as what the translated month should be */
-  if (month < 0 || month > MONTHS.DECEMBER) {
+  if (month < 0 || month > Month.December) {
     const identity = month < 0 ? -1 : 1;
-    const inner = Math.abs(month) / totalMonths;
+    const inner = Math.abs(month) / TotalMonths;
     const years = identity === -1 ? Math.ceil(inner) : Math.floor(inner);
-    month -= years * totalMonths * identity;
+    month -= years * TotalMonths * identity;
     config.yearOffset = (config.yearOffset || 0) + years * identity;
   }
-  if (month < MONTHS.APRIL) {
-    month = isEnd ? MONTHS.MARCH : MONTHS.JANUARY;
+  if (month < Month.April) {
+    month = isEnd ? Month.March : Month.January;
   }
-  else if (month < MONTHS.JULY) {
-    month = isEnd ? MONTHS.JUNE : MONTHS.APRIL;
+  else if (month < Month.July) {
+    month = isEnd ? Month.June : Month.April;
   }
-  else if (month < MONTHS.OCTOBER) {
-    month = isEnd ? MONTHS.SEPTEMBER : MONTHS.JULY;
+  else if (month < Month.October) {
+    month = isEnd ? Month.September : Month.July;
   }
   else {
-    month = isEnd ? MONTHS.DECEMBER : MONTHS.OCTOBER;
+    month = isEnd ? Month.December : Month.October;
   }
   config.month = month;
   // This config value doesn't make sense, so let's always 0 it out
@@ -103,5 +101,9 @@ proto.getQuarterEnd = function(config = {}) {
 };
 
 proto.toMMDDYYYY = function() {
-  return Intl.DateTimeFormat("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }).format(this);
+  return Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  }).format(this);
 };

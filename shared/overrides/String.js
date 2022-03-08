@@ -1,7 +1,7 @@
 ﻿const proto = String.prototype;
 
 proto.capitalize = function() {
-  return `${this[0].toUpperCase()}${this.substring(1)}`;
+  return `${this[0].toUpperCase()}${this.substring(1).toLowerCase()}`;
 };
 
 proto.equals = function(value) {
