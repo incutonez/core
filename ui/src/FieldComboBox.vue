@@ -162,6 +162,9 @@ export default {
           cls.push("flex-col-reverse");
           break;
       }
+      if (isExpanded.value) {
+        cls.push("list-expanded");
+      }
       return cls.join(" ");
     });
     function getSelections() {
@@ -272,7 +275,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @use "sass:math";
 $padding: 4px;
 .field-combo-box-list-wrapper {
@@ -283,5 +286,8 @@ $padding: 4px;
 }
 .field-combo-box-picker {
   @apply leading-7 box-border absolute top-0 right-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
+}
+.list-expanded {
+  @apply outline-2 outline outline-blue-500;
 }
 </style>

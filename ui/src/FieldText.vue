@@ -12,7 +12,7 @@
       :class="inputWidth"
     >
       <div
-        class="flex relative field-text"
+        class="field-text"
         :class="inputWrapperCls"
       >
         <slot name="beforeItems" />
@@ -260,7 +260,7 @@ export default {
 }
 
 .field-text {
-  @apply bg-slate-100 rounded-sm border border-gray-300;
+  @apply bg-slate-100 rounded-sm border border-gray-300 flex relative;
   input {
     @apply bg-transparent px-1;
     &:focus {
