@@ -44,6 +44,7 @@ export default {
       for (const selection of selections) {
         if (option === selection) {
           cls = selectedCls;
+          break;
         }
       }
       return cls;
