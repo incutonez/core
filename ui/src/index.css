@@ -9,10 +9,26 @@
   .field-number input {
     -moz-appearance: textfield;
   }
+
   .field-number input::-webkit-outer-spin-button,
   .field-number input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
+  }
+
+  .field-tags-wrapper-collapse,
+  .field-tags-wrapper-expand,
+  .field-tags-wrapper {
+    @apply inline-block p-1 mt-1 mr-1 text-xs bg-gray-200 text-gray-600 rounded border;
+  }
+
+  .field-tags-wrapper-collapse,
+  .field-tags-wrapper-expand {
+    @apply cursor-pointer font-bold;
+  }
+
+  .fields-tags-close-icon {
+    @apply inline-block ml-1 hover:text-red-800 cursor-pointer;
   }
 }
 

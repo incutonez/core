@@ -17,6 +17,7 @@
       >
         <slot name="beforeItems" />
         <input
+          ref="inputEl"
           :value="value"
           class="field-text-input"
           :class="inputCls"
@@ -56,6 +57,7 @@ import { useField } from "vee-validate";
 import {
   computed,
   nextTick,
+  ref,
   watch,
 } from "vue";
 import { parseString } from "shared/utilities.js";
@@ -71,7 +73,7 @@ export default {
     IconBase,
     FieldLabel,
   },
-  emits: ["update:modelValue", "change:validity", "change:dirty", "click:field"],
+  emits: ["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field"],
   props: {
     label: {
       type: String,
@@ -178,6 +180,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const inputEl = ref(null);
     const fieldRules = computed(() => props.rulesCfg(props));
     const field = useField(props.label || "field-text", fieldRules, {
       initialValue: props.modelValue,
@@ -224,17 +227,19 @@ export default {
       field.setTouched(true);
       updateValue(props.parseValue(props.modelValue));
       field.validate();
+      emit("blur:field");
     }
     return {
+      Icons,
       field,
       containerCls,
       inputWrapperCls,
       fieldErrors,
       showErrors,
+      inputEl,
       onInputField,
       onBlurField,
       onClickField,
-      Icons,
       value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
     };
@@ -260,15 +265,12 @@ export default {
 }
 
 .field-text {
-  @apply bg-slate-100 rounded-sm border border-gray-300 flex relative;
+  @apply bg-slate-100 rounded-sm border border-gray-300 flex relative focus-within:outline-2 focus-within:outline focus-within:outline-blue-500;
   input {
     @apply bg-transparent px-1;
     &:focus {
       @apply outline-none;
     }
-  }
-  &:focus-within {
-    @apply outline-2 outline outline-blue-500;
   }
 }
 

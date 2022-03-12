@@ -1,8 +1,9 @@
 ﻿<template>
-  <ul>
+  <ul tabindex="-1">
     <li
       v-for="(option, index) in options"
       :key="index"
+      tabindex="-1"
       class="list-base-item"
       :class="isSelected(option, selections)"
       @click="onClickListItem($event, option)"
@@ -13,7 +14,7 @@
 </template>
 
 <script>
-const selectedCls = "list-base-item-selected";
+const SelectedCls = "list-base-item-selected";
 export default {
   name: "ListBase",
   emits: ["update:selections"],
@@ -37,13 +38,15 @@ export default {
   },
   setup(props, { emit }) {
     function onClickListItem(event, option) {
-      emit("update:selections", option, event.target.classList.contains(selectedCls));
+      // We don't want the document click to be triggered, as the parent class will handle what to do
+      event.stopPropagation();
+      emit("update:selections", option, event.target.classList.contains(SelectedCls));
     }
     function isSelected(option, selections) {
       let cls = "";
       for (const selection of selections) {
         if (option === selection) {
-          cls = selectedCls;
+          cls = SelectedCls;
           break;
         }
       }

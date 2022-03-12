@@ -10,7 +10,12 @@
       :options="listOptions"
       value-field="name"
       :tags-position="tagPosition"
+      :filter-selections="filterSelections"
     />
+    <input
+      v-model="filterSelections"
+      type="checkbox"
+    >
     <FieldInteger
       v-model="tagPosition"
       label="Tag Position"
@@ -83,6 +88,7 @@ export default {
       listOptions: names,
       selectedName: [1, 5],
       tagPosition: ComboBoxTagPositions.Above,
+      filterSelections: false,
     };
   },
   methods: {

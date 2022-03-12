@@ -2,11 +2,12 @@
   <FieldText
     ref="fieldEl"
     v-bind="$props"
-    v-model="displayValue"
+    v-model="displayValueFm"
     :input-wrapper-classes="inputWrapperCls"
     :input-cls="inputCls"
     @keydown.delete="onKeyBackspace"
     @click:field="onClickField"
+    @keydown.tab="onTabField"
   >
     <template #beforeItems>
       <div
@@ -14,14 +15,32 @@
         :class="itemsWrapperCls"
       >
         <slot name="itemsDisplay">
-          <ItemsBase
+          <template
             v-for="(selection, index) in selections"
-            :key="index"
-            @remove:selection="onClickItemRemove(selection)"
+            :key="selection[valueField]"
           >
-            {{ selection[valueField] }}
-          </ItemsBase>
+            <ItemsBase
+              v-show="isTagVisible(selection, index)"
+              @remove:selection="onClickItemRemove(selection)"
+            >
+              {{ selection[valueField] }}
+            </ItemsBase>
+          </template>
         </slot>
+        <div
+          v-show="showExpandTags"
+          class="field-tags-wrapper-collapse"
+          @click="onClickExpandTags"
+        >
+          <span>+ {{ collapsedTagCount }}</span>
+        </div>
+        <div
+          v-show="showCollapseTags"
+          class="field-tags-wrapper-expand"
+          @click="onClickCollapseTags"
+        >
+          <span>- {{ collapsedTagCount }}</span>
+        </div>
       </div>
     </template>
     <template #afterItems>
@@ -33,17 +52,18 @@
       <div
         v-show="isExpanded"
         class="field-combo-box-list-wrapper"
+        tabindex="-1"
       >
         <slot
           name="list"
           :expanded="isExpanded"
-          :options="options"
+          :options="optionsAvailable"
           :value-field="valueField"
           :selections="selections"
         >
           <ListBase
             :selections="selections"
-            :options="options"
+            :options="optionsAvailable"
             :value-field="valueField"
             @update:selections="onUpdateSelections"
           />
@@ -64,6 +84,7 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  unref,
   watch,
 } from "vue";
 import ListBase from "ui/ListBase.vue";
@@ -122,12 +143,66 @@ export default {
       type: Number,
       default: ComboBoxTagPositions.Above,
     },
+    maxSelectedTags: {
+      type: Number,
+      default: 2,
+    },
+    filterSelections: {
+      type: Boolean,
+      default: false,
+    },
+    filterFn: {
+      type: Function,
+      default: null,
+    },
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
     const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
+    const searchValue = ref(null);
     const displayValue = ref(null);
+    const showCollapseTags = ref(false);
+    const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
+    const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
+    const optionsAvailable = computed(() => {
+      let { options } = props;
+      const { filterFn, valueField, idField } = props;
+      const search = unref(searchValue);
+      if (search) {
+        if (filterFn) {
+          options = filterFn({
+            search,
+            options,
+            valueField,
+            idField,
+          });
+        }
+        else {
+          const searchRe = new RegExp(search, "i");
+          options = options.filter((option) => searchRe.test(option[valueField]));
+        }
+      }
+      if (props.filterSelections) {
+        const selectionValues = props.modelValue;
+        if (!isEmpty(selectionValues)) {
+          options = options.filter((option) => selectionValues.indexOf(option[idField]) === -1);
+        }
+      }
+      return options;
+    });
+    const displayValueFm = computed({
+      get() {
+        if (searchValue.value) {
+          return searchValue.value;
+        }
+        return displayValue.value;
+      },
+      // User is typing
+      set(value) {
+        searchValue.value = value;
+      },
+    });
     const itemsWrapperCls = computed(() => {
       let cls;
       switch (props.tagsPosition) {
@@ -162,9 +237,6 @@ export default {
           cls.push("flex-col-reverse");
           break;
       }
-      if (isExpanded.value) {
-        cls.push("list-expanded");
-      }
       return cls.join(" ");
     });
     function getSelections() {
@@ -193,7 +265,6 @@ export default {
       else {
         displayValue.value = values[0][props.valueField];
       }
-      updateExpanded(false);
     }), {
       immediate: true,
     });
@@ -202,10 +273,10 @@ export default {
     });
     function updateExpanded(value = !isExpanded.value) {
       isExpanded.value = value;
+      if (value) {
+        fieldEl.value.inputEl.focus();
+      }
       emit("update:expanded", value);
-    }
-    function onBlurField() {
-      updateExpanded(false);
     }
     function onKeyBackspace() {
       let { modelValue } = props;
@@ -218,6 +289,13 @@ export default {
     function onClickField() {
       updateExpanded();
     }
+    function onTabField() {
+      blurField();
+    }
+    function blurField() {
+      updateExpanded(false);
+      searchValue.value = null;
+    }
     function onClickPicker() {
       updateExpanded();
     }
@@ -226,7 +304,7 @@ export default {
     }
     function onClickDocument(event) {
       if (!fieldEl.value.$el.contains(event.target)) {
-        updateExpanded(false);
+        blurField();
       }
     }
     function updateSelections(option, remove) {
@@ -241,13 +319,25 @@ export default {
           updateValue = modelValue.concat(selectedId);
         }
       }
-      else if( !remove) {
+      else if (!remove) {
         updateValue = selectedId;
+      }
+      if (!props.multiSelect) {
+        updateExpanded(false);
       }
       emit("update:modelValue", updateValue);
     }
     function onUpdateSelections(option, remove) {
       updateSelections(option, remove);
+    }
+    function onClickCollapseTags() {
+      showCollapseTags.value = false;
+    }
+    function onClickExpandTags() {
+      showCollapseTags.value = true;
+    }
+    function isTagVisible(selection, index) {
+      return showCollapseTags.value || index < props.maxSelectedTags;
     }
     onMounted(() => {
       document.addEventListener("click", onClickDocument);
@@ -258,18 +348,26 @@ export default {
     return {
       Icons,
       selections,
-      onClickPicker,
-      onClickField,
-      onBlurField,
-      onUpdateSelections,
-      onClickItemRemove,
-      onKeyBackspace,
+      showExpandTags,
+      showCollapseTags,
+      collapsedTagCount,
       inputWrapperCls,
       isExpanded,
       fieldEl,
       displayValue,
+      displayValueFm,
       itemsWrapperCls,
       inputCls,
+      optionsAvailable,
+      isTagVisible,
+      onClickPicker,
+      onClickField,
+      onTabField,
+      onUpdateSelections,
+      onClickItemRemove,
+      onKeyBackspace,
+      onClickExpandTags,
+      onClickCollapseTags,
     };
   },
 };
@@ -286,8 +384,5 @@ $padding: 4px;
 }
 .field-combo-box-picker {
   @apply leading-7 box-border absolute top-0 right-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
-}
-.list-expanded {
-  @apply outline-2 outline outline-blue-500;
 }
 </style>

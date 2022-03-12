@@ -1,17 +1,18 @@
 ﻿<template>
-  <div class="inline-block p-1 mt-1 mr-1 h-6 text-xs bg-gray-200 rounded border">
-    <slot />
+  <div class="field-tags-wrapper">
+    <span class="item-text">
+      <slot />
+    </span>
     <IconBase
       :icon="Icons.CLOSE"
-      class="inline-block ml-1 hover:text-red-800 cursor-pointer"
+      class="fields-tags-close-icon"
       @click="onClickRemoveOption"
     />
   </div>
 </template>
 
 <script>
-import { Icons } from "ui/index.js";
-import IconBase from "ui/IconBase.vue";
+import { Icons, IconBase } from "ui/index.js";
 
 export default {
   name: "ItemsBase",
