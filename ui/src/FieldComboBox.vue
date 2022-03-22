@@ -108,12 +108,14 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 /**
  * TODOJEF:
  * - Switch to using CSS instead of the TagPositions like above
+ * - When you scroll, the height is determined and flips
  * - Add a master DropdownList component
  * -- Add radio/checkboxes
  * - Add groups
  * -- Create a grouper class
  * - Change hover to be changed through JS
  * - Add keyboard events... up, down, enter
+ * -- https://stackoverflow.com/a/52835382/1253609
  * - Probably create a shadow collection class that can alter the items in list provided
  * - Add components:
  * -- Avatar
