@@ -105,6 +105,21 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
  */
+/**
+ * TODOJEF:
+ * - Switch to using CSS instead of the TagPositions like above
+ * - Add a master DropdownList component
+ * -- Add radio/checkboxes
+ * - Add groups
+ * -- Create a grouper class
+ * - Change hover to be changed through JS
+ * - Add keyboard events... up, down, enter
+ * - Probably create a shadow collection class that can alter the items in list provided
+ * - Add components:
+ * -- Avatar
+ * -- Badge (this is what the tags will use)
+ * -- Window that can be dragged, minimized/maximized
+ */
 export default {
   name: "FieldComboBox",
   components: {
