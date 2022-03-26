@@ -75,11 +75,6 @@
 
 <script>
 import {
-  FieldText,
-  IconBase,
-  Icons,
-} from "ui/index.js";
-import {
   computed,
   onMounted,
   onUnmounted,
@@ -87,13 +82,17 @@ import {
   unref,
   watch,
 } from "vue";
-import ListBase from "ui/ListBase.vue";
 import {
   isArray,
   isEmpty,
 } from "shared/utilities.js";
-import ItemsBase from "ui/ItemsBase.vue";
 import { Enum } from "shared/Enum.js";
+import {
+  FieldText,
+  IconBase,
+  ItemsBase,
+  ListBase,
+} from "ui/index.js";
 
 /**
  * @property {Number} Above
@@ -125,9 +124,9 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 export default {
   name: "FieldComboBox",
   components: {
-    ItemsBase,
     ListBase,
     IconBase,
+    ItemsBase,
     FieldText,
   },
   emits: ["update:expanded", "update:modelValue"],
@@ -363,7 +362,6 @@ export default {
       document.removeEventListener("click", onClickDocument);
     });
     return {
-      Icons,
       selections,
       showExpandTags,
       showCollapseTags,

@@ -64,14 +64,13 @@ import { parseString } from "shared/utilities.js";
 import {
   FieldLabel,
   IconBase,
-  Icons,
 } from "ui/index.js";
 
 export default {
   name: "FieldText",
   components: {
-    IconBase,
     FieldLabel,
+    IconBase,
   },
   emits: ["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field"],
   props: {
@@ -230,7 +229,6 @@ export default {
       emit("blur:field");
     }
     return {
-      Icons,
       field,
       containerCls,
       inputWrapperCls,

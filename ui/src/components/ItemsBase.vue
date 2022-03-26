@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { Icons, IconBase } from "ui/index.js";
+import { IconBase } from "ui/index.js";
 
 export default {
   name: "ItemsBase",
@@ -25,7 +25,6 @@ export default {
       emit("remove:selection", event);
     }
     return {
-      Icons,
       onClickRemoveOption,
     };
   },

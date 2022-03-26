@@ -54,25 +54,26 @@
 
 <script>
 import { TestModel } from "shared/models/TestModel.js";
+import { names } from "shared/data/names.js";
 import {
+  FieldComboBox,
   FieldCurrency,
   FieldInteger,
   FieldNumber,
   FieldPercent,
   FieldText,
+  ComboBoxTagPositions,
 } from "ui/index.js";
-import FieldComboBox, { ComboBoxTagPositions } from "ui/FieldComboBox.vue";
-import { names } from "shared/data/names.js";
 
 export default {
   name: "App",
   components: {
-    FieldComboBox,
     FieldPercent,
     FieldCurrency,
-    FieldInteger,
     FieldNumber,
     FieldText,
+    FieldInteger,
+    FieldComboBox,
   },
   data() {
     return {
