@@ -9,7 +9,8 @@
     "node": true
   },
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "ecmaVersion": "latest"
   },
   "plugins": ["eslint-plugin-tailwindcss"],
   "rules": {

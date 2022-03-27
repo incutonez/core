@@ -49,26 +49,29 @@
         :icon="Icons.PICKER_DOWN"
         @click="onClickPicker"
       />
-      <div
-        v-show="isExpanded"
-        class="field-combo-box-list-wrapper"
-        tabindex="-1"
-      >
-        <slot
-          name="list"
-          :expanded="isExpanded"
-          :options="optionsAvailable"
-          :value-field="valueField"
-          :selections="selections"
+      <Teleport to="#overlayManager">
+        <div
+          v-show="isExpanded"
+          ref="dropdownListEl"
+          class="field-combo-box-list-wrapper"
+          tabindex="-1"
         >
-          <ListBase
-            :selections="selections"
+          <slot
+            name="list"
+            :expanded="isExpanded"
             :options="optionsAvailable"
             :value-field="valueField"
-            @update:selections="onUpdateSelections"
-          />
-        </slot>
-      </div>
+            :selections="selections"
+          >
+            <ListBase
+              :selections="selections"
+              :options="optionsAvailable"
+              :value-field="valueField"
+              @update:selections="onUpdateSelections"
+            />
+          </slot>
+        </div>
+      </Teleport>
     </template>
   </FieldText>
 </template>
@@ -174,6 +177,7 @@ export default {
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
+    const dropdownListEl = ref(null);
     const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
     const searchValue = ref(null);
@@ -290,7 +294,13 @@ export default {
     function updateExpanded(value = !isExpanded.value) {
       isExpanded.value = value;
       if (value) {
-        fieldEl.value.inputEl.focus();
+        const { inputEl } = fieldEl.value;
+        inputEl.focus();
+        const { style: dropdownStyle } = dropdownListEl.value;
+        const boundingRect = fieldEl.value.$el.querySelector(".field-text").getBoundingClientRect();
+        dropdownStyle.top = `${boundingRect.bottom + 8}px`;
+        dropdownStyle.left = `${boundingRect.left - 2}px`;
+        dropdownStyle.width = `${boundingRect.width + 4}px`;
       }
       emit("update:expanded", value);
     }
@@ -321,6 +331,11 @@ export default {
     function onClickDocument(event) {
       if (!fieldEl.value.$el.contains(event.target)) {
         blurField();
+      }
+    }
+    function onScrollDocument({ target }) {
+      if (isExpanded.value && dropdownListEl.value !== target) {
+        updateExpanded(false);
       }
     }
     function updateSelections(option, remove) {
@@ -357,9 +372,11 @@ export default {
     }
     onMounted(() => {
       document.addEventListener("click", onClickDocument);
+      document.addEventListener("scroll", onScrollDocument, true);
     });
     onUnmounted(() => {
       document.removeEventListener("click", onClickDocument);
+      document.addEventListener("scroll", onScrollDocument, true);
     });
     return {
       selections,
@@ -369,6 +386,7 @@ export default {
       inputWrapperCls,
       isExpanded,
       fieldEl,
+      dropdownListEl,
       displayValue,
       displayValueFm,
       itemsWrapperCls,
@@ -392,10 +410,7 @@ export default {
 @use "sass:math";
 $padding: 4px;
 .field-combo-box-list-wrapper {
-  @apply rounded overflow-auto absolute z-10 w-full h-36 indent-px bg-white border border-gray-300 shadow;
-  width: calc(100% + #{$padding});
-  left: -#{math.div($padding, 2)};
-  top: calc(100% + #{$padding});
+  @apply pointer-events-auto rounded overflow-auto absolute top-24 z-10 w-full h-36 indent-px bg-white border border-gray-300 shadow;
 }
 .field-combo-box-picker {
   @apply leading-7 box-border absolute top-0 right-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;

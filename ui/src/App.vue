@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-items-stretch space-y-4 max-w-xs h-full">
+  <div class="flex overflow-scroll flex-col justify-items-stretch space-y-4 max-w-xs h-24">
     <div class="bg-blue-100">
       Hi {{ record.fullName }}!
     </div>
