@@ -376,7 +376,7 @@ export default {
     });
     onUnmounted(() => {
       document.removeEventListener("click", onClickDocument);
-      document.addEventListener("scroll", onScrollDocument, true);
+      document.removeEventListener("scroll", onScrollDocument, true);
     });
     return {
       selections,
