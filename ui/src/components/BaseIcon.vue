@@ -6,7 +6,7 @@
       class="inline-block pl-1"
     >
       <slot>
-        <TooltipBase :value="tooltip" />
+        <BaseTooltip :value="tooltip" />
       </slot>
     </div>
   </div>
@@ -14,12 +14,12 @@
 
 <script>
 import { computed } from "vue";
-import { TooltipBase } from "ui/index.js";
+import { BaseTooltip } from "ui/index.js";
 
 export default {
-  name: "IconBase",
+  name: "BaseIcon",
   components: {
-    TooltipBase,
+    BaseTooltip,
   },
   props: {
     icon: {

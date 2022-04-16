@@ -1,12 +1,15 @@
 ﻿export { default as Icons } from "ui/Icons.js";
-export { default as TooltipBase, TooltipPositions } from "ui/components/TooltipBase.vue";
-export { default as FieldLabel } from "ui/components/FieldLabel.vue";
-export { default as ListBase } from "ui/components/ListBase.vue";
+export { default as BaseOverlay } from "ui/components/BaseOverlay.vue";
+export { default as BaseTooltip, TooltipPositions } from "ui/components/BaseTooltip.vue";
+export { default as BaseLabel } from "ui/components/BaseLabel.vue";
+export { default as BaseList } from "ui/components/BaseList.vue";
 
-// Depends on TooltipBase
-export { default as IconBase } from "ui/components/IconBase.vue";
-export { default as ItemsBase } from "ui/components/ItemsBase.vue";
-// Depends on FieldLabel
+// Depends on BaseTooltip
+export { default as BaseIcon } from "ui/components/BaseIcon.vue";
+export { default as BaseItems } from "ui/components/BaseItems.vue";
+export { default as BaseButton } from "ui/components/BaseButton.vue";
+export { default as BaseButtonMenu } from "ui/components/BaseButtonMenu.vue";
+// Depends on BaseLabel
 export { default as FieldText } from "ui/components/FieldText.vue";
 // Depends on FieldText
 export { default as FieldNumber } from "ui/components/FieldNumber.vue";
@@ -16,5 +19,5 @@ export { default as FieldPercent } from "ui/components/FieldPercent.vue";
 export { default as FieldInteger } from "ui/components/FieldInteger.vue";
 // Depends on FieldNumber
 export { default as FieldCurrency } from "ui/components/FieldCurrency.vue";
-// Depends on FieldText and IconBase
+// Depends on FieldText and BaseIcon
 export { default as FieldComboBox, ComboBoxTagPositions } from "ui/components/FieldComboBox.vue";

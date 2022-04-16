@@ -16,8 +16,8 @@
 <script>
 const SelectedCls = "list-base-item-selected";
 export default {
-  name: "ListBase",
-  emits: ["update:selections"],
+  name: "BaseList",
+  emits: ["update:selections", "click:item"],
   props: {
     options: {
       type: Array,
@@ -29,7 +29,7 @@ export default {
      */
     valueField: {
       type: String,
-      default: "value",
+      default: "",
     },
     selections: {
       type: Array,
@@ -41,6 +41,7 @@ export default {
       // We don't want the document click to be triggered, as the parent class will handle what to do
       event.stopPropagation();
       emit("update:selections", option, event.target.classList.contains(SelectedCls));
+      emit("click:item", option);
     }
     function isSelected(option, selections) {
       let cls = "";

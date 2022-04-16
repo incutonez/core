@@ -32,11 +32,18 @@
   }
 }
 
-body, html {
+body, html, #app {
   @apply h-full w-full;
 }
 
+#app {
+  @apply relative;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 #overlayManager {
-  @apply absolute top-0 left-0 contents pointer-events-none;
+  @apply absolute top-0 left-0 contents pointer-events-none z-10;
   contain: layout;
 }

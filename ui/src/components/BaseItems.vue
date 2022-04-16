@@ -3,7 +3,7 @@
     <span class="item-text">
       <slot />
     </span>
-    <IconBase
+    <BaseIcon
       :icon="Icons.CLOSE"
       class="fields-tags-close-icon"
       @click="onClickRemoveOption"
@@ -12,12 +12,12 @@
 </template>
 
 <script>
-import { IconBase } from "ui/index.js";
+import { BaseIcon } from "ui/index.js";
 
 export default {
-  name: "ItemsBase",
+  name: "BaseItems",
   components: {
-    IconBase,
+    BaseIcon,
   },
   emits: ["remove:selection"],
   setup(props, { emit }) {

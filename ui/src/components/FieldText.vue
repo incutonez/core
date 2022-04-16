@@ -3,7 +3,7 @@
     class="flex"
     :class="containerCls"
   >
-    <FieldLabel
+    <BaseLabel
       :value="label"
       :class="labelWidth"
     />
@@ -28,7 +28,7 @@
         >
         <slot name="afterItems" />
       </div>
-      <IconBase
+      <BaseIcon
         v-show="showErrors"
         :icon="Icons.ALERT_TRIANGLE"
         class="text-red-800"
@@ -41,7 +41,7 @@
             {{ fieldError }}
           </li>
         </ul>
-      </IconBase>
+      </BaseIcon>
     </div>
   </div>
 </template>
@@ -62,15 +62,15 @@ import {
 } from "vue";
 import { parseString } from "shared/utilities.js";
 import {
-  FieldLabel,
-  IconBase,
+  BaseLabel,
+  BaseIcon,
 } from "ui/index.js";
 
 export default {
   name: "FieldText",
   components: {
-    FieldLabel,
-    IconBase,
+    BaseLabel,
+    BaseIcon,
   },
   emits: ["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field"],
   props: {
@@ -194,7 +194,7 @@ export default {
     });
     const containerCls = computed(() => useFieldCls(props));
     const inputWrapperCls = computed(() => useInputCls(props, field));
-    watch(fieldRules, async (value) => {
+    watch(fieldRules, async(value) => {
       if (value) {
         // We have to wait for the field to receive its new rules before validating
         await nextTick();

@@ -32,7 +32,7 @@ import { Enum } from "shared/Enum.js";
 export const TooltipPositions = new Enum(["right-middle", "right-top", "right-bottom", "middle", "middle-top", "middle-bottom", "left-middle", "left-top", "left-bottom"], false);
 
 export default {
-  name: "TooltipBase",
+  name: "BaseTooltip",
   props: {
     value: {
       type: String,

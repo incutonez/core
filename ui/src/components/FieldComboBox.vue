@@ -19,12 +19,12 @@
             v-for="(selection, index) in selections"
             :key="selection[valueField]"
           >
-            <ItemsBase
+            <BaseItems
               v-show="isTagVisible(selection, index)"
               @remove:selection="onClickItemRemove(selection)"
             >
               {{ selection[valueField] }}
-            </ItemsBase>
+            </BaseItems>
           </template>
         </slot>
         <div
@@ -44,7 +44,7 @@
       </div>
     </template>
     <template #afterItems>
-      <IconBase
+      <BaseIcon
         class="field-combo-box-picker"
         :icon="Icons.PICKER_DOWN"
         @click="onClickPicker"
@@ -63,7 +63,7 @@
             :value-field="valueField"
             :selections="selections"
           >
-            <ListBase
+            <BaseList
               :selections="selections"
               :options="optionsAvailable"
               :value-field="valueField"
@@ -92,9 +92,9 @@ import {
 import { Enum } from "shared/Enum.js";
 import {
   FieldText,
-  IconBase,
-  ItemsBase,
-  ListBase,
+  BaseIcon,
+  BaseItems,
+  BaseList,
 } from "ui/index.js";
 
 /**
@@ -127,9 +127,9 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 export default {
   name: "FieldComboBox",
   components: {
-    ListBase,
-    IconBase,
-    ItemsBase,
+    BaseList,
+    BaseIcon,
+    BaseItems,
     FieldText,
   },
   emits: ["update:expanded", "update:modelValue"],

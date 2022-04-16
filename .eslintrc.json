@@ -13,6 +13,7 @@
   },
   "plugins": ["eslint-plugin-import"],
   "rules": {
+    "space-before-function-paren": ["error", "never"],
     "indent": ["error", 2, {"SwitchCase": 1}],
     "semi": [2, "always"],
     "quotes": ["error", "double"],

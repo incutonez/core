@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "FieldLabel",
+  name: "BaseLabel",
   props: {
     value: {
       type: String,

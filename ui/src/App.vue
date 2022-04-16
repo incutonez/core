@@ -1,54 +1,62 @@
 <template>
-  <div class="flex overflow-scroll flex-col justify-items-stretch space-y-4 max-w-xs h-24">
-    <div class="bg-blue-100">
-      Hi {{ record.fullName }}!
+  <div class="flex flex-col w-full h-full">
+    <div class="flex overflow-scroll flex-col flex-1 justify-items-stretch space-y-4 max-w-xs">
+      <div class="bg-blue-100">
+        Hi {{ record.fullName }}!
+      </div>
+      <FieldComboBox
+        v-model="selectedName"
+        multi-select
+        label="Combo"
+        :options="listOptions"
+        value-field="name"
+        :tags-position="tagPosition"
+        :filter-selections="filterSelections"
+      />
+      <input
+        v-model="filterSelections"
+        type="checkbox"
+      >
+      <FieldInteger
+        v-model="tagPosition"
+        label="Tag Position"
+      />
+      <FieldText
+        v-model="record.name"
+        label="Name"
+        :required="isRequired"
+        :min-length="minLength"
+        :max-length="maxLength"
+        @change:validity="onChangeValidity"
+        @change:dirty="onChangeDirty"
+      />
+      <FieldInteger
+        v-model="record.int"
+        label="Integer"
+        :required="isRequired"
+        :min-value="minValue"
+      />
+      <FieldNumber
+        v-model="record.decimal"
+        label="Decimal"
+        :min-value="minValue"
+      />
+      <FieldCurrency
+        v-model="record.decimal"
+        label="Currency"
+      />
+      <FieldPercent
+        v-model="record.decimal"
+        label="Percent"
+        input-width="w-14"
+      />
     </div>
-    <FieldComboBox
-      v-model="selectedName"
-      multi-select
-      label="Combo"
-      :options="listOptions"
-      value-field="name"
-      :tags-position="tagPosition"
-      :filter-selections="filterSelections"
-    />
-    <input
-      v-model="filterSelections"
-      type="checkbox"
-    >
-    <FieldInteger
-      v-model="tagPosition"
-      label="Tag Position"
-    />
-    <FieldText
-      v-model="record.name"
-      label="Name"
-      :required="isRequired"
-      :min-length="minLength"
-      :max-length="maxLength"
-      @change:validity="onChangeValidity"
-      @change:dirty="onChangeDirty"
-    />
-    <FieldInteger
-      v-model="record.int"
-      label="Integer"
-      :required="isRequired"
-      :min-value="minValue"
-    />
-    <FieldNumber
-      v-model="record.decimal"
-      label="Decimal"
-      :min-value="minValue"
-    />
-    <FieldCurrency
-      v-model="record.decimal"
-      label="Currency"
-    />
-    <FieldPercent
-      v-model="record.decimal"
-      label="Percent"
-      input-width="w-14"
-    />
+    <footer>
+      <BaseButtonMenu
+        text="Start"
+        class="rounded default lg"
+      />
+    </footer>
   </div>
 </template>
 
@@ -63,11 +71,17 @@ import {
   FieldPercent,
   FieldText,
   ComboBoxTagPositions,
+  BaseButtonMenu,
 } from "ui/index.js";
+import {
+  reactive,
+  toRefs,
+} from "vue";
 
 export default {
   name: "App",
   components: {
+    BaseButtonMenu,
     FieldPercent,
     FieldCurrency,
     FieldNumber,
@@ -75,8 +89,8 @@ export default {
     FieldInteger,
     FieldComboBox,
   },
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       isRequired: true,
       record: new TestModel({
         name: "John",
@@ -90,23 +104,19 @@ export default {
       selectedName: [1, 5],
       tagPosition: ComboBoxTagPositions.Above,
       filterSelections: false,
-    };
-  },
-  methods: {
-    onChangeValidity() {
+    });
+    function onChangeValidity() {
       console.log("onChangeValidity");
-    },
-    onChangeDirty() {
+    }
+    function onChangeDirty() {
       console.log("onChangeDirty");
-    },
+    }
+
+    return {
+      ...toRefs(state),
+      onChangeValidity,
+      onChangeDirty,
+    };
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-</style>
