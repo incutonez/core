@@ -3,6 +3,8 @@
     ref="fieldEl"
     v-bind="$props"
     v-model="displayValueFm"
+    v-click-document="onClickDocument"
+    v-scroll-document="onScrollDocument"
     :input-wrapper-classes="inputWrapperCls"
     :input-cls="inputCls"
     @keydown.delete="onKeyBackspace"
@@ -79,8 +81,6 @@
 <script>
 import {
   computed,
-  onMounted,
-  onUnmounted,
   ref,
   unref,
   watch,
@@ -106,23 +106,6 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 /**
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
- */
-/**
- * TODOJEF:
- * - Switch to using CSS instead of the TagPositions like above
- * - When you scroll, the height is determined and flips
- * - Add a master DropdownList component
- * -- Add radio/checkboxes
- * - Add groups
- * -- Create a grouper class
- * - Change hover to be changed through JS
- * - Add keyboard events... up, down, enter
- * -- https://stackoverflow.com/a/52835382/1253609
- * - Probably create a shadow collection class that can alter the items in list provided
- * - Add components:
- * -- Avatar
- * -- Badge (this is what the tags will use)
- * -- Window that can be dragged, minimized/maximized
  */
 export default {
   name: "FieldComboBox",
@@ -328,8 +311,8 @@ export default {
     function onClickItemRemove(option) {
       updateSelections(option, true);
     }
-    function onClickDocument(event) {
-      if (!fieldEl.value.$el.contains(event.target)) {
+    function onClickDocument({ target }) {
+      if (isExpanded.value && !fieldEl.value.$el.contains(target)) {
         blurField();
       }
     }
@@ -370,14 +353,6 @@ export default {
     function isTagVisible(selection, index) {
       return showCollapseTags.value || index < props.maxSelectedTags;
     }
-    onMounted(() => {
-      document.addEventListener("click", onClickDocument);
-      document.addEventListener("scroll", onScrollDocument, true);
-    });
-    onUnmounted(() => {
-      document.removeEventListener("click", onClickDocument);
-      document.removeEventListener("scroll", onScrollDocument, true);
-    });
     return {
       selections,
       showExpandTags,
@@ -401,6 +376,8 @@ export default {
       onKeyBackspace,
       onClickExpandTags,
       onClickCollapseTags,
+      onClickDocument,
+      onScrollDocument,
     };
   },
 };

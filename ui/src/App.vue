@@ -55,6 +55,9 @@
       <BaseButtonMenu
         text="Start"
         class="rounded default lg"
+        list-cls="h-64 overflow-auto"
+        :menu-options="componentOptions"
+        menu-value-field="name"
       />
     </footer>
   </div>
@@ -78,6 +81,7 @@ import {
   toRefs,
 } from "vue";
 
+const ComponentList = ["Button", "Menu", "Icon", "Items", "Label", "List", "Overlay", "Tooltip", "FieldComboBox", "FieldCurrency", "FieldInteger", "FieldNumber", "FieldPercent", "FieldText", "FieldYear"];
 export default {
   name: "App",
   components: {
@@ -104,6 +108,12 @@ export default {
       selectedName: [1, 5],
       tagPosition: ComboBoxTagPositions.Above,
       filterSelections: false,
+      componentOptions: ComponentList.map((item, index) => {
+        return {
+          name: item,
+          id: index,
+        };
+      }),
     });
     function onChangeValidity() {
       console.log("onChangeValidity");

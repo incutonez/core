@@ -1,0 +1,30 @@
+﻿Fields:
+- Add disabled/read only states
+- Unit tests
+
+FieldComboBox:
+- Switch to using CSS instead of the TagPositions in FieldComboBox
+- When you scroll, the height is determined and flips
+- Add a master DropdownList component
+-- Add radio/checkboxes
+- Add groups
+-- Create a grouper class
+- Change hover to be changed through JS
+- Add keyboard events... up, down, enter
+-- https://stackoverflow.com/a/52835382/1253609
+- Probably create a shadow collection class that can alter the items in list provided
+- Show selections at the top (config)
+- Text overflow and truncate or go to next line
+- Disable options
+
+Components:
+- Avatar
+- Badge (this is what the tags will use)
+- Window that can be dragged, minimized/maximized
+- Text highlighting (for searching)
+
+Misc:
+- Continue Core UI plugin
+-- Add vite CSS plugin and put Core as top file in library mode export (this is so the CSS gets lumped into it)
+-- Minify it, so only the dist dir is there, and it's not in a dist dir... it's just at the root level
+- Change global NPM_TOKEN in npmrc to use NPM_TOKEN var from PowerShell

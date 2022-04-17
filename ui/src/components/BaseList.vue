@@ -1,10 +1,9 @@
 ﻿<template>
-  <ul tabindex="-1">
+  <ul class="base-list">
     <li
       v-for="(option, index) in options"
       :key="index"
-      tabindex="-1"
-      class="list-base-item"
+      class="base-list-item"
       :class="isSelected(option, selections)"
       @click="onClickListItem($event, option)"
     >
@@ -14,7 +13,7 @@
 </template>
 
 <script>
-const SelectedCls = "list-base-item-selected";
+const SelectedCls = "base-list-item-selected";
 export default {
   name: "BaseList",
   emits: ["update:selections", "click:item"],
@@ -62,14 +61,14 @@ export default {
 </script>
 
 <style lang="scss">
-.list-base-item {
+.base-list-item {
   @apply py-1 px-2 hover:bg-slate-100 cursor-pointer;
-  &.list-base-item-selected,
+  &.base-list-item-selected,
   &:hover {
     box-shadow: inset 2px 0 #3B82F6;
   }
 
-  &.list-base-item-selected {
+  &.base-list-item-selected {
     @apply text-blue-700 bg-blue-100;
   }
 }

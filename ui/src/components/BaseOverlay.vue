@@ -12,6 +12,6 @@ export default {
 
 <style scoped>
 .overlay-container {
-  @apply absolute;
+  @apply absolute pointer-events-auto;
 }
 </style>
