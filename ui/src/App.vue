@@ -1,9 +1,8 @@
 <template>
   <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
-    <RouterView v-slot="{ Component }">
-      <Teleport to="#overlayManager">
-        <!-- https://github.com/vuejs/core/issues/5747 -->
-        <KeepAlive>
+    <Teleport to="#overlayManager">
+      <RouterView v-slot="{ Component }">
+        <KeepAlive :include="cachedDialogs">
           <Component
             :is="Component"
             :key="route.fullPath"
@@ -13,8 +12,8 @@
             @click:minimize="onClickMinimizeDialog"
           />
         </KeepAlive>
-      </Teleport>
-    </RouterView>
+      </RouterView>
+    </Teleport>
   </main>
   <footer class="box-border flex items-stretch bg-slate-700">
     <BaseButtonMenu
@@ -25,12 +24,14 @@
       menu-value-field="name"
       @click:item="onClickStartItem"
     />
-    <section class="flex flex-1 items-center mx-2 space-x-2">
+    <section class="flex flex-1 mx-2 space-x-2">
       <BaseButton
         v-for="dialog in activeDialogs"
         :key="dialog.name"
         :text="dialog.name"
-        @click="onClickRestoreDialog(dialog)"
+        class="px-2 hover:bg-slate-600 border-b-2 border-gray-300"
+        :class="getActiveCls(dialog)"
+        @click="onClickToggleDialog(dialog)"
       />
     </section>
     <section class="flex flex-col items-stretch text-sm">
@@ -56,7 +57,7 @@ import {
   reactive,
 } from "vue";
 
-const ComponentList = Object.keys(Route).map((route) => {
+const ComponentList = Object.keys(Route).filter((key) => key !== "Home").map((route) => {
   return {
     name: route,
     fullPath: Route[route],
@@ -74,12 +75,13 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
+    const cachedDialogs = computed(() => activeDialogs.map(({ name }) => name));
     function onClickStartItem(item) {
       router.push(item.fullPath);
     }
     function onClickCloseDialog(cmp) {
       const { name } = cmp.type;
-      activeDialogs.remove((item) => item.name === name);
+      delete activeDialogs.remove((dialog) => dialog.name === name);
       router.push(Route.Home);
     }
     function onClickMinimizeDialog() {
@@ -91,25 +93,37 @@ export default {
         return;
       }
       const { name } = cmp.type;
-      if (activeDialogs.find((item) => item.name === name)) {
+      const dialog = activeDialogs.find((dialog) => dialog.name === name);
+      if (dialog) {
         return;
       }
       activeDialogs.push({
-        name,
         fullPath,
+        name,
       });
     }
-    function onClickRestoreDialog(dialog) {
-      router.push(dialog.fullPath);
+    function onClickToggleDialog(dialog) {
+      // Current showing dialog, so let's minimize it
+      if (route.fullPath === dialog.fullPath) {
+        router.push(Route.Home);
+      }
+      else {
+        router.push(dialog.fullPath);
+      }
+    }
+    function getActiveCls(dialog) {
+      return dialog.fullPath === route.fullPath ? "bg-slate-500" : "";
     }
 
     return {
       route,
       cmpCls,
       activeDialogs,
+      cachedDialogs,
+      getActiveCls,
       ComponentList,
       onMountedDialog,
-      onClickRestoreDialog,
+      onClickToggleDialog,
       onClickStartItem,
       onClickCloseDialog,
       onClickMinimizeDialog,

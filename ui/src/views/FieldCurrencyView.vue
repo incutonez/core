@@ -1,7 +1,10 @@
 ﻿<template>
-  <BaseDialog>
+  <BaseDialog
+    title="Field Currency"
+    class="header-blue"
+  >
     <template #body>
-      <section class="flex-1">
+      <section class="base-dialog-body">
         <FieldCurrency
           v-model="value"
           label="Currency"

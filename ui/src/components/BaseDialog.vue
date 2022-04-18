@@ -1,5 +1,5 @@
 ﻿<template>
-  <BaseOverlay v-show="opened">
+  <BaseOverlay>
     <div class="base-dialog">
       <header class="base-dialog-header">
         <slot name="title">
@@ -103,8 +103,6 @@ export default {
       emit("click:restore");
     }
     return {
-      opened,
-      maximized,
       showMaximized,
       showRestoreDown,
       onClickClose,

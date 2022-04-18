@@ -1,17 +1,29 @@
 ﻿<template>
-  <FieldText
-    v-model="value"
-    label="Name"
-    :required="isRequired"
-    :min-length="minLength"
-    :max-length="maxLength"
-    @change:validity="onChangeValidity"
-    @change:dirty="onChangeDirty"
-  />
+  <BaseDialog
+    title="Field Currency"
+    class="header-blue"
+  >
+    <template #body>
+      <section class="base-dialog-body">
+        <FieldText
+          v-model="value"
+          label="Name"
+          :required="isRequired"
+          :min-length="minLength"
+          :max-length="maxLength"
+          @change:validity="onChangeValidity"
+          @change:dirty="onChangeDirty"
+        />
+      </section>
+    </template>
+  </BaseDialog>
 </template>
 
 <script>
-import { FieldText } from "ui/index.js";
+import {
+  BaseDialog,
+  FieldText,
+} from "ui/index.js";
 import {
   reactive,
   toRefs,
@@ -20,6 +32,7 @@ import {
 export default {
   name: "FieldTextView",
   components: {
+    BaseDialog,
     FieldText,
   },
   setup() {
