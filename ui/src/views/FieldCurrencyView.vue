@@ -13,7 +13,6 @@
 
 <script>
 import {
-  onMounted,
   reactive,
   toRefs,
 } from "vue";
@@ -31,10 +30,6 @@ export default {
   setup() {
     const state = reactive({
       value: 10.203,
-    });
-
-    onMounted(() => {
-      console.log("FieldCurrencyView");
     });
 
     return {

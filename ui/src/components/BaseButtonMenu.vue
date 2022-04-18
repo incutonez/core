@@ -6,18 +6,22 @@
     :toggleable="true"
   >
     <template #menu>
-      <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
-      <BaseOverlay class="bottom-8 z-10 w-48">
-        <BaseList
+      <Teleport to="#overlayManager">
+        <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
+        <BaseOverlay
           v-show="menuShowing"
-          ref="listEl"
-          class="bg-slate-100 shadow-top"
-          :class="listCls"
-          :options="menuOptions"
-          :value-field="menuValueField"
-          @click:item="onClickMenuItem"
-        />
-      </BaseOverlay>
+          class="bottom-8 z-10 w-48"
+        >
+          <BaseList
+            ref="listEl"
+            class="bg-slate-100 shadow-top"
+            :class="listCls"
+            :options="menuOptions"
+            :value-field="menuValueField"
+            @click:item="onClickMenuItem"
+          />
+        </BaseOverlay>
+      </Teleport>
     </template>
   </BaseButton>
 </template>

@@ -32,15 +32,13 @@ import {
   BaseDialog,
 } from "ui/index.js";
 import {
-  onMounted,
   reactive,
   toRefs,
 } from "vue";
 import { names } from "shared/data/names.js";
 
-const name = "FieldComboBoxView";
 export default {
-  name,
+  name: "FieldComboBoxView",
   components: {
     BaseDialog,
     FieldInteger,
@@ -52,10 +50,6 @@ export default {
       listOptions: names,
       tagPosition: ComboBoxTagPositions.Above,
       filterSelections: false,
-    });
-
-    onMounted(() => {
-      console.log("FieldComboBoxView");
     });
 
     return {

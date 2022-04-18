@@ -1,5 +1,5 @@
 ﻿import "ui/index.css";
-import "shared/overrides/Date.js";
+import "shared/overrides/index.js";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon.js";
 

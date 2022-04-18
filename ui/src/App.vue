@@ -1,12 +1,17 @@
 <template>
   <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
     <RouterView v-slot="{ Component }">
-      <component
-        :is="Component"
-        :class="cmpCls"
-        @vnode-mounted="onMountedDialog"
-        @click:close="onClickCloseDialog"
-      />
+      <Teleport to="#overlayManager">
+        <KeepAlive :include="activeDialogs">
+          <component
+            :is="Component"
+            v-show="isShowing(activeDialog, Component)"
+            :class="cmpCls"
+            @vnode-mounted="onMountedDialog(Component)"
+            @click:close="onClickCloseDialog(Component)"
+          />
+        </KeepAlive>
+      </Teleport>
     </RouterView>
   </main>
   <footer class="bg-slate-700 border-t border-gray-300">
@@ -31,12 +36,11 @@ import {
   BaseButtonMenu,
 } from "ui/index.js";
 import Route from "ui/statics/Route.js";
-import BaseDialog from "ui/components/BaseDialog.vue";
 import {
   computed,
   reactive,
+  ref,
 } from "vue";
-import BaseOverlay from "ui/components/BaseOverlay.vue";
 
 const ComponentList = Object.keys(Route).map((route) => {
   return {
@@ -47,12 +51,11 @@ const ComponentList = Object.keys(Route).map((route) => {
 export default {
   name: "App",
   components: {
-    BaseOverlay,
-    BaseDialog,
     BaseButtonMenu,
     RouterView,
   },
   setup() {
+    const activeDialog = ref(null);
     const activeDialogs = reactive([]);
     const route = useRoute();
     const router = useRouter();
@@ -60,12 +63,16 @@ export default {
     function onClickStartItem(item) {
       router.push(item.path);
     }
-    function onClickCloseDialog() {
+    function onClickCloseDialog(cmp) {
+      activeDialogs.remove(cmp?.type.name);
       router.push(Route.Home);
     }
-    // TODOJEF: Revisit this and fix it... issue with KeepAlive, Teleport, and dynamic include
+    function isShowing(active, cmp) {
+      return active === cmp?.type.name;
+    }
     function onMountedDialog(cmp) {
       const { name } = cmp.type;
+      activeDialog.value = name;
       if (activeDialogs.find((item) => item === name)) {
         return;
       }
@@ -75,7 +82,9 @@ export default {
     return {
       route,
       cmpCls,
+      activeDialog,
       activeDialogs,
+      isShowing,
       ComponentList,
       onMountedDialog,
       onClickStartItem,
