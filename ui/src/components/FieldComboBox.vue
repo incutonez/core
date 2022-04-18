@@ -48,7 +48,7 @@
     <template #afterItems>
       <BaseIcon
         class="field-combo-box-picker"
-        :icon="Icons.PICKER_DOWN"
+        :icon="Icon.PickerDown"
         @click="onClickPicker"
       />
       <Teleport to="#overlayManager">

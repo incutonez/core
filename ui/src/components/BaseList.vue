@@ -62,7 +62,7 @@ export default {
 
 <style lang="scss">
 .base-list-item {
-  @apply py-1 px-2 hover:bg-slate-100 cursor-pointer;
+  @apply py-1 px-2 hover:bg-slate-300 cursor-pointer;
   &.base-list-item-selected,
   &:hover {
     box-shadow: inset 2px 0 #3B82F6;

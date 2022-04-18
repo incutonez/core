@@ -1,13 +1,13 @@
 ﻿import "ui/index.css";
 import "shared/overrides/Date.js";
 import "ui/rules.js";
-import Icons from "ui/Icons.js";
+import Icon from "ui/statics/Icon.js";
 
 export default {
   install(app) {
     const domEl = document.createElement("div");
     domEl.id = "overlayManager";
     document.body.appendChild(domEl);
-    app.config.globalProperties.Icons = Icons;
+    app.config.globalProperties.Icon = Icon;
   },
 };

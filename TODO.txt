@@ -22,9 +22,12 @@ Components:
 - Badge (this is what the tags will use)
 - Window that can be dragged, minimized/maximized
 - Text highlighting (for searching)
+- Checkbox
+- Radiofield
 
 Misc:
 - Continue Core UI plugin
 -- Add vite CSS plugin and put Core as top file in library mode export (this is so the CSS gets lumped into it)
 -- Minify it, so only the dist dir is there, and it's not in a dist dir... it's just at the root level
 - Change global NPM_TOKEN in npmrc to use NPM_TOKEN var from PowerShell
+- When we use a KeepAlive in the RouterView, it doesn't work properly... it always show the last one, and if we try to use a dynamic include, it gets all messed up because of Teleport

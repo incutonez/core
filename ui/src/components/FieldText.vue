@@ -30,7 +30,7 @@
       </div>
       <BaseIcon
         v-show="showErrors"
-        :icon="Icons.ALERT_TRIANGLE"
+        :icon="Icon.AlertTriangle"
         class="text-red-800"
       >
         <ul>

@@ -7,31 +7,32 @@
   >
     <template #menu>
       <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
-      <Teleport to="#overlayManager">
-        <BaseOverlay class="bottom-8 w-48">
-          <BaseList
-            v-show="menuShowing"
-            ref="listEl"
-            class="bg-white shadow-top"
-            :class="listCls"
-            :options="menuOptions"
-            :value-field="menuValueField"
-            @click:item="onClickMenuItem"
-          />
-        </BaseOverlay>
-      </Teleport>
+      <BaseOverlay class="bottom-8 z-10 w-48">
+        <BaseList
+          v-show="menuShowing"
+          ref="listEl"
+          class="bg-slate-100 shadow-top"
+          :class="listCls"
+          :options="menuOptions"
+          :value-field="menuValueField"
+          @click:item="onClickMenuItem"
+        />
+      </BaseOverlay>
     </template>
   </BaseButton>
 </template>
 
 <script>
-import { BaseButton } from "ui/index.js";
+import {
+  BaseButton,
+  BaseList,
+  BaseOverlay,
+} from "ui/index.js";
 import { ref } from "vue";
-import BaseOverlay from "ui/components/BaseOverlay.vue";
-import BaseList from "ui/components/BaseList.vue";
 
 export default {
   name: "BaseButtonMenu",
+  emits: ["click:item"],
   components: {
     BaseList,
     BaseOverlay,
@@ -51,7 +52,7 @@ export default {
       default: "",
     },
   },
-  setup() {
+  setup(props, { emit }) {
     const rootEl = ref(null);
     const listEl = ref(null);
     const menuShowing = ref(false);
@@ -59,7 +60,7 @@ export default {
       menuShowing.value = false;
     }
     function onClickMenuItem(menuItem) {
-      // TODO: Load route here
+      emit("click:item", menuItem);
       hideMenu();
     }
     function onClickDocument({ target }) {

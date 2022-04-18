@@ -108,7 +108,7 @@ export default {
 <style lang="scss" scoped>
 .base-button {
   &.default {
-    @apply relative bg-blue-200 hover:bg-blue-300 border px-2 border-gray-300;
+    @apply relative bg-blue-200 hover:bg-blue-300 px-2;
 
     &.toggled,
     &:focus-within {

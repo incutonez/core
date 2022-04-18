@@ -4,7 +4,7 @@
       <slot />
     </span>
     <BaseIcon
-      :icon="Icons.CLOSE"
+      :icon="Icon.Close"
       class="fields-tags-close-icon"
       @click="onClickRemoveOption"
     />
