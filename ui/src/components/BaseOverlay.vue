@@ -9,9 +9,3 @@ export default {
   name: "BaseOverlay",
 };
 </script>
-
-<style scoped>
-.overlay-container {
-  @apply absolute pointer-events-auto;
-}
-</style>

@@ -4,16 +4,17 @@
     v-model:toggled="menuShowing"
     v-click-document="onClickDocument"
     :toggleable="true"
+    @click="onClickButton"
   >
     <template #menu>
       <Teleport to="#overlayManager">
         <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
         <BaseOverlay
           v-show="menuShowing"
-          class="bottom-8 z-10 w-48"
+          ref="listEl"
+          class="z-10 w-48"
         >
           <BaseList
-            ref="listEl"
             class="bg-slate-100 shadow-top"
             :class="listCls"
             :options="menuOptions"
@@ -72,11 +73,15 @@ export default {
         hideMenu();
       }
     }
+    function onClickButton() {
+      listEl.value.$el.style.bottom = `${rootEl.value.$el.clientHeight}px`;
+    }
 
     return {
       rootEl,
       listEl,
       menuShowing,
+      onClickButton,
       onClickDocument,
       onClickMenuItem,
     };

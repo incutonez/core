@@ -1,11 +1,17 @@
-﻿const proto = Array.prototype;
+﻿import { isFunction } from "shared/utilities.js";
+
+const proto = Array.prototype;
 
 /**
  * Simplified method for removing an item from an array
- * @param item
+ * @param {Function|*} item
  */
 proto.remove = function(item) {
-  const found = this.findIndex((record) => record === item);
+  let fn = item;
+  if (!isFunction(fn)) {
+    fn = (record) => record === item;
+  }
+  const found = this.findIndex(fn);
   if (found === -1) {
     return;
   }

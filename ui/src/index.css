@@ -30,6 +30,14 @@
   .fields-tags-close-icon {
     @apply inline-block ml-1 hover:text-red-800 cursor-pointer;
   }
+
+  .base-dialog-body {
+    @apply flex-1 p-2;
+  }
+
+  .overlay-container {
+    @apply absolute pointer-events-auto;
+  }
 }
 
 body, html, #app {
@@ -37,7 +45,7 @@ body, html, #app {
 }
 
 #app {
-  @apply relative flex flex-col items-stretch w-full h-full;
+  @apply relative flex flex-col items-stretch w-full h-full text-base;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -47,6 +47,10 @@ export function isObject(value) {
   return value?.constructor === Object;
 }
 
+export function isFunction(value) {
+  return typeof value === "function";
+}
+
 export function parseNumber(value, precision = 2) {
   if (isDefined(value)) {
     value = isNumber(value) ? value : parseFloat(value);

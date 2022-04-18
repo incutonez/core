@@ -1,7 +1,10 @@
 ﻿<template>
-  <BaseDialog>
+  <BaseDialog
+    title="Field ComboBox"
+    class="header-blue"
+  >
     <template #body>
-      <section class="flex-1">
+      <section class="base-dialog-body">
         <FieldComboBox
           v-model="selectedName"
           multi-select

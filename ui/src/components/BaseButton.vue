@@ -12,7 +12,9 @@
         :icon="icon"
       />
     </slot>
-    {{ text }}
+    <slot>
+      <span class="base-button-text">{{ text }}</span>
+    </slot>
     <slot name="menu" />
   </button>
 </template>
@@ -116,8 +118,18 @@ export default {
     }
   }
 
+  &.base {
+    .base-button-text {
+      @apply text-sm;
+    }
+  }
+
   &.lg {
     @apply h-8;
+
+    .base-button-text {
+      @apply text-base;
+    }
   }
 
   &.xl {

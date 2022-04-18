@@ -2,27 +2,41 @@
   <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
     <RouterView v-slot="{ Component }">
       <Teleport to="#overlayManager">
-        <KeepAlive :include="activeDialogs">
-          <component
+        <!-- https://github.com/vuejs/core/issues/5747 -->
+        <KeepAlive>
+          <Component
             :is="Component"
-            v-show="isShowing(activeDialog, Component)"
+            :key="route.fullPath"
             :class="cmpCls"
             @vnode-mounted="onMountedDialog(Component)"
             @click:close="onClickCloseDialog(Component)"
+            @click:minimize="onClickMinimizeDialog"
           />
         </KeepAlive>
       </Teleport>
     </RouterView>
   </main>
-  <footer class="bg-slate-700 border-t border-gray-300">
+  <footer class="box-border flex items-stretch bg-slate-700">
     <BaseButtonMenu
       text="Start"
-      class="default lg"
+      class="default"
       list-cls="h-64 overflow-auto"
       :menu-options="ComponentList"
       menu-value-field="name"
       @click:item="onClickStartItem"
     />
+    <section class="flex flex-1 items-center mx-2 space-x-2">
+      <BaseButton
+        v-for="dialog in activeDialogs"
+        :key="dialog.name"
+        :text="dialog.name"
+        @click="onClickRestoreDialog(dialog)"
+      />
+    </section>
+    <section class="flex flex-col items-stretch text-sm">
+      <span class="flex-1">Time</span>
+      <span class="flex-1">Date</span>
+    </section>
   </footer>
 </template>
 
@@ -33,62 +47,72 @@ import {
   useRouter,
 } from "vue-router";
 import {
+  BaseButton,
   BaseButtonMenu,
 } from "ui/index.js";
 import Route from "ui/statics/Route.js";
 import {
   computed,
   reactive,
-  ref,
 } from "vue";
 
 const ComponentList = Object.keys(Route).map((route) => {
   return {
     name: route,
-    path: Route[route],
+    fullPath: Route[route],
   };
 });
 export default {
   name: "App",
   components: {
+    BaseButton,
     BaseButtonMenu,
     RouterView,
   },
   setup() {
-    const activeDialog = ref(null);
     const activeDialogs = reactive([]);
     const route = useRoute();
     const router = useRouter();
-    const cmpCls = computed(() => route.path === Route.Home ? "" : "view-dialog");
+    const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
     function onClickStartItem(item) {
-      router.push(item.path);
+      router.push(item.fullPath);
     }
     function onClickCloseDialog(cmp) {
-      activeDialogs.remove(cmp?.type.name);
+      const { name } = cmp.type;
+      activeDialogs.remove((item) => item.name === name);
       router.push(Route.Home);
     }
-    function isShowing(active, cmp) {
-      return active === cmp?.type.name;
+    function onClickMinimizeDialog() {
+      router.push(Route.Home);
     }
     function onMountedDialog(cmp) {
-      const { name } = cmp.type;
-      activeDialog.value = name;
-      if (activeDialogs.find((item) => item === name)) {
+      const { fullPath } = route;
+      if (fullPath === Route.Home) {
         return;
       }
-      activeDialogs.push(name);
+      const { name } = cmp.type;
+      if (activeDialogs.find((item) => item.name === name)) {
+        return;
+      }
+      activeDialogs.push({
+        name,
+        fullPath,
+      });
+    }
+    function onClickRestoreDialog(dialog) {
+      router.push(dialog.fullPath);
     }
 
     return {
       route,
       cmpCls,
-      activeDialog,
       activeDialogs,
-      isShowing,
       ComponentList,
       onMountedDialog,
+      onClickRestoreDialog,
       onClickStartItem,
       onClickCloseDialog,
+      onClickMinimizeDialog,
     };
   },
 };
@@ -96,7 +120,7 @@ export default {
 
 <style>
 .view-dialog {
-  @apply top-0 w-5/6 h-fit bg-white w-full border border-gray-300 shadow;
-  height: calc(100% - 2rem);
+  @apply top-0 w-5/6 h-fit bg-white w-full shadow;
+  height: calc(100% - 2.5rem);
 }
 </style>
