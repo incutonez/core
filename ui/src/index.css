@@ -38,6 +38,11 @@
   .overlay-container {
     @apply absolute pointer-events-auto;
   }
+  
+  .view-dialog {
+    @apply top-0 w-5/6 h-fit bg-white w-full shadow;
+    height: calc(100% - 2.25rem);
+  }
 }
 
 body, html, #app {

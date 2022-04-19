@@ -33,9 +33,9 @@
         @click="onClickToggleDialog(dialog)"
       />
     </section>
-    <section class="flex flex-col items-stretch text-sm">
-      <span class="flex-1">Time</span>
-      <span class="flex-1">Date</span>
+    <section class="flex flex-col items-stretch py-0.5 px-2 text-xs text-stone-200">
+      <span class="flex-1">{{ dateTime.toLocaleTimeString() }}</span>
+      <span class="flex-1">{{ dateTime.toMMDDYYYY() }}</span>
     </section>
   </footer>
 </template>
@@ -53,6 +53,7 @@ import {
 import Route from "ui/statics/Route.js";
 import {
   computed,
+  ref,
 } from "vue";
 import { useDialogManager } from "ui/composables/DialogManager.js";
 
@@ -72,6 +73,7 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const dateTime = ref(new Date());
     const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
     const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
     function onClickStartItem(item) {
@@ -87,10 +89,15 @@ export default {
     function onClickToggleDialog(dialog) {
       toggleDialog(dialog);
     }
+    setInterval(() => {
+      // Reactivity won't work unless we have a brand new object
+      dateTime.value = new Date(dateTime.value.getTime() + 1000);
+    }, 1000);
 
     return {
       route,
       cmpCls,
+      dateTime,
       activeDialogs,
       cachedDialogs,
       ComponentList,
@@ -102,10 +109,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.view-dialog {
-  @apply top-0 w-5/6 h-fit bg-white w-full shadow;
-  height: calc(100% - 2.5rem);
-}
-</style>
