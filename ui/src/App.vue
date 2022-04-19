@@ -7,8 +7,7 @@
             :is="Component"
             :key="route.fullPath"
             :class="cmpCls"
-            @vnode-mounted="onMountedDialog(Component)"
-            @click:close="onClickCloseDialog(Component)"
+            @click:close="onClickCloseDialog"
             @click:minimize="onClickMinimizeDialog"
           />
         </KeepAlive>
@@ -30,7 +29,7 @@
         :key="dialog.name"
         :text="dialog.name"
         class="px-2 hover:bg-slate-600 border-b-2 border-gray-300"
-        :class="getActiveCls(dialog)"
+        :class="dialog.activeCls"
         @click="onClickToggleDialog(dialog)"
       />
     </section>
@@ -54,8 +53,8 @@ import {
 import Route from "ui/statics/Route.js";
 import {
   computed,
-  reactive,
 } from "vue";
+import { useDialogManager } from "ui/composables/DialogManager.js";
 
 const ComponentList = Object.keys(Route).filter((key) => key !== "Home").map((route) => {
   return {
@@ -71,48 +70,22 @@ export default {
     RouterView,
   },
   setup() {
-    const activeDialogs = reactive([]);
     const route = useRoute();
     const router = useRouter();
     const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
-    const cachedDialogs = computed(() => activeDialogs.map(({ name }) => name));
+    const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
     function onClickStartItem(item) {
       router.push(item.fullPath);
     }
-    function onClickCloseDialog(cmp) {
-      const { name } = cmp.type;
-      delete activeDialogs.remove((dialog) => dialog.name === name);
+    function onClickCloseDialog() {
+      removeDialog();
       router.push(Route.Home);
     }
     function onClickMinimizeDialog() {
       router.push(Route.Home);
     }
-    function onMountedDialog(cmp) {
-      const { fullPath } = route;
-      if (fullPath === Route.Home) {
-        return;
-      }
-      const { name } = cmp.type;
-      const dialog = activeDialogs.find((dialog) => dialog.name === name);
-      if (dialog) {
-        return;
-      }
-      activeDialogs.push({
-        fullPath,
-        name,
-      });
-    }
     function onClickToggleDialog(dialog) {
-      // Current showing dialog, so let's minimize it
-      if (route.fullPath === dialog.fullPath) {
-        router.push(Route.Home);
-      }
-      else {
-        router.push(dialog.fullPath);
-      }
-    }
-    function getActiveCls(dialog) {
-      return dialog.fullPath === route.fullPath ? "bg-slate-500" : "";
+      toggleDialog(dialog);
     }
 
     return {
@@ -120,9 +93,7 @@ export default {
       cmpCls,
       activeDialogs,
       cachedDialogs,
-      getActiveCls,
       ComponentList,
-      onMountedDialog,
       onClickToggleDialog,
       onClickStartItem,
       onClickCloseDialog,

@@ -52,7 +52,7 @@ import {
   useFieldRules,
   useInputAttrs,
   useInputCls,
-} from "ui/composables/useBaseField.js";
+} from "ui/composables/BaseField.js";
 import { useField } from "vee-validate";
 import {
   computed,

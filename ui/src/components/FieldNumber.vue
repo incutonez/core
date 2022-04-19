@@ -25,7 +25,7 @@
 import {
   useFieldRules,
   useInputAttrs,
-} from "ui/composables/useBaseField.js";
+} from "ui/composables/BaseField.js";
 import {
   parseNumber,
 } from "shared/utilities.js";
