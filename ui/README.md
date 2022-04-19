@@ -1,7 +1,11 @@
-# Vue 3 + Vite
+# Core UI Components
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+The intent of this code is used as experiments for how to build commonly reused components that are essential to any application.  Frameworks like Vuetify, PrimeVue, etc. don't allow full control over styling and functionality, so I wanted to experiment with rolling my own components.
 
-## Recommended IDE Setup
+## Running
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+The repo is set up using [NPM Workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces), so the installation must be done at the repo's root.  This project uses Node v16.14.2 and npm v8.7.0.
+
+- `cd core`
+- `npm ci`
+- `npm run ui`
