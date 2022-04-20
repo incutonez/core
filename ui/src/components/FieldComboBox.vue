@@ -51,29 +51,27 @@
         :icon="Icon.PickerDown"
         @click="onClickPicker"
       />
-      <Teleport to="#overlayManager">
-        <div
-          v-show="isExpanded"
-          ref="dropdownListEl"
-          class="field-combo-box-list-wrapper"
-          tabindex="-1"
+      <BaseOverlay
+        v-show="isExpanded"
+        ref="dropdownListEl"
+        class="field-combo-box-list-wrapper"
+        tabindex="-1"
+      >
+        <slot
+          name="list"
+          :expanded="isExpanded"
+          :options="optionsAvailable"
+          :value-field="valueField"
+          :selections="selections"
         >
-          <slot
-            name="list"
-            :expanded="isExpanded"
+          <BaseList
+            :selections="selections"
             :options="optionsAvailable"
             :value-field="valueField"
-            :selections="selections"
-          >
-            <BaseList
-              :selections="selections"
-              :options="optionsAvailable"
-              :value-field="valueField"
-              @update:selections="onUpdateSelections"
-            />
-          </slot>
-        </div>
-      </Teleport>
+            @update:selections="onUpdateSelections"
+          />
+        </slot>
+      </BaseOverlay>
     </template>
   </FieldText>
 </template>
@@ -96,6 +94,7 @@ import {
   BaseItems,
   BaseList,
 } from "ui/index.js";
+import BaseOverlay from "ui/components/BaseOverlay.vue";
 
 /**
  * @property {Number} Above
@@ -110,6 +109,7 @@ export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
 export default {
   name: "FieldComboBox",
   components: {
+    BaseOverlay,
     BaseList,
     BaseIcon,
     BaseItems,
@@ -279,7 +279,7 @@ export default {
       if (value) {
         const { inputEl } = fieldEl.value;
         inputEl.focus();
-        const { style: dropdownStyle } = dropdownListEl.value;
+        const { style: dropdownStyle } = dropdownListEl.value.$el;
         const boundingRect = fieldEl.value.$el.querySelector(".field-text").getBoundingClientRect();
         dropdownStyle.top = `${boundingRect.bottom + 8}px`;
         dropdownStyle.left = `${boundingRect.left - 2}px`;

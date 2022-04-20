@@ -7,22 +7,20 @@
     @click="onClickButton"
   >
     <template #menu>
-      <Teleport to="#overlayManager">
-        <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
-        <BaseOverlay
-          v-show="menuShowing"
-          ref="listEl"
-          class="z-10 w-48"
-        >
-          <BaseList
-            class="bg-slate-100 shadow-top"
-            :class="listCls"
-            :options="menuOptions"
-            :value-field="menuValueField"
-            @click:item="onClickMenuItem"
-          />
-        </BaseOverlay>
-      </Teleport>
+      <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
+      <BaseOverlay
+        v-show="menuShowing"
+        ref="listEl"
+        class="z-10 w-48"
+      >
+        <BaseList
+          class="bg-slate-100 shadow-top"
+          :class="listCls"
+          :options="menuOptions"
+          :value-field="menuValueField"
+          @click:item="onClickMenuItem"
+        />
+      </BaseOverlay>
     </template>
   </BaseButton>
 </template>

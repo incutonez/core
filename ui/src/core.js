@@ -2,40 +2,17 @@
 import "shared/overrides/index.js";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon.js";
-import {
-  createApp,
-  h,
-} from "vue";
+import { OverlayManager } from "ui/components/OverlayManager.js";
 
 /**
- * This is more of an experiment on how to have a global OverlayManager
+ * Current issue is that I want a global manager component, but I don't want all of the apps to have to
+ * add the component in the App.vue... I want it to be injected, so it seems like the only way to do this
+ * is through WebComponents (customElements)
  */
-class OverlayManager {
-  rootEl = document.createElement("div");
-
-  constructor() {
-    this.rootEl.id = "overlayManager";
-    document.body.appendChild(this.rootEl);
-  }
-
-  add(cmp, props) {
-    const componentApp = createApp({
-      setup: () => {
-        return () => h(cmp, props);
-      },
-    });
-    addGlobals(componentApp);
-    componentApp.mount(this.rootEl);
-  }
-}
-
-function addGlobals(app) {
-  app.config.globalProperties.Icon = Icon;
-}
-
 export default {
   install(app) {
-    window.OverlayManager = new OverlayManager();
-    addGlobals(app);
+    const overlayManager = new OverlayManager();
+    app.provide("OverlayManager", overlayManager);
+    app.config.globalProperties.Icon = Icon;
   },
 };

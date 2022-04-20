@@ -1,18 +1,16 @@
 <template>
   <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
-    <Teleport to="#overlayManager">
-      <RouterView v-slot="{ Component }">
-        <KeepAlive :include="cachedDialogs">
-          <Component
-            :is="Component"
-            :key="route.fullPath"
-            :class="cmpCls"
-            @click:close="onClickCloseDialog"
-            @click:minimize="onClickMinimizeDialog"
-          />
-        </KeepAlive>
-      </RouterView>
-    </Teleport>
+    <RouterView v-slot="{ Component }">
+      <KeepAlive :include="cachedDialogs">
+        <Component
+          :is="Component"
+          :key="route.fullPath"
+          :class="cmpCls"
+          @click:close="onClickCloseDialog"
+          @click:minimize="onClickMinimizeDialog"
+        />
+      </KeepAlive>
+    </RouterView>
   </main>
   <footer class="box-border flex items-stretch bg-slate-700">
     <BaseButtonMenu

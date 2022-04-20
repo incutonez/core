@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .contain-layout {
+    contain: layout;
+  }
+}
+
 @layer components {
   /* Removing scrollers for number fields in Mozilla and WebKit */
   .field-number input {
@@ -54,9 +60,4 @@ body, html, #app {
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-#overlayManager {
-  @apply absolute top-0 left-0 contents pointer-events-none z-10;
-  contain: layout;
 }
