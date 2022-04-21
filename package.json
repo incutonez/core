@@ -11,7 +11,8 @@
     "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx jest",
     "lint": "npx eslint --fix",
     "prepare": "npx husky install",
-    "benchmarks": "node benchmarks/index.js"
+    "benchmarks": "node benchmarks/index.js",
+    "build:ui": "cd ui && npm run build"
   },
   "repository": {
     "type": "git",
