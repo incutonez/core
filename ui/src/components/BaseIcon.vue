@@ -1,42 +1,28 @@
 ﻿<template>
   <div class="base-icon">
-    <span :class="icon" />
-    <div
-      v-if="hasInner"
-      class="inline-block z-10 pl-1"
-    >
-      <slot>
-        <!-- TODO: This is no longer working after moving to an overlay container -->
-        <BaseTooltip :value="tooltip" />
-      </slot>
-    </div>
+    <slot>
+      <FontAwesomeIcon
+        :fixed-width="true"
+        :icon="icon"
+      />
+    </slot>
+    <slot name="tooltip" />
   </div>
 </template>
 
 <script>
-import { computed } from "vue";
-import { BaseTooltip } from "ui/index.js";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 export default {
   name: "BaseIcon",
   components: {
-    BaseTooltip,
+    FontAwesomeIcon,
   },
   props: {
     icon: {
-      type: String,
+      type: Object,
       required: true,
     },
-    tooltip: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props, { slots }) {
-    const hasInner = computed(() => !!slots.default || props.tooltip);
-    return {
-      hasInner,
-    };
   },
 };
 </script>

@@ -26,7 +26,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@fortawesome/fontawesome-free/scss/solid";
 .checkbox {
   :deep(.field-text) {
     @apply items-center flex h-6 w-6 cursor-pointer;
@@ -34,9 +33,8 @@ export default {
       @apply appearance-none rounded-sm border h-full w-full cursor-pointer;
 
       &:checked:after {
-        @extend .fas;
         @apply h-full w-full inline-block text-center text-xl leading-5;
-        content: fa-content($fa-var-check);
+        content: '✔';
       }
     }
   }

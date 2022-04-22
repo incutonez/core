@@ -1,6 +1,4 @@
-﻿import "shared/overrides/String.js";
-
-export class Enum {
+﻿export class Enum {
   constructor(values, useIndex = true) {
     if (Array.isArray(values)) {
       values.forEach((value, index) => {

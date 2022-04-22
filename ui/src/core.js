@@ -1,8 +1,12 @@
-﻿import "ui/index.css";
+﻿import "ui/index.scss";
 import "shared/overrides/index.js";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon.js";
 import { OverlayManager } from "ui/components/OverlayManager.js";
+import {
+  clickDocument,
+  scrollDocument,
+} from "ui/directives/document.js";
 
 /**
  * Current issue is that I want a global manager component, but I don't want all of the apps to have to
@@ -14,5 +18,7 @@ export default {
     const overlayManager = new OverlayManager();
     app.provide("OverlayManager", overlayManager);
     app.config.globalProperties.Icon = Icon;
+    app.directive("click-document", clickDocument);
+    app.directive("scroll-document", scrollDocument);
   },
 };
