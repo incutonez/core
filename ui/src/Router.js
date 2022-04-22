@@ -10,6 +10,7 @@ import FieldIntegerView from "ui/views/FieldIntegerView.vue";
 import FieldNumberView from "ui/views/FieldNumberView.vue";
 import FieldPercentView from "ui/views/FieldPercentView.vue";
 import FieldTextView from "ui/views/FieldTextView.vue";
+import FieldCheckboxView from "ui/views/FieldCheckboxView.vue";
 
 export const Router = createRouter({
   history: createWebHashHistory(),
@@ -34,5 +35,8 @@ export const Router = createRouter({
   }, {
     path: Route.Text,
     component: FieldTextView,
+  }, {
+    path: Route.CheckBox,
+    component: FieldCheckboxView,
   }],
 });

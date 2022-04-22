@@ -1,11 +1,12 @@
 ﻿<template>
   <div
-    class="flex"
+    class="base-field"
     :class="containerCls"
   >
     <BaseLabel
       :value="label"
       :class="labelWidth"
+      :for="id"
     />
     <div
       class="relative"
@@ -17,13 +18,13 @@
       >
         <slot name="beforeItems" />
         <input
+          v-bind="inputAttrs"
+          :id="id"
           ref="inputEl"
-          :value="value"
+          v-model="value"
           class="field-text-input"
           :class="inputCls"
-          v-bind="inputAttrs"
           @click="onClickField"
-          @input="onInputField"
           @blur="onBlurField"
         >
         <slot name="afterItems" />
@@ -66,8 +67,10 @@ import {
   BaseIcon,
 } from "ui/index.js";
 
+// TODO: Should probably generate guids instead, but this works for right now
+let fieldCount = 1;
 export default {
-  name: "FieldText",
+  name: "BaseField",
   components: {
     BaseLabel,
     BaseIcon,
@@ -177,13 +180,20 @@ export default {
       type: Function,
       default: parseString,
     },
+    id: {
+      type: String,
+      default: () => `input-${fieldCount++}`,
+    },
   },
   setup(props, { emit }) {
     const inputEl = ref(null);
     const fieldRules = computed(() => props.rulesCfg(props));
-    const field = useField(props.label || "field-text", fieldRules, {
+    const field = useField(props.label || `field-${props.inputType}`, fieldRules, {
       initialValue: props.modelValue,
       validateOnMount: props.validateOnInit,
+      type: props.inputType,
+      checkedValue: true,
+      uncheckedValue: false,
     });
     field.setTouched(props.validateOnInit);
     function updateValue(value) {
@@ -212,14 +222,9 @@ export default {
       }
     });
     const fieldErrors = computed(() => field.errors.value);
-    const showErrors = computed(() => {
-      return field.meta.touched && fieldErrors.value.length;
-    });
+    const showErrors = computed(() => field.meta.touched && fieldErrors.value.length);
     function onClickField(event) {
       emit("click:field", event);
-    }
-    function onInputField(event) {
-      updateValue(event.target.value);
     }
     // We have to make sure that when we lose focus that we parse the value appropriately
     function onBlurField() {
@@ -228,17 +233,24 @@ export default {
       field.validate();
       emit("blur:field");
     }
+    const value = computed({
+      get() {
+        return field.value.value;
+      },
+      set(val) {
+        updateValue(val);
+      },
+    });
     return {
       field,
+      value,
       containerCls,
       inputWrapperCls,
       fieldErrors,
       showErrors,
       inputEl,
-      onInputField,
       onBlurField,
       onClickField,
-      value: field.value,
       inputAttrs: props.inputAttrsCfg(props),
     };
   },
@@ -246,6 +258,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.base-field {
+  @apply flex;
+}
 .label-horizontal {
   @apply space-x-2;
   &.flex-row-reverse {
@@ -264,7 +279,7 @@ export default {
 
 .field-text {
   @apply bg-slate-100 rounded-sm border border-gray-300 flex relative focus-within:outline-2 focus-within:outline focus-within:outline-blue-500;
-  input {
+  input:not([type='checkbox']) {
     @apply bg-transparent px-1;
     &:focus {
       @apply outline-none;

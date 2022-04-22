@@ -64,6 +64,7 @@ export function parseInteger(value) {
 }
 
 export function parseBoolean(value) {
+  console.log("parsing", value);
   if (isBoolean(value)) {
     return value;
   }

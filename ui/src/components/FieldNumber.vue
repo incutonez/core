@@ -1,5 +1,5 @@
 ﻿<template>
-  <FieldText
+  <BaseField
     ref="fieldEl"
     v-bind="$props"
     class="field-number"
@@ -18,7 +18,7 @@
         v-bind="scope"
       />
     </template>
-  </FieldText>
+  </BaseField>
 </template>
 
 <script>
@@ -29,12 +29,12 @@ import {
 import {
   parseNumber,
 } from "shared/utilities.js";
-import { FieldText } from "ui/index.js";
+import { BaseField } from "ui/index.js";
 
 export default {
   name: "FieldNumber",
   components: {
-    FieldText,
+    BaseField,
   },
   props: {
     step: {

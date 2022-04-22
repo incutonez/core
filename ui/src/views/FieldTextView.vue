@@ -5,7 +5,7 @@
   >
     <template #body>
       <section class="base-dialog-body">
-        <FieldText
+        <BaseField
           v-model="value"
           label="Name"
           :required="isRequired"
@@ -22,7 +22,7 @@
 <script>
 import {
   BaseDialog,
-  FieldText,
+  BaseField,
 } from "ui/index.js";
 import {
   reactive,
@@ -30,10 +30,10 @@ import {
 } from "vue";
 
 export default {
-  name: "FieldTextView",
+  name: "BaseFieldView",
   components: {
     BaseDialog,
-    FieldText,
+    BaseField,
   },
   setup() {
     const state = reactive({

@@ -4,7 +4,7 @@
     class="header-blue"
   >
     <template #body>
-      <section class="base-dialog-body">
+      <section class="space-y-2 base-dialog-body">
         <FieldComboBox
           v-model="selectedName"
           multi-select
@@ -14,10 +14,10 @@
           :tags-position="tagPosition"
           :filter-selections="filterSelections"
         />
-        <input
+        <FieldCheckBox
           v-model="filterSelections"
-          type="checkbox"
-        >
+          label="Filter Selections"
+        />
         <FieldInteger
           v-model="tagPosition"
           label="Tag Position"
@@ -33,6 +33,7 @@ import {
   FieldInteger,
   ComboBoxTagPositions,
   BaseDialog,
+  FieldCheckBox,
 } from "ui/index.js";
 import {
   reactive,
@@ -43,6 +44,7 @@ import { names } from "shared/data/names.js";
 export default {
   name: "FieldComboBoxView",
   components: {
+    FieldCheckBox,
     BaseDialog,
     FieldInteger,
     FieldComboBox,

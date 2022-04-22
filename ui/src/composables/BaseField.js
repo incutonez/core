@@ -1,4 +1,5 @@
-﻿export function useFieldCls(props) {
+﻿// TODOJEF: Rework this to passing in top, right, etc. as a class instead of needing a prop
+export function useFieldCls(props) {
   const { labelAlign } = props;
   return {
     "flex-col label-vertical": labelAlign === "top",

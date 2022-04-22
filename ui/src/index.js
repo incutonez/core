@@ -11,8 +11,10 @@ export { default as BaseItems } from "ui/components/BaseItems.vue";
 export { default as BaseButton } from "ui/components/BaseButton.vue";
 export { default as BaseButtonMenu } from "ui/components/BaseButtonMenu.vue";
 // Depends on BaseLabel
-export { default as FieldText } from "ui/components/FieldText.vue";
-// Depends on FieldText
+export { default as BaseField } from "ui/components/BaseField.vue";
+// Depends on BaseField
+export { default as FieldCheckBox } from "ui/components/FieldCheckBox.vue";
+// Depends on BaseField
 export { default as FieldNumber } from "ui/components/FieldNumber.vue";
 // Depends on FieldNumber
 export { default as FieldPercent } from "ui/components/FieldPercent.vue";
@@ -20,5 +22,5 @@ export { default as FieldPercent } from "ui/components/FieldPercent.vue";
 export { default as FieldInteger } from "ui/components/FieldInteger.vue";
 // Depends on FieldNumber
 export { default as FieldCurrency } from "ui/components/FieldCurrency.vue";
-// Depends on FieldText and BaseIcon
+// Depends on BaseField and BaseIcon
 export { default as FieldComboBox, ComboBoxTagPositions } from "ui/components/FieldComboBox.vue";

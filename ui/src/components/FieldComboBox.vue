@@ -1,5 +1,5 @@
 ﻿<template>
-  <FieldText
+  <BaseField
     ref="fieldEl"
     v-bind="$props"
     v-model="displayValueFm"
@@ -73,7 +73,7 @@
         </slot>
       </BaseOverlay>
     </template>
-  </FieldText>
+  </BaseField>
 </template>
 
 <script>
@@ -89,7 +89,7 @@ import {
 } from "shared/utilities.js";
 import { Enum } from "shared/Enum.js";
 import {
-  FieldText,
+  BaseField,
   BaseIcon,
   BaseItems,
   BaseList,
@@ -113,7 +113,7 @@ export default {
     BaseList,
     BaseIcon,
     BaseItems,
-    FieldText,
+    BaseField,
   },
   emits: ["update:expanded", "update:modelValue"],
   props: {

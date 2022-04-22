@@ -8,4 +8,5 @@ export default {
   Number: `${FieldRoute}/number`,
   Percent: `${FieldRoute}/percent`,
   Text: `${FieldRoute}/text`,
+  CheckBox: `${FieldRoute}/checkBox`,
 };
