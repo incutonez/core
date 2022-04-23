@@ -9,6 +9,11 @@ export default defineConfig({
   plugins: [vue(), cssInjectedByJsPlugin()],
   css: {
     postcss,
+    preprocessorOptions: {
+      scss: {
+        charset: false,
+      },
+    },
   },
   resolve: {
     alias: {
@@ -26,6 +31,7 @@ export default defineConfig({
       input: {
         "CoreUI": "src/core.js",
         "index": "src/index.js",
+        "tailwind.config": "tailwind.config.js",
       },
       output: {
         dir: "dist",

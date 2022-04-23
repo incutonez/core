@@ -1,7 +1,6 @@
 ﻿<template>
   <BaseField
     ref="fieldEl"
-    v-bind="$props"
     v-model="displayValueFm"
     v-click-document="onClickDocument"
     v-scroll-document="onScrollDocument"

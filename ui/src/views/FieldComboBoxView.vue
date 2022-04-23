@@ -7,12 +7,16 @@
       <section class="space-y-2 base-dialog-body">
         <FieldComboBox
           v-model="selectedName"
-          multi-select
           label="Combo"
           :options="listOptions"
           value-field="name"
           :tags-position="tagPosition"
           :filter-selections="filterSelections"
+          :multi-select="multiSelect"
+        />
+        <FieldCheckBox
+          v-model="multiSelect"
+          label="Multi Select"
         />
         <FieldCheckBox
           v-model="filterSelections"
@@ -55,6 +59,7 @@ export default {
       listOptions: names,
       tagPosition: ComboBoxTagPositions.Above,
       filterSelections: false,
+      multiSelect: true,
     });
 
     return {

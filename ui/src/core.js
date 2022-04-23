@@ -1,4 +1,5 @@
-﻿import "ui/index.scss";
+﻿import "ui/index.css";
+import "@fontsource/open-sans";
 import "shared/overrides/index.js";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon.js";

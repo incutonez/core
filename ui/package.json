@@ -10,6 +10,7 @@
     "lint": "eslint \"src/**/*.{js,vue}\""
   },
   "dependencies": {
+    "@fontsource/open-sans": "^4.5.8",
     "@vee-validate/i18n": "^4.5.7",
     "vee-validate": "^4.5.8",
     "vue": "^3.2.25",

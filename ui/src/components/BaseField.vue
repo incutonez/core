@@ -227,9 +227,13 @@ export default {
       emit("click:field", event);
     }
     // We have to make sure that when we lose focus that we parse the value appropriately
+    // TODO: How to prevent this from being called when clicking a combobox list item
     function onBlurField() {
       field.setTouched(true);
-      updateValue(props.parseValue(props.modelValue));
+      const value = props.parseValue(props.modelValue);
+      if (value !== props.modelValue) {
+        updateValue(value);
+      }
       field.validate();
       emit("blur:field");
     }
