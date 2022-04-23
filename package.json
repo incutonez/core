@@ -12,7 +12,8 @@
     "lint": "npx eslint --fix",
     "prepare": "npx husky install",
     "benchmarks": "node benchmarks/index.js",
-    "build:ui": "cd ui && npm run build"
+    "build:ui": "cd ui && npm run build",
+    "publish:ui": "cd ui && npm publish"
   },
   "repository": {
     "type": "git",
