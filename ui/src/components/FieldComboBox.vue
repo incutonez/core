@@ -316,7 +316,7 @@ export default {
       }
     }
     function onScrollDocument({ target }) {
-      if (isExpanded.value && dropdownListEl.value !== target) {
+      if (isExpanded.value && !dropdownListEl.value.$el.contains(target)) {
         updateExpanded(false);
       }
     }
