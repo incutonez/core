@@ -13,6 +13,7 @@
     "prepare": "npx husky install",
     "benchmarks": "node benchmarks/index.js",
     "build:ui": "cd ui && npm run build",
+    "build:ui:gh": "cd ui && npm run build:gh",
     "publish:ui": "cd ui && npm publish"
   },
   "repository": {

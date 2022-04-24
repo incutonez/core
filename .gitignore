@@ -1,2 +1,6 @@
 ﻿.idea/
 node_modules
+docs
+dist
+.DS_Store
+*.local
