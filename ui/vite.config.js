@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
     },
   };
   if (mode === "GitHubPages") {
+    baseConfig.base = "/core/";
     baseConfig.build = {
       rollupOptions: {
         output: {
