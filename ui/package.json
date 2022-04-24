@@ -12,6 +12,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
+    "build:gh": "vite build --mode=GitHubPages",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,vue}\"",
     "prepublishOnly": "npm run build"
