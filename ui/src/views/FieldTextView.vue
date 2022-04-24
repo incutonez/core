@@ -7,7 +7,7 @@
       <section class="base-dialog-body">
         <BaseField
           v-model="value"
-          label="Name"
+          label="First Name"
           :required="isRequired"
           :min-length="minLength"
           :max-length="maxLength"
