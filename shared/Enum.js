@@ -11,10 +11,13 @@
         }
       });
     }
+    else {
+      Object.assign(this, values);
+    }
   }
 
   valueToKey(value) {
-    return String(value).split(/(?=[A-Z])|-/).map((item) => item.capitalize()).join("_");
+    return String(value).split(/(?=[A-Z])|-/).map((item) => item.capitalize()).join("");
   }
 
   get count() {
@@ -27,6 +30,15 @@
 
   get values() {
     return Object.keys(this).map((key) => this[key]);
+  }
+
+  get options() {
+    return Object.keys(this).map((key) => {
+      return {
+        id: this[key],
+        value: key,
+      };
+    });
   }
 
   toString() {

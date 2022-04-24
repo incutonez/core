@@ -1,9 +1,9 @@
-﻿export const clickDocument = {
+﻿export const mouseDownDocument = {
   mounted(el, binding) {
-    document.addEventListener("click", binding.value);
+    document.addEventListener("mousedown", binding.value);
   },
   unmounted(el, binding) {
-    document.removeEventListener("click", binding.value);
+    document.removeEventListener("mousedown", binding.value);
   },
 };
 

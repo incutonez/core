@@ -10,7 +10,7 @@
           label="Combo"
           :options="listOptions"
           value-field="name"
-          :tags-position="tagPosition"
+          :class="tagPosition"
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
         />
@@ -22,8 +22,9 @@
           v-model="filterSelections"
           label="Filter Selections"
         />
-        <FieldInteger
+        <FieldComboBox
           v-model="tagPosition"
+          :options="ComboBoxTagPosition.options"
           label="Tag Position"
         />
       </section>
@@ -34,8 +35,7 @@
 <script>
 import {
   FieldComboBox,
-  FieldInteger,
-  ComboBoxTagPositions,
+  ComboBoxTagPosition,
   BaseDialog,
   FieldCheckBox,
 } from "ui/index.js";
@@ -50,16 +50,16 @@ export default {
   components: {
     FieldCheckBox,
     BaseDialog,
-    FieldInteger,
     FieldComboBox,
   },
   setup() {
     const state = reactive({
       selectedName: [1, 5],
       listOptions: names,
-      tagPosition: ComboBoxTagPositions.Above,
+      tagPosition: ComboBoxTagPosition.Above,
       filterSelections: false,
       multiSelect: true,
+      ComboBoxTagPosition,
     });
 
     return {

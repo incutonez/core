@@ -2,7 +2,7 @@
   <BaseButton
     ref="rootEl"
     v-model:toggled="menuShowing"
-    v-click-document="onClickDocument"
+    v-mousedown-document="onClickDocument"
     :toggleable="true"
     @click="onClickButton"
   >

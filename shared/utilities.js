@@ -51,6 +51,10 @@ export function isFunction(value) {
   return typeof value === "function";
 }
 
+export function hasTarget(element, target) {
+  return element === target || element.contains(target);
+}
+
 export function parseNumber(value, precision = 2) {
   if (isDefined(value)) {
     value = isNumber(value) ? value : parseFloat(value);
@@ -64,7 +68,6 @@ export function parseInteger(value) {
 }
 
 export function parseBoolean(value) {
-  console.log("parsing", value);
   if (isBoolean(value)) {
     return value;
   }

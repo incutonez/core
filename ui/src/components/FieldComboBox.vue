@@ -1,20 +1,18 @@
 ﻿<template>
   <BaseField
     ref="fieldEl"
-    v-model="displayValueFm"
-    v-click-document="onClickDocument"
+    v-model="displayValue"
+    v-mousedown-document="onMouseDownDocument"
     v-scroll-document="onScrollDocument"
-    :input-wrapper-classes="inputWrapperCls"
-    :input-cls="inputCls"
+    class="field-combo-box"
+    :class="componentCls"
     @keydown.delete="onKeyBackspace"
+    @input:field="onInputField"
     @click:field="onClickField"
     @keydown.tab="onTabField"
   >
     <template #beforeItems>
-      <div
-        v-if="multiSelect"
-        :class="itemsWrapperCls"
-      >
+      <div v-if="multiSelect">
         <slot name="itemsDisplay">
           <template
             v-for="(selection, index) in selections"
@@ -83,6 +81,7 @@ import {
   watch,
 } from "vue";
 import {
+  hasTarget,
   isArray,
   isEmpty,
 } from "shared/utilities.js";
@@ -98,9 +97,13 @@ import BaseOverlay from "ui/components/BaseOverlay.vue";
 /**
  * @property {Number} Above
  * @property {Number} Below
- * @property {Number} Pack
+ * @property {Number} Inline
  */
-export const ComboBoxTagPositions = new Enum(["above", "below", "pack"]);
+export const ComboBoxTagPosition = new Enum({
+  Above: "tags-above",
+  Below: "tags-below",
+  Inline: "tags-inline",
+});
 /**
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
@@ -140,10 +143,6 @@ export default {
       type: String,
       default: "value",
     },
-    tagsPosition: {
-      type: Number,
-      default: ComboBoxTagPositions.Above,
-    },
     maxSelectedTags: {
       type: Number,
       default: 2,
@@ -162,15 +161,14 @@ export default {
     const dropdownListEl = ref(null);
     const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
-    const searchValue = ref(null);
-    const displayValue = ref(null);
+    const $search = ref(null);
     const showCollapseTags = ref(false);
     const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
       let { options } = props;
       const { filterFn, valueField, idField } = props;
-      const search = unref(searchValue);
+      const search = unref($search);
       if (search) {
         if (filterFn) {
           options = filterFn({
@@ -185,62 +183,28 @@ export default {
           options = options.filter((option) => searchRe.test(option[valueField]));
         }
       }
-      if (props.filterSelections) {
-        const selectionValues = props.modelValue;
+      if (props.multiSelect && props.filterSelections) {
+        const selectionValues = unref(selections);
         if (!isEmpty(selectionValues)) {
-          options = options.filter((option) => selectionValues.indexOf(option[idField]) === -1);
+          options = options.filter((option) => selectionValues.indexOf(option) === -1);
         }
       }
       return options;
     });
-    const displayValueFm = computed({
+    const displayValue = computed({
       get() {
-        if (searchValue.value) {
-          return searchValue.value;
+        const search = unref($search);
+        if (isEmpty(search)) {
+          return props.multiSelect ? "" : selections.value[0]?.[props.valueField];
         }
-        return displayValue.value;
+        return search;
       },
       // User is typing
       set(value) {
-        searchValue.value = value;
+        $search.value = value;
       },
     });
-    const itemsWrapperCls = computed(() => {
-      let cls;
-      switch (props.tagsPosition) {
-        case ComboBoxTagPositions.Pack:
-          cls = "contents";
-          break;
-        case ComboBoxTagPositions.Below:
-        case ComboBoxTagPositions.Above:
-        default:
-          cls = "flex-wrap";
-          break;
-      }
-      return cls;
-    });
-    const inputCls = computed(() => {
-      const cls = ["flex-1 w-full"];
-      if (props.multiSelect) {
-        cls.push("mt-1");
-      }
-      return cls.join(" ");
-    });
-    const inputWrapperCls = computed(() => {
-      const cls = ["box-border flex-wrap pr-5"];
-      if (props.multiSelect) {
-        cls.push("pb-1 pl-1");
-      }
-      switch (props.tagsPosition) {
-        case ComboBoxTagPositions.Above:
-          cls.push("flex-col");
-          break;
-        case ComboBoxTagPositions.Below:
-          cls.push("flex-col-reverse");
-          break;
-      }
-      return cls.join(" ");
-    });
+    const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
     function getSelections() {
       const selections = [];
       const { idField } = props;
@@ -258,28 +222,26 @@ export default {
       return selections;
     }
     watch(() => props.modelValue, (() => {
-      const { multiSelect } = props;
-      const values = getSelections();
-      selections.value = values;
-      if (multiSelect || isEmpty(values)) {
-        displayValue.value = null;
-      }
-      else {
-        displayValue.value = values[0][props.valueField];
-      }
+      selections.value = getSelections();
     }), {
       immediate: true,
     });
     watch(() => props.expanded, (value) => {
       updateExpanded(value);
     });
+    watch(() => props.multiSelect, (value) => {
+      if (!value) {
+        updateSelections({
+          option: selections.value?.[0],
+        });
+      }
+    });
     function updateExpanded(value = !isExpanded.value) {
       isExpanded.value = value;
       if (value) {
-        const { inputEl } = fieldEl.value;
-        inputEl.focus();
+        const { inputWrapper } = fieldEl.value;
         const { style: dropdownStyle } = dropdownListEl.value.$el;
-        const boundingRect = fieldEl.value.$el.querySelector(".field-text").getBoundingClientRect();
+        const boundingRect = inputWrapper.getBoundingClientRect();
         dropdownStyle.top = `${boundingRect.bottom + 8}px`;
         dropdownStyle.left = `${boundingRect.left - 2}px`;
         dropdownStyle.width = `${boundingRect.width + 4}px`;
@@ -287,31 +249,62 @@ export default {
       emit("update:expanded", value);
     }
     function onKeyBackspace() {
-      let { modelValue } = props;
-      if (isEmpty(modelValue) || !isEmpty(displayValue.value)) {
+      if (!props.multiSelect) {
         return;
       }
-      modelValue = props.multiSelect ? modelValue[modelValue.length - 1] : modelValue;
-      updateSelections(props.options?.find((item) => item[props.idField] === modelValue), true);
+      let { modelValue } = props;
+      if (isEmpty(modelValue) || !isEmpty($search.value)) {
+        return;
+      }
+      modelValue = modelValue[modelValue.length - 1];
+      updateSelections({
+        option: props.options?.find((item) => item[props.idField] === modelValue),
+        remove: true,
+      });
     }
     function onClickField() {
       updateExpanded();
+    }
+    /**
+     * When the user does any sort of input for the single select, we need to update
+     * our search value to what's been typed, as the search acts as both the display
+     * value and the filter value for the dropdown list.  And we don't want to initially
+     * set the search value until the user does some sort of input.
+     * @param {String} value
+     */
+    function onInputField(value) {
+      if (props.multiSelect) {
+        return;
+      }
+      if (isEmpty(value)) {
+        updateSelections({
+          shouldBlur: false,
+        });
+      }
     }
     function onTabField() {
       blurField();
     }
     function blurField() {
       updateExpanded(false);
-      searchValue.value = null;
+      $search.value = null;
     }
     function onClickPicker() {
       updateExpanded();
     }
     function onClickItemRemove(option) {
-      updateSelections(option, true);
+      updateSelections({
+        option,
+        remove: true,
+      });
     }
-    function onClickDocument({ target }) {
-      if (isExpanded.value && !fieldEl.value.$el.contains(target)) {
+    function onMouseDownDocument(event) {
+      const { target } = event;
+      if (isExpanded.value && hasTarget(dropdownListEl.value.$el, target)) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      else if (!hasTarget(fieldEl.value.$el, target)) {
         blurField();
       }
     }
@@ -320,11 +313,15 @@ export default {
         updateExpanded(false);
       }
     }
-    function updateSelections(option, remove) {
+    function updateSelections({ option, remove, shouldBlur = !props.multiSelect } = {}) {
       let updateValue = null;
-      const { modelValue, multiSelect } = props;
+      const { multiSelect } = props;
+      let { modelValue } = props;
       const selectedId = option?.[props.idField];
       if (multiSelect) {
+        if (!isArray(modelValue)) {
+          modelValue = [modelValue];
+        }
         if (remove) {
           updateValue = modelValue.filter((item) => item !== selectedId);
         }
@@ -335,13 +332,16 @@ export default {
       else if (!remove) {
         updateValue = selectedId;
       }
-      if (!props.multiSelect) {
-        updateExpanded(false);
+      if (shouldBlur) {
+        blurField();
       }
       emit("update:modelValue", updateValue);
     }
     function onUpdateSelections(option, remove) {
-      updateSelections(option, remove);
+      updateSelections({
+        option,
+        remove,
+      });
     }
     function onClickCollapseTags() {
       showCollapseTags.value = false;
@@ -357,32 +357,30 @@ export default {
       showExpandTags,
       showCollapseTags,
       collapsedTagCount,
-      inputWrapperCls,
       isExpanded,
       fieldEl,
       dropdownListEl,
       displayValue,
-      displayValueFm,
-      itemsWrapperCls,
-      inputCls,
+      componentCls,
       optionsAvailable,
       isTagVisible,
       onClickPicker,
       onClickField,
+      onInputField,
       onTabField,
       onUpdateSelections,
       onClickItemRemove,
       onKeyBackspace,
       onClickExpandTags,
       onClickCollapseTags,
-      onClickDocument,
+      onMouseDownDocument,
       onScrollDocument,
     };
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "sass:math";
 $padding: 4px;
 .field-combo-box-list-wrapper {
@@ -390,5 +388,35 @@ $padding: 4px;
 }
 .field-combo-box-picker {
   @apply leading-7 box-border absolute top-0 right-0 pr-2 text-xs leading-6 cursor-pointer hover:text-blue-600;
+}
+
+.multi-select {
+  :deep(.field-text-input) {
+    @apply mt-1;
+  }
+
+  :deep(.field-text) {
+    @apply pb-1 pl-1 flex-col;
+  }
+
+  &.tags-below {
+    :deep(.field-text) {
+      @apply flex-col-reverse;
+    }
+  }
+
+  &.tags-inline {
+    :deep(.field-text) {
+      @apply flex-row;
+    }
+  }
+}
+
+:deep(.field-text) {
+  @apply box-border flex-wrap pr-5;
+}
+
+:deep(.field-text-input) {
+  @apply flex-1 w-full;
 }
 </style>

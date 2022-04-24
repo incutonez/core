@@ -13,6 +13,7 @@
       :class="inputWidth"
     >
       <div
+        ref="inputWrapper"
         class="field-text"
         :class="inputWrapperCls"
       >
@@ -25,7 +26,9 @@
           class="field-text-input"
           :class="inputCls"
           @click="onClickField"
+          @focus="onFocusField"
           @blur="onBlurField"
+          @input="onInputField"
         >
         <slot name="afterItems" />
       </div>
@@ -75,7 +78,7 @@ export default {
     BaseLabel,
     BaseIcon,
   },
-  emits: ["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field"],
+  emits: ["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field", "focus:field", "input:field"],
   props: {
     label: {
       type: String,
@@ -187,6 +190,7 @@ export default {
   },
   setup(props, { emit }) {
     const inputEl = ref(null);
+    const inputWrapper = ref(null);
     const fieldRules = computed(() => props.rulesCfg(props));
     const field = useField(props.label || `field-${props.inputType}`, fieldRules, {
       initialValue: props.modelValue,
@@ -226,6 +230,13 @@ export default {
     function onClickField(event) {
       emit("click:field", event);
     }
+    function onInputField(event) {
+      emit("input:field", event.target.value);
+    }
+    function onFocusField() {
+      inputEl.value.select();
+      emit("focus:field");
+    }
     // We have to make sure that when we lose focus that we parse the value appropriately
     // TODO: How to prevent this from being called when clicking a combobox list item
     function onBlurField() {
@@ -248,13 +259,16 @@ export default {
     return {
       field,
       value,
+      inputWrapper,
       containerCls,
       inputWrapperCls,
       fieldErrors,
       showErrors,
       inputEl,
       onBlurField,
+      onFocusField,
       onClickField,
+      onInputField,
       inputAttrs: props.inputAttrsCfg(props),
     };
   },

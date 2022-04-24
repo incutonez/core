@@ -23,4 +23,4 @@ export { default as FieldInteger } from "ui/components/FieldInteger.vue";
 // Depends on FieldNumber
 export { default as FieldCurrency } from "ui/components/FieldCurrency.vue";
 // Depends on BaseField and BaseIcon
-export { default as FieldComboBox, ComboBoxTagPositions } from "ui/components/FieldComboBox.vue";
+export { default as FieldComboBox, ComboBoxTagPosition } from "ui/components/FieldComboBox.vue";

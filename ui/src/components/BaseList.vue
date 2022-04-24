@@ -39,6 +39,7 @@ export default {
     function onClickListItem(event, option) {
       // We don't want the document click to be triggered, as the parent class will handle what to do
       event.stopPropagation();
+      event.preventDefault();
       emit("update:selections", option, event.target.classList.contains(SelectedCls));
       emit("click:item", option);
     }

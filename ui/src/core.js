@@ -5,7 +5,7 @@ import "ui/rules.js";
 import Icon from "ui/statics/Icon.js";
 import { OverlayManager } from "ui/components/OverlayManager.js";
 import {
-  clickDocument,
+  mouseDownDocument,
   scrollDocument,
 } from "ui/directives/document.js";
 
@@ -19,7 +19,7 @@ export default {
     const overlayManager = new OverlayManager();
     app.provide("OverlayManager", overlayManager);
     app.config.globalProperties.Icon = Icon;
-    app.directive("click-document", clickDocument);
+    app.directive("mousedown-document", mouseDownDocument);
     app.directive("scroll-document", scrollDocument);
   },
 };
