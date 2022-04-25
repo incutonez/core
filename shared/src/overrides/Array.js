@@ -1,4 +1,4 @@
-﻿import { isFunction } from "@incutonez/shared";
+﻿import { isFunction } from "@incutonez/shared/src/utilities.js";
 
 const proto = Array.prototype;
 

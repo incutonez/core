@@ -1,7 +1,7 @@
 ﻿import {
   Month,
   Weekday,
-} from "@incutonez/shared";
+} from "@incutonez/shared/src/Enums.js";
 
 const proto = Date.prototype;
 const TotalMonths = Month.count;

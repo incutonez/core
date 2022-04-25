@@ -109,18 +109,20 @@ export default {
 
 <style lang="scss" scoped>
 .base-button {
+  .base-button-text {
+    @apply flex;
+  }
+
   &.default {
-    @apply relative bg-blue-200 hover:bg-blue-300 px-2;
+    @apply relative bg-blue-200 hover:bg-blue-300 px-2 shadow-sm;
 
     &.toggled,
     &:focus-within {
       @apply bg-blue-400;
     }
-  }
 
-  &.base {
     .base-button-text {
-      @apply text-sm;
+      @apply text-sm uppercase;
     }
   }
 
