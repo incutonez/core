@@ -72,10 +72,10 @@ import {
 /**
  * @property {String} Left
  * @property {String} Right
- * @property {String} Up
+ * @property {String} Top
  * @property {String} Down
  */
-export const FieldLabelAlign = new Enum(["left", "right", "up", "down"], false);
+export const FieldLabelAlign = new Enum(["left", "right", "top", "down"], false);
 
 // TODO: Should probably generate guids instead, but this works for right now
 let fieldCount = 1;
@@ -283,30 +283,31 @@ export default {
 <style scoped lang="scss">
 .base-field {
   @apply flex;
-}
-.left {
-  @apply flex-row;
-}
-.left,
-.right {
-  @apply space-x-2;
 
-  label {
-    @apply leading-6;
+  &.left {
+    @apply flex-row;
+  }
+  &.left,
+  &.right {
+    @apply space-x-2;
+  }
+  &.right {
+    @apply flex-row-reverse space-x-reverse;
+  }
+  &.top {
+    @apply flex-col;
+  }
+  &.top,
+  &.down {
+    @apply space-y-1;
+  }
+  &.down {
+    @apply flex-col-reverse space-y-reverse;
   }
 }
-.right {
-  @apply flex-row-reverse space-x-reverse;
-}
-.up {
-  @apply flex-col;
-}
-.up,
-.down {
-  @apply space-y-1;
-}
-.down {
-  @apply flex-col-reverse space-y-reverse;
+
+:deep(.base-label) {
+  @apply leading-6;
 }
 
 .field-text {
