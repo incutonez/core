@@ -9,7 +9,6 @@
  * @property {Model} [model]
  * @property {*} [defaultValue=""]
  */
-import { Enum } from "@incutonez/shared";
 import {
   cloneDeep,
   isArray,
@@ -21,6 +20,7 @@ import {
   parseNumber,
   parseObject,
   parseString,
+  Enum,
   Collection,
 } from "@incutonez/shared";
 
