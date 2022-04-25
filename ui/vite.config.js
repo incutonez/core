@@ -7,7 +7,7 @@ import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const baseConfig = {
-    plugins: [vue(), cssInjectedByJsPlugin()],
+    plugins: [vue()],
     css: {
       postcss,
       preprocessorOptions: {
@@ -25,6 +25,9 @@ export default defineConfig(({ mode }) => {
   if (mode === "GitHubPages") {
     baseConfig.base = "/core/";
     baseConfig.build = {
+      cssCodeSplit: false,
+      assetsInlineLimit: 100000,
+      assetsDir: ".",
       rollupOptions: {
         output: {
           dir: "docs",
@@ -33,6 +36,7 @@ export default defineConfig(({ mode }) => {
     };
   }
   else {
+    baseConfig.plugins.push(cssInjectedByJsPlugin());
     baseConfig.build = {
       lib: {
         entry: "src/index.js",
