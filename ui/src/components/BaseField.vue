@@ -1,9 +1,10 @@
 ﻿<template>
   <div
     class="base-field"
-    :class="containerCls"
+    :class="labelAlign"
   >
     <BaseLabel
+      v-if="!!label"
       :value="label"
       :class="labelWidth"
       :for="id"
@@ -52,10 +53,8 @@
 
 <script>
 import {
-  useFieldCls,
   useFieldRules,
   useInputAttrs,
-  useInputCls,
 } from "ui/composables/BaseField.js";
 import { useField } from "vee-validate";
 import {
@@ -64,11 +63,19 @@ import {
   ref,
   watch,
 } from "vue";
-import { parseString } from "@incutonez/shared";
+import { parseString, Enum } from "@incutonez/shared";
 import {
   BaseLabel,
   BaseIcon,
 } from "ui/index.js";
+
+/**
+ * @property {String} Left
+ * @property {String} Right
+ * @property {String} Up
+ * @property {String} Down
+ */
+export const FieldLabelAlign = new Enum(["left", "right", "up", "down"], false);
 
 // TODO: Should probably generate guids instead, but this works for right now
 let fieldCount = 1;
@@ -100,17 +107,13 @@ export default {
       type: [Object, String],
       default: "w-full",
     },
-    inputWrapperClasses: {
-      type: [Object, String],
-      default: null,
-    },
     inputWidth: {
       type: String,
       default: "flex-1",
     },
     labelAlign: {
       type: String,
-      default: "left",
+      default: FieldLabelAlign.Left,
     },
     required: {
       type: Boolean,
@@ -206,8 +209,11 @@ export default {
     watch(computed(() => props.modelValue), (value) => {
       field.handleChange(value, false);
     });
-    const containerCls = computed(() => useFieldCls(props));
-    const inputWrapperCls = computed(() => useInputCls(props, field));
+    const inputWrapperCls = computed(() => {
+      return {
+        "field-invalid": field.meta.touched && field.meta.valid === false,
+      };
+    });
     watch(fieldRules, async(value) => {
       if (value) {
         // We have to wait for the field to receive its new rules before validating
@@ -260,7 +266,6 @@ export default {
       field,
       value,
       inputWrapper,
-      containerCls,
       inputWrapperCls,
       fieldErrors,
       showErrors,
@@ -279,20 +284,29 @@ export default {
 .base-field {
   @apply flex;
 }
-.label-horizontal {
+.left {
+  @apply flex-row;
+}
+.left,
+.right {
   @apply space-x-2;
-  &.flex-row-reverse {
-    @apply space-x-reverse;
-  }
+
   label {
     @apply leading-6;
   }
 }
-.label-vertical {
+.right {
+  @apply flex-row-reverse space-x-reverse;
+}
+.up {
+  @apply flex-col;
+}
+.up,
+.down {
   @apply space-y-1;
-  &.flex-col-reverse {
-    @apply space-y-reverse;
-  }
+}
+.down {
+  @apply flex-col-reverse space-y-reverse;
 }
 
 .field-text {

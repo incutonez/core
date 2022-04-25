@@ -45,8 +45,10 @@ export default {
     }
     function isSelected(option, selections) {
       let cls = "";
+      const { valueField } = props;
+      const value = option[valueField];
       for (const selection of selections) {
-        if (option === selection) {
+        if (value === selection[valueField]) {
           cls = SelectedCls;
           break;
         }

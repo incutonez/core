@@ -4,12 +4,18 @@
     class="header-blue"
   >
     <template #body>
-      <section class="base-dialog-body">
+      <section class="space-y-2 base-dialog-body">
         <FieldInteger
           v-model="value"
           label="Integer"
+          :label-align="labelAlign"
           :required="isRequired"
           :min-value="minValue"
+        />
+        <FieldComboBox
+          v-model="labelAlign"
+          label="Label Align"
+          :options="options"
         />
       </section>
     </template>
@@ -24,11 +30,14 @@ import {
 import {
   BaseDialog,
   FieldInteger,
+  FieldLabelAlign,
 } from "ui/index.js";
+import FieldComboBox from "ui/components/FieldComboBox.vue";
 
 export default {
   name: "FieldIntegerView",
   components: {
+    FieldComboBox,
     BaseDialog,
     FieldInteger,
   },
@@ -37,9 +46,11 @@ export default {
       isRequired: true,
       value: 0,
       minValue: 2,
+      labelAlign: FieldLabelAlign.Left,
     });
 
     return {
+      options: FieldLabelAlign.options,
       ...toRefs(state),
     };
   },

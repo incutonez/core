@@ -11,7 +11,7 @@ export { default as BaseItems } from "ui/components/BaseItems.vue";
 export { default as BaseButton } from "ui/components/BaseButton.vue";
 export { default as BaseButtonMenu } from "ui/components/BaseButtonMenu.vue";
 // Depends on BaseLabel
-export { default as BaseField } from "ui/components/BaseField.vue";
+export { default as BaseField, FieldLabelAlign } from "ui/components/BaseField.vue";
 // Depends on BaseField
 export { default as FieldCheckBox } from "ui/components/FieldCheckBox.vue";
 // Depends on BaseField
