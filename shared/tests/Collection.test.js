@@ -1,5 +1,5 @@
-﻿import json from "shared/data.js";
-import { TestModel } from "shared/models/TestModel.js";
+﻿import json from "@incutonez/shared/data.js";
+import { TestModel } from "@incutonez/shared/models/TestModel.js";
 
 describe("Collection Filter", () => {
   test("Adding Single Filter", () => {

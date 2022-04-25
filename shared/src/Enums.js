@@ -1,4 +1,4 @@
-﻿import { Enum } from "shared/Enum.js";
+﻿import { Enum } from "@incutonez/shared";
 
 /**
  * @property {Number} January

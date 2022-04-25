@@ -1,12 +1,19 @@
 {
-  "name": "shared",
-  "version": "1.0.0",
+  "name": "@incutonez/shared",
+  "version": "1.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/incutonez/core.git"
+  },
+  "files": [
+    "src/*"
+  ],
   "author": "",
   "license": "ISC"
 }

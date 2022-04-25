@@ -1,10 +1,8 @@
 ﻿import {
   isArray,
   isEmpty,
-} from "shared/utilities.js";
-import {
   Model,
-} from "shared/Model.js";
+} from "@incutonez/shared";
 
 export class Collection extends Array {
   isCollection = true;

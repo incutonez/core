@@ -16,7 +16,7 @@ import {
   ref,
   unref,
 } from "vue";
-import { Enum } from "shared/Enum.js";
+import { Enum } from "@incutonez/shared";
 
 /**
  * @property {String} RIGHT_MIDDLE

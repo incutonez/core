@@ -1,4 +1,4 @@
-﻿import "shared/overrides/Date.js";
+﻿import "@incutonez/shared/overrides/Date.js";
 
 describe("Quarters", () => {
   test("Quarter Start Future", () => {
@@ -6,20 +6,30 @@ describe("Quarters", () => {
     const date = new Date().getYearStart();
     for (let i = 0; i < 1000; i++) {
       if (i % 3 === 0) {
-        previous = date.getQuarterStart({ monthOffset: i }).getTime();
+        previous = date.getQuarterStart({
+          monthOffset: i,
+        }).getTime();
       }
-      expect(date.getQuarterStart({ monthOffset: i }).getTime()).toBe(previous);
+      expect(date.getQuarterStart({
+        monthOffset: i,
+      }).getTime()).toBe(previous);
     }
   });
 
   test("Quarter Start Past", () => {
     let previous;
-    const date = new Date().getYearEnd({ yearOffset: -1 });
+    const date = new Date().getYearEnd({
+      yearOffset: -1,
+    });
     for (let i = 0; i < 1000; i++) {
       if (i % 3 === 0) {
-        previous = date.getQuarterStart({ monthOffset: -i }).getTime();
+        previous = date.getQuarterStart({
+          monthOffset: -i,
+        }).getTime();
       }
-      expect(date.getQuarterStart({ monthOffset: -i }).getTime()).toBe(previous);
+      expect(date.getQuarterStart({
+        monthOffset: -i,
+      }).getTime()).toBe(previous);
     }
   });
 
@@ -28,20 +38,30 @@ describe("Quarters", () => {
     const date = new Date().getYearStart();
     for (let i = 0; i < 1000; i++) {
       if (i % 3 === 0) {
-        previous = date.getQuarterEnd({ monthOffset: i }).getTime();
+        previous = date.getQuarterEnd({
+          monthOffset: i,
+        }).getTime();
       }
-      expect(date.getQuarterEnd({ monthOffset: i }).getTime()).toBe(previous);
+      expect(date.getQuarterEnd({
+        monthOffset: i,
+      }).getTime()).toBe(previous);
     }
   });
 
   test("Quarter End Past", () => {
     let previous;
-    const date = new Date().getYearEnd({ yearOffset: -1 });
+    const date = new Date().getYearEnd({
+      yearOffset: -1,
+    });
     for (let i = 0; i < 1000; i++) {
       if (i % 3 === 0) {
-        previous = date.getQuarterEnd({ monthOffset: -i }).getTime();
+        previous = date.getQuarterEnd({
+          monthOffset: -i,
+        }).getTime();
       }
-      expect(date.getQuarterEnd({ monthOffset: -i }).getTime()).toBe(previous);
+      expect(date.getQuarterEnd({
+        monthOffset: -i,
+      }).getTime()).toBe(previous);
     }
   });
 });
@@ -54,11 +74,15 @@ describe("Weeks", () => {
       const offset = i % 7;
       if (offset === 0) {
         if (expected != null) {
-          start = start.getWeekStart({ dateOffset: 7 });
+          start = start.getWeekStart({
+            dateOffset: 7,
+          });
         }
         expected = start.getTime();
       }
-      expect(start.getWeekStart({ dateOffset: offset }).getTime()).toBe(expected);
+      expect(start.getWeekStart({
+        dateOffset: offset,
+      }).getTime()).toBe(expected);
     }
   });
 
@@ -69,13 +93,17 @@ describe("Weeks", () => {
       const offset = i % 7;
       if (offset === 0) {
         if (expected != null) {
-          start = start.getWeekStart({ dateOffset: -7 });
+          start = start.getWeekStart({
+            dateOffset: -7,
+          });
         }
         // We actually want the previous week
         start.setDate(start.getDate() - 1);
         expected = start.getWeekStart().getTime();
       }
-      expect(start.getWeekStart({ dateOffset: -offset }).getTime()).toBe(expected);
+      expect(start.getWeekStart({
+        dateOffset: -offset,
+      }).getTime()).toBe(expected);
     }
   });
 
@@ -86,11 +114,18 @@ describe("Weeks", () => {
       const offset = i % 7;
       if (offset === 0) {
         if (expected != null) {
-          start = start.getWeekStart({ dateOffset: 7 });
+          start = start.getWeekStart({
+            dateOffset: 7,
+          });
         }
-        expected = start.getWeekStart({ isEnd: true }).getTime();
+        expected = start.getWeekStart({
+          isEnd: true,
+        }).getTime();
       }
-      expect(start.getWeekStart({ dateOffset: offset, isEnd: true }).getTime()).toBe(expected);
+      expect(start.getWeekStart({
+        dateOffset: offset,
+        isEnd: true,
+      }).getTime()).toBe(expected);
     }
   });
 
@@ -101,13 +136,20 @@ describe("Weeks", () => {
       const offset = i % 7;
       if (offset === 0) {
         if (expected != null) {
-          start = start.getWeekStart({ dateOffset: -7 });
+          start = start.getWeekStart({
+            dateOffset: -7,
+          });
         }
         // We actually want the previous week
         start.setDate(start.getDate() - 1);
-        expected = start.getWeekStart({ isEnd: true }).getTime();
+        expected = start.getWeekStart({
+          isEnd: true,
+        }).getTime();
       }
-      expect(start.getWeekStart({ dateOffset: -offset, isEnd: true }).getTime()).toBe(expected);
+      expect(start.getWeekStart({
+        dateOffset: -offset,
+        isEnd: true,
+      }).getTime()).toBe(expected);
     }
   });
 });

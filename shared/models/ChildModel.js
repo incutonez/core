@@ -1,7 +1,7 @@
 ﻿import {
   FieldType,
   Model,
-} from "shared/Model.js";
+} from "@incutonez/shared";
 
 export class ChildModel extends Model {
   get fields() {

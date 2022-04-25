@@ -64,7 +64,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { parseString } from "shared/utilities.js";
+import { parseString } from "@incutonez/shared";
 import {
   BaseLabel,
   BaseIcon,

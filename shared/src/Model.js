@@ -9,7 +9,7 @@
  * @property {Model} [model]
  * @property {*} [defaultValue=""]
  */
-import { Enum } from "shared/Enum.js";
+import { Enum } from "@incutonez/shared";
 import {
   cloneDeep,
   isArray,
@@ -21,8 +21,8 @@ import {
   parseNumber,
   parseObject,
   parseString,
-} from "shared/utilities.js";
-import { Collection } from "shared/Collection.js";
+  Collection,
+} from "@incutonez/shared";
 
 /**
  * @property {Number} String

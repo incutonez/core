@@ -43,7 +43,7 @@ import {
   reactive,
   toRefs,
 } from "vue";
-import { names } from "shared/data/names.js";
+import { names } from "@incutonez/shared/data/names.js";
 
 export default {
   name: "FieldComboBoxView",

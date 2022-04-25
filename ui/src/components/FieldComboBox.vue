@@ -84,15 +84,15 @@ import {
   hasTarget,
   isArray,
   isEmpty,
-} from "shared/utilities.js";
-import { Enum } from "shared/Enum.js";
+  Enum,
+} from "@incutonez/shared";
 import {
   BaseField,
   BaseIcon,
   BaseItems,
   BaseList,
+  BaseOverlay,
 } from "ui/index.js";
-import BaseOverlay from "ui/components/BaseOverlay.vue";
 
 /**
  * @property {Number} Above

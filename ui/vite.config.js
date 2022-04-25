@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "ui": path.resolve(path.resolve(), "./src"),
-        "shared": path.resolve(path.resolve(), "../shared"),
       },
     },
   };

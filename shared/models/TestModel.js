@@ -1,9 +1,9 @@
 ﻿import {
   FieldType,
   Model,
-} from "shared/Model.js";
-import { ChildModel } from "shared/models/ChildModel.js";
-import { ChildCollection } from "shared/collections/ChildCollection.js";
+} from "@incutonez/shared";
+import { ChildModel } from "@incutonez/shared/models/ChildModel.js";
+import { ChildCollection } from "@incutonez/shared/collections/ChildCollection.js";
 
 export class TestModel extends Model {
   get fields() {
