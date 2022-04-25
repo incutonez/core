@@ -1,5 +1,5 @@
 ﻿<template>
-  <label class="text-sm font-semibold text-slate-600 uppercase">{{ value }}{{ separator }}</label>
+  <label class="base-label">{{ value }}{{ separator }}</label>
 </template>
 
 <script>
@@ -17,3 +17,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.base-label {
+  @apply text-sm font-semibold text-slate-600 uppercase;
+}
+</style>
