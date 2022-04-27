@@ -16,8 +16,8 @@
         <BaseList
           class="bg-slate-100 shadow-top"
           :class="listCls"
-          :options="menuOptions"
-          :display-field="menuValueField"
+          :options="options"
+          :display-field="displayField"
           @click:item="onClickMenuItem"
         />
       </BaseOverlay>
@@ -42,11 +42,11 @@ export default {
     BaseButton,
   },
   props: {
-    menuOptions: {
+    options: {
       type: Array,
       default: () => [],
     },
-    menuValueField: {
+    displayField: {
       type: String,
       default: "",
     },

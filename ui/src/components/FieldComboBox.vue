@@ -105,9 +105,6 @@ import {
   BaseOverlay,
 } from "ui/index.js";
 
-const DefaultGroup = {
-  id: "__NoGroups__",
-};
 /**
  * @property {Number} Above
  * @property {Number} Below
@@ -178,7 +175,7 @@ export default {
      */
     groups: {
       type: Array,
-      default: undefined,
+      default: null,
     },
     groupField: {
       type: String,
@@ -200,7 +197,7 @@ export default {
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
       let { options } = props;
-      const { filterFn, displayField, idField, groups = [DefaultGroup], groupField } = props;
+      const { filterFn, displayField, idField, groups, groupField } = props;
       const search = unref($search);
       if (search) {
         if (filterFn) {
@@ -222,21 +219,19 @@ export default {
           options = options.filter((option) => selectionValues.indexOf(option) === -1);
         }
       }
-      return groups.map((group) => {
-        const { id, display = id } = group;
-        if (group === DefaultGroup) {
-          return {
-            id,
-            display,
-            options,
-          };
-        }
+      // TODOJEF: Move to BaseList?
+      return groups?.map((group) => {
+        const { id } = group;
         return {
+          ...group,
           id,
-          display,
+          idField,
+          displayField,
+          isGroup: true,
+          display: group.display || id,
           options: options.filter((option) => option[groupField] === id),
         };
-      });
+      }) || options;
     });
     const displayValue = computed({
       get() {

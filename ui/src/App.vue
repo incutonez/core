@@ -17,8 +17,8 @@
       text="Start"
       class="default"
       list-cls="h-64 overflow-auto"
-      :menu-options="ComponentList"
-      menu-value-field="name"
+      :options="ComponentList"
+      display-field="name"
       @click:item="onClickStartItem"
     />
     <section class="flex flex-1 mx-2 space-x-2">

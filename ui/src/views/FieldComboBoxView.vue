@@ -63,7 +63,7 @@ export default {
   setup() {
     const groups = computed(() => {
       const groupKey = state.groupField;
-      return names.reduce((current, value) => {
+      return groupKey ? names.reduce((current, value) => {
         const id = value[groupKey];
         const group = current.find((item) => item.id === id);
         if (!group) {
@@ -72,7 +72,7 @@ export default {
           });
         }
         return current;
-      }, []);
+      }, []) : null;
     });
     const groupFields = Object.keys(names[0]).map((name) => {
       return {
