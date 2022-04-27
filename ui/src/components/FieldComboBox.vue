@@ -16,13 +16,13 @@
         <slot name="itemsDisplay">
           <template
             v-for="(selection, index) in selections"
-            :key="selection[valueField]"
+            :key="selection[displayField]"
           >
             <BaseItems
               v-show="isTagVisible(selection, index)"
               @remove:selection="onClickItemRemove(selection)"
             >
-              {{ selection[valueField] }}
+              {{ selection[displayField] }}
             </BaseItems>
           </template>
         </slot>
@@ -58,15 +58,26 @@
           name="list"
           :expanded="isExpanded"
           :options="optionsAvailable"
-          :value-field="valueField"
+          :display-field="displayField"
           :selections="selections"
         >
           <BaseList
             :selections="selections"
             :options="optionsAvailable"
-            :value-field="valueField"
+            :display-field="displayField"
+            :id-field="idField"
             @update:selections="onUpdateSelections"
-          />
+          >
+            <template
+              v-for="(_, slot) of $slots"
+              #[slot]="scope"
+            >
+              <slot
+                :name="slot"
+                v-bind="scope"
+              />
+            </template>
+          </BaseList>
         </slot>
       </BaseOverlay>
     </template>
@@ -94,6 +105,9 @@ import {
   BaseOverlay,
 } from "ui/index.js";
 
+const DefaultGroup = {
+  id: "__NoGroups__",
+};
 /**
  * @property {Number} Above
  * @property {Number} Below
@@ -139,7 +153,7 @@ export default {
       type: String,
       default: "id",
     },
-    valueField: {
+    displayField: {
       type: String,
       default: "value",
     },
@@ -155,6 +169,25 @@ export default {
       type: Function,
       default: null,
     },
+    /**
+     * This must be an array of objects, with at least the id property defined
+     * @typedef Group
+     * @property {String|Number} id
+     * @property {String} [display=id]
+     * This is the value that's used when displaying the group.  By default, it uses the id
+     */
+    groups: {
+      type: Array,
+      default: undefined,
+    },
+    groupField: {
+      type: String,
+      default: "",
+    },
+    groupSort: {
+      type: Function,
+      default: null,
+    },
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
@@ -167,20 +200,20 @@ export default {
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
       let { options } = props;
-      const { filterFn, valueField, idField } = props;
+      const { filterFn, displayField, idField, groups = [DefaultGroup], groupField } = props;
       const search = unref($search);
       if (search) {
         if (filterFn) {
           options = filterFn({
             search,
             options,
-            valueField,
+            displayField,
             idField,
           });
         }
         else {
           const searchRe = new RegExp(search, "i");
-          options = options.filter((option) => searchRe.test(option[valueField]));
+          options = options.filter((option) => searchRe.test(option[displayField]));
         }
       }
       if (props.multiSelect && props.filterSelections) {
@@ -189,13 +222,27 @@ export default {
           options = options.filter((option) => selectionValues.indexOf(option) === -1);
         }
       }
-      return options;
+      return groups.map((group) => {
+        const { id, display = id } = group;
+        if (group === DefaultGroup) {
+          return {
+            id,
+            display,
+            options,
+          };
+        }
+        return {
+          id,
+          display,
+          options: options.filter((option) => option[groupField] === id),
+        };
+      });
     });
     const displayValue = computed({
       get() {
         const search = unref($search);
         if (isEmpty(search)) {
-          return props.multiSelect ? "" : selections.value[0]?.[props.valueField];
+          return props.multiSelect ? "" : selections.value[0]?.[props.displayField];
         }
         return search;
       },

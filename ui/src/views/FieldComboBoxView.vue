@@ -9,10 +9,17 @@
           v-model="selectedName"
           label="Combo"
           :options="listOptions"
-          value-field="name"
+          display-field="name"
           :class="tagPosition"
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
+          :groups="groups"
+          :group-field="groupField"
+        />
+        <FieldComboBox
+          v-model="groupField"
+          :options="groupFields"
+          label="Group By"
         />
         <FieldCheckBox
           v-model="multiSelect"
@@ -40,6 +47,7 @@ import {
   FieldCheckBox,
 } from "ui/index.js";
 import {
+  computed,
   reactive,
   toRefs,
 } from "vue";
@@ -53,13 +61,35 @@ export default {
     FieldComboBox,
   },
   setup() {
+    const groups = computed(() => {
+      const groupKey = state.groupField;
+      return names.reduce((current, value) => {
+        const id = value[groupKey];
+        const group = current.find((item) => item.id === id);
+        if (!group) {
+          current.push({
+            id,
+          });
+        }
+        return current;
+      }, []);
+    });
+    const groupFields = Object.keys(names[0]).map((name) => {
+      return {
+        id: name,
+        value: name,
+      };
+    });
     const state = reactive({
+      ComboBoxTagPosition,
+      groups,
+      groupFields,
       selectedName: [1, 5],
       listOptions: names,
       tagPosition: ComboBoxTagPosition.Above,
       filterSelections: false,
       multiSelect: true,
-      ComboBoxTagPosition,
+      groupField: "color",
     });
 
     return {

@@ -17,7 +17,7 @@
           class="bg-slate-100 shadow-top"
           :class="listCls"
           :options="menuOptions"
-          :value-field="menuValueField"
+          :display-field="menuValueField"
           @click:item="onClickMenuItem"
         />
       </BaseOverlay>
