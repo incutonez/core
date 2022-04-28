@@ -17,7 +17,6 @@
           class="bg-slate-100 shadow-top"
           :class="listCls"
           :options="options"
-          :display-field="displayField"
           @click:item="onClickMenuItem"
         />
       </BaseOverlay>
@@ -43,12 +42,8 @@ export default {
   },
   props: {
     options: {
-      type: Array,
+      type: [Array, Object],
       default: () => [],
-    },
-    displayField: {
-      type: String,
-      default: "",
     },
     listCls: {
       type: String,

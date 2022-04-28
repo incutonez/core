@@ -64,8 +64,6 @@
           <BaseList
             :selections="selections"
             :options="optionsAvailable"
-            :display-field="displayField"
-            :id-field="idField"
             @update:selections="onUpdateSelections"
           >
             <template
@@ -104,6 +102,7 @@ import {
   BaseList,
   BaseOverlay,
 } from "ui/index.js";
+import { Collection } from "ui/classes/Collection.js";
 
 /**
  * @property {Number} Above
@@ -177,7 +176,7 @@ export default {
       type: Array,
       default: null,
     },
-    groupField: {
+    groupKey: {
       type: String,
       default: "",
     },
@@ -197,7 +196,7 @@ export default {
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
       let { options } = props;
-      const { filterFn, displayField, idField, groups, groupField } = props;
+      const { filterFn, displayField, idField, groups, groupKey } = props;
       const search = unref($search);
       if (search) {
         if (filterFn) {
@@ -214,25 +213,24 @@ export default {
         }
       }
       if (props.multiSelect && props.filterSelections) {
+        // TODO: Selections here triggers this entire computed to be called, which is inefficient
         const selectionValues = unref(selections);
         if (!isEmpty(selectionValues)) {
           options = options.filter((option) => selectionValues.indexOf(option) === -1);
         }
       }
-      // TODOJEF: Move to BaseList?
-      return groups?.map((group) => {
-        const { id } = group;
-        return {
-          ...group,
-          id,
-          idField,
-          displayField,
-          isGroup: true,
-          display: group.display || id,
-          options: options.filter((option) => option[groupField] === id),
-        };
-      }) || options;
+      console.log("creating");
+      return new Collection({
+        idField,
+        displayField,
+        records: options,
+        grouper: {
+          groupKey,
+          groups,
+        },
+      });
     });
+    console.log(optionsAvailable);
     const displayValue = computed({
       get() {
         const search = unref($search);

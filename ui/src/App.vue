@@ -18,7 +18,6 @@
       class="default"
       list-cls="h-64 overflow-auto"
       :options="ComponentList"
-      display-field="name"
       @click:item="onClickStartItem"
     />
     <section class="flex flex-1 mx-2 space-x-2">
@@ -55,12 +54,15 @@ import {
 } from "vue";
 import { useDialogManager } from "ui/composables/DialogManager.js";
 
-const ComponentList = Object.keys(Route).filter((key) => key !== "Home").map((route) => {
-  return {
-    name: route,
-    fullPath: Route[route],
-  };
-});
+const ComponentList = {
+  displayField: "name",
+  records: Object.keys(Route).filter((key) => key !== "Home").map((route) => {
+    return {
+      name: route,
+      fullPath: Route[route],
+    };
+  }),
+};
 export default {
   name: "App",
   components: {

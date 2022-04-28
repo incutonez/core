@@ -9,16 +9,21 @@
           v-model="selectedName"
           label="Combo"
           :options="listOptions"
-          display-field="name"
+          :display-field="displayField"
           :class="tagPosition"
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
           :groups="groups"
-          :group-field="groupField"
+          :group-key="groupField"
+        />
+        <FieldComboBox
+          v-model="displayField"
+          label="Display Field"
+          :options="displayFields"
         />
         <FieldComboBox
           v-model="groupField"
-          :options="groupFields"
+          :options="displayFields"
           label="Group By"
         />
         <FieldCheckBox
@@ -74,7 +79,7 @@ export default {
         return current;
       }, []) : null;
     });
-    const groupFields = Object.keys(names[0]).map((name) => {
+    const displayFields = Object.keys(names[0]).map((name) => {
       return {
         id: name,
         value: name,
@@ -83,13 +88,14 @@ export default {
     const state = reactive({
       ComboBoxTagPosition,
       groups,
-      groupFields,
+      displayFields,
       selectedName: [1, 5],
       listOptions: names,
       tagPosition: ComboBoxTagPosition.Above,
       filterSelections: false,
       multiSelect: true,
       groupField: "color",
+      displayField: "name",
     });
 
     return {

@@ -1,24 +1,22 @@
 ﻿<template>
   <ul class="base-list">
     <li
-      v-for="option in options"
-      :key="option.isGroup ? option.id : option[idField]"
-      :class="getOptionCls(option, selections)"
-      @click="onClickListItem($event, option)"
+      v-for="option in records"
+      :key="records.getOptionId(option)"
+      :class="records.getOptionCls(option, selections)"
+      @click="onClickListItem($event, option, isGrouped)"
     >
-      <template v-if="option.options">
+      <template v-if="option.records">
         <div class="group">
           <slot
             name="groupDisplay"
             :group="option"
           >
-            Group: {{ option.display }}
+            Group: {{ records.getOptionDisplay(option) }}
           </slot>
         </div>
         <BaseList
-          :options="option.options"
-          :id-field="option.idField"
-          :display-field="option.displayField"
+          :options="option.records"
           :selections="selections"
           @update:selections="onUpdateSelections"
           @click:item="onClickItem"
@@ -39,7 +37,7 @@
           name="listItemDisplay"
           :option="option"
         >
-          {{ displayField ? option[displayField] : option }}
+          {{ records.getOptionDisplay(option) }}
         </slot>
       </template>
     </li>
@@ -48,27 +46,19 @@
 
 <script>
 import { computed } from "vue";
+import { Collection } from "ui/classes/Collection.js";
 
 const SelectedCls = "list-item-selected";
 export default {
   name: "BaseList",
   emits: ["update:selections", "click:item"],
   props: {
-    options: {
-      type: Array,
-      default: () => [],
-    },
-    idField: {
-      type: String,
-      default: "",
-    },
     /**
-     * If this is supplied, then the individual options are considered as an object, and we
-     * need the key to access the appropriate value
+     * @type {Collection}
      */
-    displayField: {
-      type: String,
-      default: "",
+    options: {
+      type: [Array, Object],
+      default: () => [],
     },
     selections: {
       type: Array,
@@ -76,7 +66,16 @@ export default {
     },
   },
   setup(props, { emit }) {
-    const showGroups = computed(() => props.options.length > 1);
+    /**
+     * We always want to be dealing with our class, so we can normalize the functionality
+     */
+    const records = computed(() => {
+      const { options } = props;
+      return options.isCollection ? options : new Collection(options);
+    });
+    const idField = computed(() => records.value.idField);
+    const displayField = computed(() => records.value.displayField);
+    const isGrouped = computed(() => records.value.grouped);
     function emitUpdate(args) {
       emit("update:selections", ...args);
     }
@@ -96,21 +95,11 @@ export default {
       emitUpdate([option, event.target.classList.contains(SelectedCls)]);
       emitClick([option]);
     }
-    function getOptionCls(option, selections) {
-      const cls = [option.isGroup ? "group-wrapper" : "list-item"];
-      const { idField } = props;
-      const value = option[idField];
-      for (const selection of selections) {
-        if (value === selection[idField]) {
-          cls.push(SelectedCls);
-          break;
-        }
-      }
-      return cls;
-    }
     return {
-      showGroups,
-      getOptionCls,
+      records,
+      isGrouped,
+      idField,
+      displayField,
       onClickListItem,
       onUpdateSelections,
       onClickItem,
