@@ -34,12 +34,14 @@
           </template>
         </BaseList>
       </template>
-      <slot
-        name="listItemDisplay"
-        :option="option"
-      >
-        {{ displayField ? option[displayField] : option }}
-      </slot>
+      <template v-else>
+        <slot
+          name="listItemDisplay"
+          :option="option"
+        >
+          {{ displayField ? option[displayField] : option }}
+        </slot>
+      </template>
     </li>
   </ul>
 </template>
