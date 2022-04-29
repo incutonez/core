@@ -3,12 +3,14 @@
 const GroupId = "id";
 const GroupDisplay = "display";
 const SelectedCls = "list-item-selected";
+const UpdateFields = ["grouper", "records", "filters"];
 export class Collection extends Array {
   grouper = null;
   records = [];
   idField = "";
   displayField = "";
   isCollection = true;
+  filters = [];
 
   constructor(args) {
     super();
@@ -20,12 +22,14 @@ export class Collection extends Array {
       Object.assign(this, args);
     }
     this.init();
+    // TODOJEF: Asking here https://stackoverflow.com/questions/72051932/vue-array-class-proxy-not-reacting
     return new Proxy(this, {
-      set: (target, prop, receiver) => {
-        this[prop] = receiver;
-        if (prop === "grouper" || prop === "records") {
-          this.init();
+      set: (target, prop, value) => {
+        target[prop] = value;
+        if (UpdateFields.indexOf(prop) !== -1) {
+          target.init();
         }
+        return true;
       },
     });
   }
@@ -34,10 +38,65 @@ export class Collection extends Array {
     this.length = 0;
   }
 
+  add(data, clear = false) {
+    if (clear) {
+      this.clear();
+    }
+    if (isEmpty(data)) {
+      return;
+    }
+    data = isArray(data) ? data : [data];
+    data.forEach((item) => {
+      this.push(item);
+    });
+  }
+
+  clearFilters() {
+    this.filters = [];
+  }
+
+  addFilters(filters) {
+    if (isEmpty(filters)) {
+      return;
+    }
+    filters = isArray(filters) ? filters : [filters];
+    this.filters = this.filters.concat(filters);
+  }
+
   init() {
-    const { grouper, records, idField, displayField } = this;
+    const { grouper, idField, displayField, filters } = this;
+    let { records } = this;
     this.clear();
-    console.log("calling init");
+    // TODO: The issue appears to be here... something wrong with the filtering, as it doesn't notify
+    // of any changes... however, doing this without filters works
+    if (!isEmpty(filters)) {
+      let data = [];
+      filters.forEach((filter, index) => {
+        // If we have multiple filters, we have to make some swaps
+        if (index !== 0) {
+          records = data;
+          data = [];
+        }
+        let filterFn = filter.fn;
+        if (!filterFn) {
+          let { value } = filter;
+          const { property, exact = false } = filter;
+          if (!exact) {
+            value = new RegExp(value, "i");
+          }
+          filterFn = (record) => {
+            const recordValue = record[property];
+            return exact ? recordValue === value : value.test(recordValue);
+          };
+        }
+        records.forEach((record) => {
+          if (filterFn(record)) {
+            data.push(record);
+          }
+        });
+      });
+      records = data;
+    }
     if (this.grouped) {
       const { groups, groupKey } = grouper;
       for (let group of groups) {
