@@ -77,7 +77,7 @@ export default {
     watchEffect(() => {
       const { options } = props;
       // We always want to be dealing with our class, so we can normalize the functionality
-      records.value = options?.isCollection ? options : new Collection(props.options);
+      records.value = options?.isCollection ? options : new Collection(options);
     });
     const idField = computed(() => records.value.idField);
     const displayField = computed(() => records.value.displayField);
