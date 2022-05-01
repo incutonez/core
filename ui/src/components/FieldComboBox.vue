@@ -219,7 +219,6 @@ export default {
           options = options.filter((option) => selectionValues.indexOf(option) === -1);
         }
       }
-      console.log("creating");
       return new Collection({
         idField,
         displayField,
@@ -230,7 +229,6 @@ export default {
         },
       });
     });
-    console.log(optionsAvailable);
     const displayValue = computed({
       get() {
         const search = unref($search);

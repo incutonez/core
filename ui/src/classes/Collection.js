@@ -1,4 +1,12 @@
-﻿import { isArray, isEmpty } from "@incutonez/shared/src/utilities.js";
+﻿/**
+ * @typedef CollectionFilter
+ * @property {String} property
+ * @property {*} value
+ * @property {Boolean} or
+ * If this is set, then the previous filtered data will act as an OR instead of an AND, so it'll use
+ * the same records that were used by the previous filter.
+ */
+import { isArray, isEmpty } from "@incutonez/shared/src/utilities.js";
 
 const GroupId = "id";
 const GroupDisplay = "display";
@@ -10,6 +18,9 @@ export class Collection extends Array {
   idField = "";
   displayField = "";
   isCollection = true;
+  /**
+   * @type {CollectionFilter[]}
+   */
   filters = [];
 
   constructor(args) {
@@ -22,12 +33,12 @@ export class Collection extends Array {
       Object.assign(this, args);
     }
     this.init();
-    // TODOJEF: Asking here https://stackoverflow.com/questions/72051932/vue-array-class-proxy-not-reacting
     return new Proxy(this, {
-      set: (target, prop, value) => {
+      set(target, prop, value, receiver) {
         target[prop] = value;
         if (UpdateFields.indexOf(prop) !== -1) {
-          target.init();
+          // We have to use receiver for some reason
+          receiver.init();
         }
         return true;
       },
@@ -46,9 +57,7 @@ export class Collection extends Array {
       return;
     }
     data = isArray(data) ? data : [data];
-    data.forEach((item) => {
-      this.push(item);
-    });
+    data.forEach((item) => this.push(item));
   }
 
   clearFilters() {
@@ -67,13 +76,11 @@ export class Collection extends Array {
     const { grouper, idField, displayField, filters } = this;
     let { records } = this;
     this.clear();
-    // TODO: The issue appears to be here... something wrong with the filtering, as it doesn't notify
-    // of any changes... however, doing this without filters works
     if (!isEmpty(filters)) {
       let data = [];
       filters.forEach((filter, index) => {
-        // If we have multiple filters, we have to make some swaps
-        if (index !== 0) {
+        // If we have multiple filters, we have to make some swaps if the filter is not an OR
+        if (!(index === 0 || filter.or)) {
           records = data;
           data = [];
         }
@@ -116,13 +123,11 @@ export class Collection extends Array {
           idField,
           displayField,
         });
-        this.push(group);
+        this.add(group);
       }
     }
     else {
-      records.forEach((record) => {
-        this.push(record);
-      });
+      this.add(records);
     }
   }
 
