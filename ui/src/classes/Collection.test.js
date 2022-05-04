@@ -1,6 +1,6 @@
 ﻿import {
   Collection,
-  GroupKey,
+  GroupDisplay,
 } from "ui/classes/Collection.js";
 import { names } from "shared/data/names.js";
 
@@ -11,8 +11,8 @@ describe("Collection Groups", () => {
     if (!ids) {
       return;
     }
-    expect(ids.indexOf(group[GroupKey])).not.toEqual(-1);
-    // expect(group.isGrouped).toEqual(true);
+    expect(ids.indexOf(group[GroupDisplay])).not.toEqual(-1);
+    expect(group.isGrouped).toEqual(keys.length - 1 !== index);
     group.forEach((record) => checkGroup(record, keys, index + 1));
   }
 

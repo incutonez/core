@@ -88,6 +88,7 @@ import {
   ref,
   unref,
   watch,
+  watchEffect,
 } from "vue";
 import {
   hasTarget,
@@ -168,7 +169,7 @@ export default {
     /**
      * This must be an array of objects, with at least the id property defined
      * @typedef Group
-     * @property {String|Number} id
+     * @property {String|Number} key
      * @property {String} [display=id]
      * This is the value that's used when displaying the group.  By default, it uses the id
      */
@@ -176,10 +177,7 @@ export default {
       type: Array,
       default: null,
     },
-    groupKey: {
-      type: String,
-      default: "",
-    },
+    // TODOJEF: Get this working
     groupSort: {
       type: Function,
       default: null,
@@ -196,7 +194,7 @@ export default {
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
       let { options } = props;
-      const { filterFn, displayField, idField, groups, groupKey } = props;
+      const { filterFn, displayField, idField, groups } = props;
       const search = unref($search);
       if (search) {
         if (filterFn) {
@@ -213,7 +211,8 @@ export default {
         }
       }
       if (props.multiSelect && props.filterSelections) {
-        // TODO: Selections here triggers this entire computed to be called, which is inefficient
+        // TODOJEF: Selections here triggers this entire computed to be called, which is inefficient
+        // Really should be using addFilters on the collection
         const selectionValues = unref(selections);
         if (!isEmpty(selectionValues)) {
           options = options.filter((option) => selectionValues.indexOf(option) === -1);
@@ -222,11 +221,8 @@ export default {
       return new Collection({
         idField,
         displayField,
+        groups,
         records: options,
-        grouper: [{
-          groupKey,
-          groups,
-        }],
       });
     });
     const displayValue = computed({
@@ -355,7 +351,7 @@ export default {
       let updateValue = null;
       const { multiSelect } = props;
       let { modelValue } = props;
-      const selectedId = option?.[props.idField];
+      const selectedId = optionsAvailable.value.getOptionId(option);
       if (multiSelect) {
         if (!isArray(modelValue)) {
           modelValue = [modelValue];

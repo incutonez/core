@@ -14,7 +14,6 @@
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
           :groups="groups"
-          :group-key="groupField"
         />
         <FieldComboBox
           v-model="displayField"
@@ -54,6 +53,7 @@ import {
 import {
   computed,
   reactive,
+  ref,
   toRefs,
 } from "vue";
 import { names } from "@incutonez/shared/data/names.js";
@@ -66,18 +66,12 @@ export default {
     FieldComboBox,
   },
   setup() {
+    const groupField = ref("color");
     const groups = computed(() => {
-      const groupKey = state.groupField;
-      return groupKey ? names.reduce((current, value) => {
-        const id = value[groupKey];
-        const group = current.find((item) => item.id === id);
-        if (!group) {
-          current.push({
-            id,
-          });
-        }
-        return current;
-      }, []) : null;
+      const key = groupField.value;
+      return key ? [{
+        key,
+      }] : null;
     });
     const displayFields = Object.keys(names[0]).map((name) => {
       return {
@@ -89,12 +83,12 @@ export default {
       ComboBoxTagPosition,
       groups,
       displayFields,
+      groupField,
       selectedName: [1, 5],
       listOptions: names,
       tagPosition: ComboBoxTagPosition.Above,
       filterSelections: false,
       multiSelect: true,
-      groupField: "color",
       displayField: "name",
     });
 

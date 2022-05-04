@@ -6,7 +6,7 @@
       :class="records.getOptionCls(option, selections)"
       @click="onClickListItem($event, option, isGrouped)"
     >
-      <template v-if="option.records">
+      <template v-if="isGrouped">
         <div class="group">
           <slot
             name="groupDisplay"
@@ -16,7 +16,7 @@
           </slot>
         </div>
         <BaseList
-          :options="option.records"
+          :options="option"
           :selections="selections"
           @update:selections="onUpdateSelections"
           @click:item="onClickItem"
@@ -71,17 +71,15 @@ export default {
   },
   setup(props, { emit }) {
     const records = ref(null);
-    /**
-     * @patch https://github.com/vuejs/core/issues/5841
-     */
     watchEffect(() => {
       const { options } = props;
+      // TODOJEF: Figure out better way to prevent rendering from happening on every click
       // We always want to be dealing with our class, so we can normalize the functionality
       records.value = options?.isCollection ? options : new Collection(options);
     });
     const idField = computed(() => records.value.idField);
     const displayField = computed(() => records.value.displayField);
-    const isGrouped = computed(() => records.value.grouped);
+    const isGrouped = computed(() => records.value.isGrouped);
     function emitUpdate(args) {
       emit("update:selections", ...args);
     }
@@ -94,8 +92,8 @@ export default {
     function onClickItem(...args) {
       emitClick(args);
     }
-    function onClickListItem(event, option) {
-      if (option.isGroup) {
+    function onClickListItem(event, option, grouped) {
+      if (grouped) {
         return;
       }
       emitUpdate([option, event.target.classList.contains(SelectedCls)]);
