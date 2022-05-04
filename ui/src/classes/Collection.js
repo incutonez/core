@@ -6,18 +6,24 @@
  * If this is set, then the previous filtered data will act as an OR instead of an AND, so it'll use
  * the same records that were used by the previous filter.
  */
-import { isArray, isEmpty } from "@incutonez/shared/src/utilities.js";
+import {
+  isArray,
+  isEmpty,
+  isObject,
+} from "@incutonez/shared/src/utilities.js";
 
-const GroupId = "id";
+const GroupKey = "key";
 const GroupDisplay = "display";
 const SelectedCls = "list-item-selected";
-const UpdateFields = ["grouper", "records", "filters"];
+const UpdateFields = ["groups", "records", "filters"];
+
 export class Collection extends Array {
-  grouper = null;
+  groups = null;
   records = [];
   idField = "";
   displayField = "";
   isCollection = true;
+  isGrouped = false;
   /**
    * @type {CollectionFilter[]}
    */
@@ -35,6 +41,9 @@ export class Collection extends Array {
     this.init();
     return new Proxy(this, {
       set(target, prop, value, receiver) {
+        if (prop === "groups" && value && isObject(value)) {
+          value = [value];
+        }
         target[prop] = value;
         if (UpdateFields.indexOf(prop) !== -1) {
           // We have to use receiver for some reason
@@ -50,14 +59,11 @@ export class Collection extends Array {
   }
 
   add(data, clear = false) {
-    if (clear) {
-      this.clear();
-    }
     if (isEmpty(data)) {
       return;
     }
     data = isArray(data) ? data : [data];
-    data.forEach((item) => this.push(item));
+    this.records = clear ? data : this.records.concat(data);
   }
 
   clearFilters() {
@@ -73,7 +79,7 @@ export class Collection extends Array {
   }
 
   init() {
-    const { grouper, idField, displayField, filters } = this;
+    const { groups, filters } = this;
     let { records } = this;
     this.clear();
     if (!isEmpty(filters)) {
@@ -104,44 +110,71 @@ export class Collection extends Array {
       });
       records = data;
     }
-    if (this.grouped) {
-      const { groups, groupKey } = grouper;
-      for (let group of groups) {
-        group = {
-          ...group,
-        };
-        const { [GroupId]: id } = group;
-        const groupRecords = records.filter((record) => record[groupKey] === id);
-        if (isEmpty(groupRecords)) {
-          continue;
+    this.isGrouped = !!groups;
+    if (groups) {
+      for (let i = 0; i < groups.length; i++) {
+        const { [GroupKey]: key, display } = groups[i];
+        if (i === 0) {
+          records.forEach((record) => {
+            const groupKey = record[key];
+            const foundGroup = this.find((groupRecord) => groupRecord[GroupKey] === groupKey);
+            if (foundGroup) {
+              foundGroup.records.push(record);
+            }
+            else {
+              const groupedRecord = new Collection({
+                [GroupKey]: groupKey,
+                records: [record],
+                display() {
+                  return display ? display(groupedRecord) : groupKey;
+                },
+              });
+              this.push(groupedRecord);
+            }
+          });
         }
-        // If the display value wasn't specified, set it to the ID, so we have something
-        group[GroupDisplay] ??= id;
-        group.isGroup = true;
-        group.records = new Collection({
-          records: records.filter((record) => record[groupKey] === id),
-          idField,
-          displayField,
-        });
-        this.add(group);
+        else {
+          // TODOJEF: This works for 2 levels right now... make it work for n level groups
+          this.forEach((group) => {
+            const theGroups = [];
+            group.records.forEach((record) => {
+              const groupKey = record[key];
+              const foundGroup = theGroups.find((groupRecord) => groupRecord[GroupKey] === groupKey);
+              if (foundGroup) {
+                foundGroup.add(record);
+              }
+              else {
+                const groupedRecord = new Collection({
+                  [GroupKey]: groupKey,
+                  records: [record],
+                  display() {
+                    return display ? display(groupedRecord) : groupKey;
+                  },
+                });
+                theGroups.push(groupedRecord);
+              }
+            });
+            group.records = theGroups;
+          });
+        }
       }
     }
     else {
-      this.add(records);
+      records.forEach((record) => this.push(record));
     }
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
   getOptionId(option) {
-    return this.grouped ? option[GroupId] : option[this.idField];
+    return this.isGrouped ? option[GroupKey] : option[this.idField];
   }
 
   getOptionDisplay(option) {
-    return this.grouped ? option[GroupDisplay] : option[this.displayField];
+    return this.isGrouped ? option[GroupDisplay] : option[this.displayField];
   }
 
   getOptionCls(option, selections) {
-    if (this.grouped) {
+    if (this.isGrouped) {
       return "group-wrapper";
     }
     const cls = ["list-item"];
@@ -154,9 +187,5 @@ export class Collection extends Array {
       }
     }
     return cls;
-  }
-
-  get grouped() {
-    return !isEmpty(this.grouper?.groups);
   }
 }

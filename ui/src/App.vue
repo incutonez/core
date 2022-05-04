@@ -53,6 +53,7 @@ import {
   ref,
 } from "vue";
 import { useDialogManager } from "ui/composables/DialogManager.js";
+import { Collection } from "ui/classes/Collection.js";
 
 const ComponentList = {
   displayField: "name",
@@ -63,6 +64,7 @@ const ComponentList = {
     };
   }),
 };
+console.log(new Collection());
 export default {
   name: "App",
   components: {

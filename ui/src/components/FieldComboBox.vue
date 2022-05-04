@@ -223,10 +223,10 @@ export default {
         idField,
         displayField,
         records: options,
-        grouper: {
+        grouper: [{
           groupKey,
           groups,
-        },
+        }],
       });
     });
     const displayValue = computed({
