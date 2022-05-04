@@ -119,3 +119,10 @@ export function parseString(value) {
 export function cloneDeep(value) {
   return parseRaw(JSON.stringify(value));
 }
+
+export function commonSort(lhs, rhs, identity = -1) {
+  if (lhs === rhs) {
+    return 0;
+  }
+  return lhs < rhs ? identity : -1 * identity;
+}
