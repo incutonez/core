@@ -33,6 +33,8 @@ export class Collection extends Array {
 
   constructor(args) {
     super();
+    // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
+    this.initializing = true;
     // We always need a reference to the raw source, as that's how we'll be able to build the records
     if (isArray(args)) {
       this.records = args;
@@ -40,6 +42,9 @@ export class Collection extends Array {
     else {
       Object.assign(this, args);
     }
+    this.initializing = false;
+    // No inits should have fired, and we're done with setting all values, so let's properly init now
+    this.init();
   }
 
   clear() {
@@ -129,12 +134,15 @@ export class Collection extends Array {
       this[GroupKey] = key;
       this.push(group);
     }
-    this.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
+    this.sort((lhs, rhs) => commonSort(lhs[GroupDisplay], rhs[GroupDisplay]));
   }
 
   // TODOJEF: When this is called, we shouldn't re-group if the groups didn't change... instead, we should
   // be looking at each group?
   init() {
+    if (this.initializing) {
+      return;
+    }
     const { groups, filters } = this;
     let { records } = this;
     if (!isEmpty(filters)) {
