@@ -6,22 +6,30 @@
  * If this is set, then the previous filtered data will act as an OR instead of an AND, so it'll use
  * the same records that were used by the previous filter.
  */
-import { isArray, isEmpty } from "@incutonez/shared/src/utilities.js";
+import {
+  isArray,
+  isEmpty,
+  isObject,
+  commonSort,
+} from "@incutonez/shared/src/utilities.js";
 
-const GroupId = "id";
-const GroupDisplay = "display";
+export const GroupKey = "groupKey";
+export const GroupDisplay = "groupDisplay";
 const SelectedCls = "list-item-selected";
-const UpdateFields = ["grouper", "records", "filters"];
+
 export class Collection extends Array {
-  grouper = null;
-  records = [];
-  idField = "";
-  displayField = "";
   isCollection = true;
+  _idField = "";
+  _displayField = "";
+  _records = [];
+  _groups = null;
   /**
    * @type {CollectionFilter[]}
    */
-  filters = [];
+  _filters = [];
+  parent = null;
+  [GroupKey] = null;
+  [GroupDisplay] = null;
 
   constructor(args) {
     super();
@@ -32,17 +40,6 @@ export class Collection extends Array {
     else {
       Object.assign(this, args);
     }
-    this.init();
-    return new Proxy(this, {
-      set(target, prop, value, receiver) {
-        target[prop] = value;
-        if (UpdateFields.indexOf(prop) !== -1) {
-          // We have to use receiver for some reason
-          receiver.init();
-        }
-        return true;
-      },
-    });
   }
 
   clear() {
@@ -50,14 +47,45 @@ export class Collection extends Array {
   }
 
   add(data, clear = false) {
-    if (clear) {
-      this.clear();
-    }
     if (isEmpty(data)) {
       return;
     }
     data = isArray(data) ? data : [data];
-    data.forEach((item) => this.push(item));
+    this.records = clear ? data : this.records.concat(data);
+    this.init();
+  }
+
+  set filters(filters) {
+    this._filters = filters;
+    this.init();
+  }
+
+  get filters() {
+    return this._filters;
+  }
+
+  set records(records) {
+    this._records = records;
+    this.init();
+  }
+
+  get records() {
+    return this._records;
+  }
+
+  set groups(groups) {
+    if (isEmpty(groups)) {
+      this[GroupKey] = null;
+    }
+    else if (isObject(groups)) {
+      groups = [groups];
+    }
+    this._groups = groups;
+    this.init();
+  }
+
+  get groups() {
+    return this._groups;
   }
 
   clearFilters() {
@@ -72,10 +100,43 @@ export class Collection extends Array {
     this.filters = this.filters.concat(filters);
   }
 
-  init() {
-    const { grouper, idField, displayField, filters } = this;
-    let { records } = this;
+  // TODOJEF: I think this might need to return the records instead of setting them?
+  // This is so we can use the else portion of init and just push them on... maybe?
+  group({ key, display }, records = this.records) {
+    /* We clear because the previous values for this collection could erroneously be the actual data records,
+     * but we don't want to be dealing with those at this point, which is why we use the raw records loop */
     this.clear();
+    const groups = {};
+    records.forEach((record) => {
+      const groupKey = record[key];
+      const group = groups[groupKey];
+      if (group) {
+        group.records.push(record);
+      }
+      else {
+        groups[groupKey] = {
+          [GroupKey]: groupKey,
+          records: [record],
+        };
+      }
+    });
+    for (const { [GroupKey]: groupKey, records } of Object.values(groups)) {
+      const group = new Collection({
+        records,
+        parent: this,
+      });
+      group[GroupDisplay] = display ? display(group) : groupKey;
+      this[GroupKey] = key;
+      this.push(group);
+    }
+    this.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
+  }
+
+  // TODOJEF: When this is called, we shouldn't re-group if the groups didn't change... instead, we should
+  // be looking at each group?
+  init() {
+    const { groups, filters } = this;
+    let { records } = this;
     if (!isEmpty(filters)) {
       let data = [];
       filters.forEach((filter, index) => {
@@ -104,44 +165,61 @@ export class Collection extends Array {
       });
       records = data;
     }
-    if (this.grouped) {
-      const { groups, groupKey } = grouper;
-      for (let group of groups) {
-        group = {
-          ...group,
-        };
-        const { [GroupId]: id } = group;
-        const groupRecords = records.filter((record) => record[groupKey] === id);
-        if (isEmpty(groupRecords)) {
-          continue;
+    if (groups) {
+      let source = this;
+      for (let i = 0; i < groups.length; i++) {
+        // Create the initial groups
+        if (i === 0) {
+          this.group(groups[i], records);
         }
-        // If the display value wasn't specified, set it to the ID, so we have something
-        group[GroupDisplay] ??= id;
-        group.isGroup = true;
-        group.records = new Collection({
-          records: records.filter((record) => record[groupKey] === id),
-          idField,
-          displayField,
-        });
-        this.add(group);
+        else {
+          let nextSource = [];
+          source.forEach((collection) => {
+            collection.group(groups[i]);
+            nextSource = nextSource.concat(collection);
+          });
+          source = nextSource;
+        }
       }
     }
     else {
-      this.add(records);
+      this.clear();
+      records.forEach((record) => this.push(record));
     }
+  }
+
+  get idField() {
+    return this.parent?.idField || this._idField;
+  }
+
+  set idField(value) {
+    this._idField = value;
+  }
+
+  get displayField() {
+    return this.parent?.displayField || this._displayField;
+  }
+
+  set displayField(value) {
+    this._displayField = value;
+  }
+
+  get isGrouped() {
+    return !isEmpty(this[GroupKey]);
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
   getOptionId(option) {
-    return this.grouped ? option[GroupId] : option[this.idField];
+    return isArray(option) ? option[GroupDisplay] : option[this.idField];
   }
 
   getOptionDisplay(option) {
-    return this.grouped ? option[GroupDisplay] : option[this.displayField];
+    // If the option is an array, it's assumed it's a collection, and we're accessing the group name
+    return isArray(option) ? option[GroupDisplay] : option[this.displayField];
   }
 
   getOptionCls(option, selections) {
-    if (this.grouped) {
+    if (this.isGrouped) {
       return "group-wrapper";
     }
     const cls = ["list-item"];
@@ -154,9 +232,5 @@ export class Collection extends Array {
       }
     }
     return cls;
-  }
-
-  get grouped() {
-    return !isEmpty(this.grouper?.groups);
   }
 }
