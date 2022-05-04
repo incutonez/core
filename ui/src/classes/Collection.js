@@ -79,10 +79,10 @@ export class Collection extends Array {
     this.filters = this.filters.concat(filters);
   }
 
-  doGroup(group) {
-    const nextRecords = [];
-    const { [GroupKey]: key, display } = group;
-    this.records.forEach((record) => {
+  // nextSource = []
+  // nextRecords = this
+  doGroup(nextSource, nextRecords, records, { key, display }) {
+    records.forEach((record) => {
       const groupKey = record[key];
       const foundGroup = nextRecords.find((groupRecord) => groupRecord[GroupKey] === groupKey);
       if (foundGroup) {
@@ -97,9 +97,10 @@ export class Collection extends Array {
           },
         });
         nextRecords.push(groupedRecord);
+        nextSource.push(groupedRecord);
       }
     });
-    this.records = nextRecords.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
+    this.records.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
   }
 
   init() {
@@ -138,33 +139,20 @@ export class Collection extends Array {
     if (groups) {
       let source = this;
       for (let i = 0; i < groups.length; i++) {
+        const nextSource = [];
         const { [GroupKey]: key, display } = groups[i];
         if (i === 0) {
-          this.doGroup(groups[i]);
+          this.doGroup(nextSource, source, this.records, {
+            key,
+            display,
+          });
         }
         else {
-          const nextSource = [];
           source.forEach((group) => {
             const nextRecords = [];
-            group.records.forEach((record) => {
-              const groupKey = record[key];
-              const foundGroup = nextRecords.find((groupRecord) => groupRecord[GroupKey] === groupKey);
-              if (foundGroup) {
-                foundGroup.add(record);
-              }
-              else {
-                const groupedRecord = new Collection({
-                  [GroupKey]: groupKey,
-                  records: [record],
-                  display() {
-                    return display ? display(groupedRecord) : groupKey;
-                  },
-                });
-                // TODOJEF: Should figure out how I can just recursively use the new Collection above...
-                // if we do that, then we can keep creating the groups as the collection is created
-                nextRecords.push(groupedRecord);
-                nextSource.push(groupedRecord);
-              }
+            this.doGroup(nextSource, nextRecords, group.records, {
+              key,
+              display,
             });
             // Redefine the group's records, as they're no longer the actual data records but instead its groups
             group.records = nextRecords.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
