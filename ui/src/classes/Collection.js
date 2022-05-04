@@ -19,16 +19,16 @@ const SelectedCls = "list-item-selected";
 const UpdateFields = ["groups", "records", "filters"];
 
 export class Collection extends Array {
-  groups = null;
-  records = [];
   idField = "";
   displayField = "";
   isCollection = true;
   isGrouped = false;
+  #records = [];
+  #groups = null;
   /**
    * @type {CollectionFilter[]}
    */
-  filters = [];
+  #filters = [];
 
   constructor(args) {
     super();
@@ -39,20 +39,6 @@ export class Collection extends Array {
     else {
       Object.assign(this, args);
     }
-    this.init();
-    return new Proxy(this, {
-      set(target, prop, value, receiver) {
-        if (prop === "groups" && value && isObject(value)) {
-          value = [value];
-        }
-        target[prop] = value;
-        if (UpdateFields.indexOf(prop) !== -1) {
-          // We have to use receiver for some reason
-          receiver.init();
-        }
-        return true;
-      },
-    });
   }
 
   clear() {
@@ -65,6 +51,37 @@ export class Collection extends Array {
     }
     data = isArray(data) ? data : [data];
     this.records = clear ? data : this.records.concat(data);
+    this.init();
+  }
+
+  set filters(filters) {
+    this.#filters = filters;
+    this.init();
+  }
+
+  get filters() {
+    return this.#filters;
+  }
+
+  set records(records) {
+    this.#records = records;
+    this.init();
+  }
+
+  get records() {
+    return this.#records;
+  }
+
+  set groups(groups) {
+    if (groups && isObject(groups)) {
+      groups = [groups];
+    }
+    this.#groups = groups;
+    this.init();
+  }
+
+  get groups() {
+    return this.#groups;
   }
 
   clearFilters() {
@@ -79,12 +96,13 @@ export class Collection extends Array {
     this.filters = this.filters.concat(filters);
   }
 
-  // nextSource = []
-  // nextRecords = this
-  doGroup(nextSource, nextRecords, records, { key, display }) {
-    records.forEach((record) => {
+  doGroup({ key, display }) {
+    /* We clear because the previous values for this collection could erroneously be the actual data records,
+     * but we don't want to be dealing with those at this point, which is why we use the raw records loop */
+    this.clear();
+    this.records.forEach((record) => {
       const groupKey = record[key];
-      const foundGroup = nextRecords.find((groupRecord) => groupRecord[GroupKey] === groupKey);
+      const foundGroup = this.find((groupRecord) => groupRecord[GroupKey] === groupKey);
       if (foundGroup) {
         foundGroup.add(record);
       }
@@ -96,11 +114,10 @@ export class Collection extends Array {
             return display ? display(groupedRecord) : groupKey;
           },
         });
-        nextRecords.push(groupedRecord);
-        nextSource.push(groupedRecord);
+        this.push(groupedRecord);
       }
     });
-    this.records.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
+    this.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
   }
 
   init() {
@@ -139,23 +156,22 @@ export class Collection extends Array {
     if (groups) {
       let source = this;
       for (let i = 0; i < groups.length; i++) {
-        const nextSource = [];
         const { [GroupKey]: key, display } = groups[i];
         if (i === 0) {
-          this.doGroup(nextSource, source, this.records, {
+          // Create the initial groups
+          this.doGroup({
             key,
             display,
           });
         }
         else {
+          let nextSource = [];
           source.forEach((group) => {
-            const nextRecords = [];
-            this.doGroup(nextSource, nextRecords, group.records, {
+            group.doGroup({
               key,
               display,
             });
-            // Redefine the group's records, as they're no longer the actual data records but instead its groups
-            group.records = nextRecords.sort((lhs, rhs) => commonSort(lhs[GroupKey], rhs[GroupKey]));
+            nextSource = nextSource.concat(group);
           });
           source = nextSource;
         }
