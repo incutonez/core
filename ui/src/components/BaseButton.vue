@@ -114,7 +114,7 @@ export default {
   }
 
   &.default {
-    @apply relative bg-blue-200 hover:bg-blue-300 px-2 shadow-sm;
+    @apply relative bg-blue-200 hover:bg-blue-300 px-2 py-0.5 shadow-sm;
 
     &.toggled,
     &:focus-within {

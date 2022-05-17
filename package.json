@@ -19,7 +19,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/incutonez/core.git"
+    "url": "git://github.com/incutonez/core.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/incutonez"
   },
   "author": "incutonez",
   "license": "ISC",
