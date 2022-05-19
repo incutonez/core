@@ -202,7 +202,12 @@ export default {
     const optionsAvailable = computed(() => {
       const { displayField, idField, groups } = props;
       let { options, filterFn } = props;
-      if (!options.isCollection) {
+      /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
+       * cause side effects elsewhere... we need our own copy for this component */
+      if (options.isCollection) {
+        options = options.clone();
+      }
+      else {
         options = new Collection({
           idField,
           displayField,
