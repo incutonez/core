@@ -16,13 +16,13 @@
         <slot name="itemsDisplay">
           <template
             v-for="(selection, index) in selections"
-            :key="selection[displayField]"
+            :key="selection[displayFieldFm]"
           >
             <BaseItems
               v-show="isTagVisible(selection, index)"
               @remove:selection="onClickItemRemove(selection)"
             >
-              {{ selection[displayField] }}
+              {{ selection[displayFieldFm] }}
             </BaseItems>
           </template>
         </slot>
@@ -58,7 +58,6 @@
           name="list"
           :expanded="isExpanded"
           :options="optionsAvailable"
-          :display-field="displayField"
           :selections="selections"
         >
           <BaseList
@@ -155,11 +154,11 @@ export default {
     },
     idField: {
       type: String,
-      default: "id",
+      default: null,
     },
     displayField: {
       type: String,
-      default: "value",
+      default: null,
     },
     maxSelectedTags: {
       type: Number,
@@ -193,26 +192,33 @@ export default {
   setup(props, { emit }) {
     const fieldEl = ref(null);
     const dropdownListEl = ref(null);
-    const selections = ref(getSelections());
     const isExpanded = ref(props.expanded);
     const $search = ref(null);
     const showCollapseTags = ref(false);
+    const selections = ref(null);
     const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
-      const { displayField, idField, groups } = props;
-      let { options, filterFn } = props;
+      const { idField, groups } = props;
+      let { options, filterFn, displayField } = props;
       /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
        * cause side effects elsewhere... we need our own copy for this component */
       if (options.isCollection) {
         options = options.clone();
       }
       else {
-        options = new Collection({
-          idField,
-          displayField,
-          records: options,
-        });
+        options = new Collection(options);
+      }
+      // If this is explicitly set, we prefer it
+      if (idField) {
+        options.idField = idField;
+      }
+      // If this is explicitly set, we prefer it
+      if (displayField) {
+        options.displayField = displayField;
+      }
+      else {
+        displayField = options.displayField;
       }
       const search = unref($search);
       options.removeFilters([SearchFilter, SelectionsFilter], true);
@@ -244,11 +250,13 @@ export default {
       options.groups = groups;
       return options;
     });
+    const displayFieldFm = computed(() => optionsAvailable.value.displayField);
+    selections.value = getSelections();
     const displayValue = computed({
       get() {
         const search = unref($search);
         if (isEmpty(search)) {
-          return props.multiSelect ? "" : selections.value[0]?.[props.displayField];
+          return props.multiSelect ? "" : selections.value[0]?.[displayFieldFm.value];
         }
         return search;
       },
@@ -260,7 +268,7 @@ export default {
     const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
     function getSelections() {
       const selections = [];
-      const { idField } = props;
+      const { idField } = optionsAvailable.value;
       let { modelValue } = props;
       if (isEmpty(modelValue)) {
         return selections;
@@ -318,8 +326,9 @@ export default {
         return;
       }
       modelValue = modelValue[modelValue.length - 1];
+      const { idField } = optionsAvailable.value;
       updateSelections({
-        option: props.options?.find((item) => item[props.idField] === modelValue),
+        option: props.options?.find((item) => item[idField] === modelValue),
         remove: true,
       });
     }
@@ -424,6 +433,7 @@ export default {
       displayValue,
       componentCls,
       optionsAvailable,
+      displayFieldFm,
       isTagVisible,
       onClickPicker,
       onClickField,
