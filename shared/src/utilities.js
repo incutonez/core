@@ -43,6 +43,10 @@ export function isArray(value) {
   return Array.isArray(value);
 }
 
+export function makeArray(value) {
+  return isArray(value) ? value : [value];
+}
+
 export function isObject(value) {
   return value?.constructor === Object;
 }

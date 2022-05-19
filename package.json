@@ -8,7 +8,7 @@
   "scripts": {
     "ui": "cd ui && npm start",
     "api": "cd api && npm start",
-    "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx jest",
+    "test": "cd shared && npm run test",
     "lint": "npx eslint --fix",
     "prepare": "npx husky install",
     "benchmarks": "node benchmarks/index.js",

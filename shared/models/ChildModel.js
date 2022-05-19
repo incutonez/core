@@ -1,15 +1,13 @@
-﻿import {
-  FieldType,
-  Model,
-} from "@incutonez/shared";
+﻿import { Model } from "@incutonez/shared";
 
 export class ChildModel extends Model {
-  get fields() {
+  getDefaultFields() {
     return [{
       name: "name",
+      type: String,
     }, {
       name: "date",
-      type: FieldType.Date,
+      type: Date,
     }];
   }
 }

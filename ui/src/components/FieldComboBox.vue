@@ -88,7 +88,6 @@ import {
   ref,
   unref,
   watch,
-  watchEffect,
 } from "vue";
 import {
   hasTarget,
@@ -103,7 +102,7 @@ import {
   BaseList,
   BaseOverlay,
 } from "ui/index.js";
-import { Collection } from "ui/classes/Collection.js";
+import { Collection } from "@incutonez/shared/src/Collection.js";
 
 /**
  * @property {Number} Above
@@ -115,6 +114,14 @@ export const ComboBoxTagPosition = new Enum({
   Below: "tags-below",
   Inline: "tags-inline",
 });
+const SearchFilter = "searchFilter";
+const SelectionsFilter = "selectionsFilter";
+/**
+ * TODO: We'll need to refactor this to allow for different heights, but right now, we're hardcoding it
+ * to h-36 in field-combo-box-list-wrapper
+ */
+const ListPadding = 8;
+const ListHeight = 144 + ListPadding;
 /**
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
@@ -193,37 +200,44 @@ export default {
     const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
-      let { options } = props;
-      const { filterFn, displayField, idField, groups } = props;
+      const { displayField, idField, groups } = props;
+      let { options, filterFn } = props;
+      if (!options.isCollection) {
+        options = new Collection({
+          idField,
+          displayField,
+          records: options,
+        });
+      }
       const search = unref($search);
+      options.removeFilters([SearchFilter, SelectionsFilter], true);
       if (search) {
-        if (filterFn) {
-          options = filterFn({
-            search,
-            options,
-            displayField,
-            idField,
-          });
-        }
-        else {
+        if (!filterFn) {
           const searchRe = new RegExp(search, "i");
-          options = options.filter((option) => searchRe.test(option[displayField]));
+          filterFn = (option) => searchRe.test(option[displayField]);
         }
+        options.addFilters({
+          id: SearchFilter,
+          fn: filterFn,
+        }, {
+          suppress: true,
+        });
       }
       if (props.multiSelect && props.filterSelections) {
         // TODOJEF: Selections here triggers this entire computed to be called, which is inefficient
         // Really should be using addFilters on the collection
         const selectionValues = unref(selections);
         if (!isEmpty(selectionValues)) {
-          options = options.filter((option) => selectionValues.indexOf(option) === -1);
+          options.addFilters({
+            id: SelectionsFilter,
+            fn: (option) => selectionValues.indexOf(option) === -1,
+          }, {
+            suppress: true,
+          });
         }
       }
-      return new Collection({
-        idField,
-        displayField,
-        groups,
-        records: options,
-      });
+      options.groups = groups;
+      return options;
     });
     const displayValue = computed({
       get() {
@@ -275,10 +289,18 @@ export default {
       if (value) {
         const { inputWrapper } = fieldEl.value;
         const { style: dropdownStyle } = dropdownListEl.value.$el;
-        const boundingRect = inputWrapper.getBoundingClientRect();
-        dropdownStyle.top = `${boundingRect.bottom + 8}px`;
-        dropdownStyle.left = `${boundingRect.left - 2}px`;
-        dropdownStyle.width = `${boundingRect.width + 4}px`;
+        const boundingClientRect = inputWrapper.getBoundingClientRect();
+        const { left, width, bottom } = boundingClientRect;
+        let { top } = boundingClientRect;
+        if (innerHeight < bottom + ListHeight) {
+          top -= ListHeight;
+        }
+        else {
+          top = bottom + ListPadding;
+        }
+        dropdownStyle.top = `${top}px`;
+        dropdownStyle.left = `${left - 2}px`;
+        dropdownStyle.width = `${width + 4}px`;
       }
       emit("update:expanded", value);
     }

@@ -6,36 +6,35 @@ import { ChildModel } from "@incutonez/shared/models/ChildModel.js";
 import { ChildCollection } from "@incutonez/shared/collections/ChildCollection.js";
 
 export class TestModel extends Model {
-  get fields() {
+  getDefaultFields() {
     return [{
       name: "name",
+      type: String,
     }, {
       name: "date",
-      type: FieldType.Date,
+      type: Date,
     }, {
       name: "bool",
-      type: FieldType.Boolean,
+      type: Boolean,
     }, {
       name: "int",
-      type: FieldType.Integer,
+      type: Number,
     }, {
       name: "decimal",
-      type: FieldType.Decimal,
+      type: Number,
     }, {
       name: "array",
-      type: FieldType.Array,
+      type: Array,
     }, {
       name: "collection",
       type: FieldType.Collection,
       model: ChildModel,
     }, {
       name: "collection2",
-      type: FieldType.Collection,
-      collection: ChildCollection,
+      type: ChildCollection,
     }, {
       name: "model",
-      type: FieldType.Model,
-      model: ChildModel,
+      type: ChildModel,
     }];
   }
 

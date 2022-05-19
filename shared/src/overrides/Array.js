@@ -1,21 +1,31 @@
-﻿import { isFunction } from "@incutonez/shared/src/utilities.js";
+﻿import {
+  isEmpty,
+  isFunction,
+  makeArray,
+} from "@incutonez/shared/src/utilities.js";
 
 const proto = Array.prototype;
 
 /**
  * Simplified method for removing an item from an array
- * @param {Function|*} item
+ * @param {Function|Object|Object[]|*} items
  */
-proto.remove = function(item) {
-  let fn = item;
-  if (!isFunction(fn)) {
-    fn = (record) => record === item;
-  }
-  const found = this.findIndex(fn);
-  if (found === -1) {
+proto.remove = function(items) {
+  if (isEmpty(items)) {
     return;
   }
-  this.splice(found, 1);
+  items = makeArray(items);
+  for (const item of items) {
+    let fn = item;
+    if (!isFunction(fn)) {
+      fn = (record) => record === item;
+    }
+    const found = this.findIndex(fn);
+    if (found === -1) {
+      continue;
+    }
+    this.splice(found, 1);
+  }
 };
 
 /**

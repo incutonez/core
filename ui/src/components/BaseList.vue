@@ -50,7 +50,7 @@ import {
   ref,
   watchEffect,
 } from "vue";
-import { Collection } from "ui/classes/Collection.js";
+import { Collection } from "@incutonez/shared/src/Collection.js";
 
 const SelectedCls = "list-item-selected";
 export default {

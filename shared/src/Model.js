@@ -53,54 +53,56 @@ export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "D
  * @param {Field} field
  */
 function parseValue(value, field) {
-  // TODOJEF: Potentially simplify this by passing in the actual class as the type, and using that to instantiate the class
-  switch (field.type) {
-    case FieldType.Integer:
-      value = getValue(parseInteger(value), field, 0);
-      break;
-    case Number:
-    case FieldType.Decimal:
-      value = getValue(parseNumber(value, field.precision), field, 0);
-      break;
-    case Boolean:
-    case FieldType.Boolean:
-      value = getValue(parseBoolean(value), field, false);
-      break;
-    case Date:
-    case FieldType.Date:
-      value = getValue(parseDate(value), field, null);
-      break;
-    case FieldType.Collection:
-      value = field.collection ? new field.collection(value) : new Collection(value, field.model);
-      break;
-    case FieldType.Model:
-      value = new field.model(value);
-      break;
-    case Array:
-    case FieldType.Array:
-      value = parseArray(value);
-      break;
-    case Object:
-    case FieldType.Object:
-      value = getValue(parseObject(value), field, {});
-      break;
-    case String:
-    case FieldType.String:
-      value = getValue(parseString(value), field, "");
-      break;
-    /**
+  const { type } = field;
+  if (isDefined(type)) {
+    // TODO: Potentially remove old FieldTypes that I was using here... use native classes instead
+    switch (type) {
+      case FieldType.Integer:
+        value = getValue(parseInteger(value), field, 0);
+        break;
+      case Number:
+      case FieldType.Decimal:
+        value = getValue(parseNumber(value, field.precision), field, 0);
+        break;
+      case Boolean:
+      case FieldType.Boolean:
+        value = getValue(parseBoolean(value), field, false);
+        break;
+      case Date:
+      case FieldType.Date:
+        value = getValue(parseDate(value), field, null);
+        break;
+      case FieldType.Collection:
+        value = field.collection ? new field.collection(value) : new Collection(value, field.model);
+        break;
+      case FieldType.Model:
+        value = new field.model(value);
+        break;
+      case Array:
+      case FieldType.Array:
+        value = parseArray(value);
+        break;
+      case Object:
+      case FieldType.Object:
+        value = getValue(parseObject(value), field, {});
+        break;
+      case String:
+      case FieldType.String:
+        value = getValue(parseString(value), field, "");
+        break;
+        /**
      * Experimental... use at your own discretion.  The reason why this is experimental is because it
      * can cause recursion if you've got a defaultValue on a model that references itself as the model...
      * it will continually try to create the defaultValue and just keep digging deeper.
      */
-    default:
-      value ??= field.defaultValue;
-      if (!(value instanceof field.type) && isDefined(value)) {
-        value = new field.type(value);
-      }
-      break;
+      default:
+        value ??= field.defaultValue;
+        if (isDefined(value) && !(value instanceof type)) {
+          value = new type(value);
+        }
+        break;
+    }
   }
-
   return value;
 }
 
@@ -114,8 +116,10 @@ function getValue(value, field, defaultValue) {
 export class Model {
   isModel = true;
   _snapshot = null;
+  _fields = null;
 
-  constructor(data = {}) {
+  constructor(data) {
+    data ??= {};
     for (const { name } of this.fields) {
       if (name in data) {
         continue;
@@ -127,12 +131,24 @@ export class Model {
     this.commit();
   }
 
+  getDefaultFields() {
+    return [];
+  }
+
   /**
    * I like the fields as a getter because then you can call super and get the extending fields
    * @returns {Field[]}
    */
   get fields() {
-    return [];
+    let fields = this._fields;
+    if (!fields) {
+      this.fields = fields = this.getDefaultFields();
+    }
+    return fields;
+  }
+
+  set fields(value) {
+    this._fields = value;
   }
 
   /**
@@ -163,6 +179,10 @@ export class Model {
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
       else {
+        this.fields.push({
+          name: key,
+          custom: true,
+        });
         this[key] = data[key];
       }
     }

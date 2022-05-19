@@ -57,6 +57,7 @@ import {
   toRefs,
 } from "vue";
 import { names } from "@incutonez/shared/data/names.js";
+import { Collection } from "@incutonez/shared/src/Collection.js";
 
 export default {
   name: "FieldComboBoxView",
@@ -79,21 +80,28 @@ export default {
         value: name,
       };
     });
+    const displayField = ref("name");
     const state = reactive({
       ComboBoxTagPosition,
       groups,
       displayFields,
       groupField,
       selectedName: [1, 5],
-      listOptions: names,
+      listOptions: new Collection({
+        records: names,
+        displayField,
+        sorters: [{
+          property: displayField.value,
+        }],
+      }),
       tagPosition: ComboBoxTagPosition.Above,
       filterSelections: false,
       multiSelect: true,
-      displayField: "name",
     });
 
     return {
       ...toRefs(state),
+      displayField,
     };
   },
 };
