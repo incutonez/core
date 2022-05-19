@@ -131,6 +131,10 @@ export class Model {
     this.commit();
   }
 
+  getTrackChanges() {
+    return true;
+  }
+
   getDefaultFields() {
     return [];
   }
@@ -164,7 +168,9 @@ export class Model {
    * instead of the previous snapshot.
    */
   commit() {
-    this._snapshot = this.getData();
+    if (this.getTrackChanges()) {
+      this._snapshot = this.getData();
+    }
   }
 
   set(data, reset = false) {

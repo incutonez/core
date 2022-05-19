@@ -316,6 +316,19 @@ export class Collection extends Array {
     return cls;
   }
 
+  clone(options) {
+    const { groups, idField, displayField, sorters, filters, model } = this;
+    return new this.constructor({
+      idField,
+      displayField,
+      groups,
+      sorters,
+      filters,
+      model,
+      records: this.getData(options),
+    });
+  }
+
   getData(options) {
     const data = [];
     this._visited = true;
