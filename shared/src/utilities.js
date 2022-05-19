@@ -120,6 +120,21 @@ export function cloneDeep(value) {
   return parseRaw(JSON.stringify(value));
 }
 
+export function collect(items, keys) {
+  const collection = [];
+  if (isArray(keys)) {
+    items.forEach((item) => {
+      const collect = {};
+      keys.forEach((key) => collect[key] = item[key]);
+      collection.push(collect);
+    });
+  }
+  else {
+    items.forEach((item) => collection.push(item[keys]));
+  }
+  return collection;
+}
+
 export function commonSort(lhs, rhs, identity = -1) {
   if (lhs === rhs) {
     return 0;

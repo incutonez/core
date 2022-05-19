@@ -14,6 +14,10 @@ suite.add("Spread", () => {
   const arr = [];
   arr.push(...data);
 });
+suite.add("Concat", () => {
+  let arr = [];
+  arr = arr.concat(data);
+});
 suite.on("complete", function() {
   console.log(this.filter("fastest").map("name"));
 });

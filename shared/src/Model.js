@@ -1,7 +1,7 @@
 ﻿/**
  * @typedef Field
  * @property {String} name
- * @property {String} [type=String]
+ * @property {String} [type=String|*]
  * @property {Number} [precision=2]
  * This is for type Decimal only... it will set the precision of the decimals to this value.
  * By default, this is 2.
@@ -22,6 +22,8 @@ import {
   parseString,
   Enum,
   Collection,
+  isObject,
+  isDefined,
 } from "@incutonez/shared";
 
 /**
@@ -51,16 +53,20 @@ export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "D
  * @param {Field} field
  */
 function parseValue(value, field) {
+  // TODOJEF: Potentially simplify this by passing in the actual class as the type, and using that to instantiate the class
   switch (field.type) {
     case FieldType.Integer:
       value = getValue(parseInteger(value), field, 0);
       break;
+    case Number:
     case FieldType.Decimal:
       value = getValue(parseNumber(value, field.precision), field, 0);
       break;
+    case Boolean:
     case FieldType.Boolean:
       value = getValue(parseBoolean(value), field, false);
       break;
+    case Date:
     case FieldType.Date:
       value = getValue(parseDate(value), field, null);
       break;
@@ -70,15 +76,28 @@ function parseValue(value, field) {
     case FieldType.Model:
       value = new field.model(value);
       break;
+    case Array:
     case FieldType.Array:
       value = parseArray(value);
       break;
+    case Object:
     case FieldType.Object:
       value = getValue(parseObject(value), field, {});
       break;
+    case String:
     case FieldType.String:
-    default:
       value = getValue(parseString(value), field, "");
+      break;
+    /**
+     * Experimental... use at your own discretion.  The reason why this is experimental is because it
+     * can cause recursion if you've got a defaultValue on a model that references itself as the model...
+     * it will continually try to create the defaultValue and just keep digging deeper.
+     */
+    default:
+      value ??= field.defaultValue;
+      if (!(value instanceof field.type) && isDefined(value)) {
+        value = new field.type(value);
+      }
       break;
   }
 
@@ -94,9 +113,18 @@ function getValue(value, field, defaultValue) {
 
 export class Model {
   isModel = true;
+  _snapshot = null;
 
-  constructor(data) {
-    this.set(data, true);
+  constructor(data = {}) {
+    for (const { name } of this.fields) {
+      if (name in data) {
+        continue;
+      }
+      // Let's make sure we flesh out any values that aren't initially passed in, so they get a default value
+      data[name] = null;
+    }
+    this.set(data);
+    this.commit();
   }
 
   /**
@@ -107,46 +135,81 @@ export class Model {
     return [];
   }
 
-  clear() {
-    this.fields.forEach((field) => {
-      this[field.name] = parseValue(undefined, field);
-    });
+  /**
+   * This will reset the model to the values that were last committed to the record.  When the model
+   * is initially created, it's all of the default values + any values set in the constructor.
+   */
+  reset() {
+    this.set(this._snapshot);
   }
 
-  set(data, clear = false) {
-    if (clear) {
-      this.clear();
-    }
-    if (!data) {
-      return;
+  /**
+   * This will mark any changes as the new original data, so when reset is called, this snapshot is used
+   * instead of the previous snapshot.
+   */
+  commit() {
+    this._snapshot = this.getData();
+  }
+
+  set(data, reset = false) {
+    if (reset) {
+      this.reset();
     }
     for (const key in data) {
       const found = this.fields.find((field) => field.name === key);
+      // If we have a field that was found, let's use the proper way
       if (found) {
         this[found.name] = parseValue(data[found.name], found);
+      }
+      // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
+      else {
+        this[key] = data[key];
       }
     }
   }
 
-  clone() {
-    return new this.constructor(this.getData());
+  clone(options) {
+    return new this.constructor(this.getData(options));
   }
 
-  getData(options = {}) {
+  /**
+   * @param {String[]} include
+   * @param {String[]} exclude
+   * @returns {Object} data
+   */
+  getData({ include, exclude } = {}) {
     const data = {};
-    this.fields.forEach((field) => {
+    // Let's copy the fields because we're potentially modifying them with the include
+    const fields = [...this.fields];
+    if (include) {
+      include.forEach((field) => fields.push({
+        name: field,
+      }));
+    }
+    // Used internally
+    this._visited = true;
+    for (const field of fields) {
       const { name } = field;
+      if (exclude && exclude.indexOf(name) !== -1) {
+        continue;
+      }
       const value = this[name];
       if (value?.isModel || value?.isCollection) {
-        data[name] = value.getData(options);
+        if (!value._visited) {
+          data[name] = value.getData({
+            include,
+            exclude,
+          });
+        }
       }
-      else if (isArray(value)) {
+      else if (isArray(value) || isObject(value)) {
         data[name] = cloneDeep(value);
       }
       else {
         data[name] = value;
       }
-    });
+    }
+    delete this._visited;
     return data;
   }
 }

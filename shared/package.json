@@ -1,6 +1,6 @@
 {
   "name": "@incutonez/shared",
-  "version": "1.0.4",
+  "version": "1.0.14",
   "description": "",
   "main": "src/index.js",
   "type": "module",
