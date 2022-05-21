@@ -311,7 +311,7 @@ export default {
         else {
           top = bottom + ListPadding;
         }
-        dropdownStyle.top = `${top}px`;
+        dropdownStyle.top = `${top + scrollY}px`;
         dropdownStyle.left = `${left - 2}px`;
         dropdownStyle.width = `${width + 4}px`;
       }
