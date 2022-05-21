@@ -238,4 +238,27 @@ export class Model {
     delete this._visited;
     return data;
   }
+
+  static toClassDescription() {
+    const props = [];
+    const record = new this();
+    record.fields.forEach((field) => {
+      let { type } = field;
+      // We have a FieldType
+      if (FieldType.values.includes(type)) {
+        if (type === FieldType.Collection) {
+          type = `Collection<${field.model.name}>`;
+        }
+        else if (type === FieldType.Model) {
+          type = `${field.model.name}`;
+        }
+      }
+      // We have an actual class
+      else {
+        type = type.name;
+      }
+      return props.push(`* @property {${type}} ${field.name}`);
+    });
+    return "/**\n" + props.join("\n") + "\n */";
+  }
 }
