@@ -292,12 +292,16 @@ export class Collection extends Array {
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
   getOptionId(option) {
-    return isArray(option) ? option[GroupDisplay] : option[this.idField];
+    if (option) {
+      return isArray(option) ? option[GroupDisplay] : option[this.idField];
+    }
   }
 
   getOptionDisplay(option) {
-    // If the option is an array, it's assumed it's a collection, and we're accessing the group name
-    return isArray(option) ? option[GroupDisplay] : option[this.displayField];
+    if (option) {
+      // If the option is an array, it's assumed it's a collection, and we're accessing the group name
+      return isArray(option) ? option[GroupDisplay] : option[this.displayField];
+    }
   }
 
   getOptionCls(option, selections) {
