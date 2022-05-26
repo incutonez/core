@@ -4,7 +4,7 @@
       v-for="option in records"
       :key="option.fullPath"
       :class="records.getOptionCls(option, selections)"
-      @click="onClickListItem($event, option, isGrouped)"
+      @mousedown="onMouseDownListItem($event, option, isGrouped)"
     >
       <template v-if="isGrouped">
         <div class="group">
@@ -41,6 +41,14 @@
         </slot>
       </template>
     </li>
+    <slot name="emptyList">
+      <li
+        v-if="!records.length"
+        class="list-item-empty"
+      >
+        No Records
+      </li>
+    </slot>
   </ul>
 </template>
 
@@ -73,7 +81,7 @@ export default {
     const records = ref(null);
     watchEffect(() => {
       const { options } = props;
-      // TODOJEF: Figure out better way to prevent rendering from happening on every click
+      // TODO: Figure out better way to prevent rendering from happening on every click
       // We always want to be dealing with our class, so we can normalize the functionality
       records.value = options?.isCollection ? options : new Collection(options);
     });
@@ -92,7 +100,16 @@ export default {
     function onClickItem(...args) {
       emitClick(args);
     }
-    function onClickListItem(event, option, grouped) {
+
+    /**
+     * The reason we use mousedown instead of click is because we want to prevent the focus from being lost
+     * on the input field, and that can only be done with mousedown... click happens AFTER focus has already
+     * been lost.
+     */
+    function onMouseDownListItem(event, option, grouped) {
+      // We prevent focus from being lost in the parent component
+      event.stopPropagation();
+      event.preventDefault();
       if (grouped) {
         return;
       }
@@ -104,7 +121,7 @@ export default {
       isGrouped,
       idField,
       displayField,
-      onClickListItem,
+      onMouseDownListItem,
       onUpdateSelections,
       onClickItem,
     };
@@ -113,6 +130,10 @@ export default {
 </script>
 
 <style lang="scss">
+.list-item-empty {
+  @apply py-1 px-2 text-gray-400;
+}
+
 .list-item {
   @apply py-1 px-2 hover:bg-slate-300 cursor-pointer;
   &.list-item-selected,

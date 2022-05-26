@@ -14,7 +14,14 @@
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
           :groups="groups"
-        />
+        >
+          <template #listAfter>
+            <div class="flex sticky bottom-0 bg-white border-t border-gray-300">
+              <span>Content after</span>
+              <BaseField />
+            </div>
+          </template>
+        </FieldComboBox>
         <FieldComboBox
           v-model="displayField"
           label="Display Field"
@@ -49,6 +56,7 @@ import {
   ComboBoxTagPosition,
   BaseDialog,
   FieldCheckBox,
+  BaseField,
 } from "ui/index.js";
 import {
   computed,
@@ -62,6 +70,7 @@ import { Collection } from "@incutonez/shared/src/Collection.js";
 export default {
   name: "FieldComboBoxView",
   components: {
+    BaseField,
     FieldCheckBox,
     BaseDialog,
     FieldComboBox,

@@ -26,7 +26,7 @@
           v-model="value"
           class="field-text-input"
           :class="inputCls"
-          @click="onClickField"
+          @mousedown="onMouseDownField"
           @focus="onFocusField"
           @blur="onBlurField"
           @input="onInputField"
@@ -233,7 +233,12 @@ export default {
     });
     const fieldErrors = computed(() => field.errors.value);
     const showErrors = computed(() => field.meta.touched && fieldErrors.value.length);
-    function onClickField(event) {
+
+    /**
+     * We use mousedown here because we want it to be able to veto blurring of the field, and the
+     * only way to do that is if we use mousedown
+     */
+    function onMouseDownField(event) {
       emit("click:field", event);
     }
     function onInputField(event) {
@@ -244,7 +249,6 @@ export default {
       emit("focus:field");
     }
     // We have to make sure that when we lose focus that we parse the value appropriately
-    // TODO: How to prevent this from being called when clicking a combobox list item
     function onBlurField() {
       field.setTouched(true);
       const value = props.parseValue(props.modelValue);
@@ -272,7 +276,7 @@ export default {
       inputEl,
       onBlurField,
       onFocusField,
-      onClickField,
+      onMouseDownField,
       onInputField,
       inputAttrs: props.inputAttrsCfg(props),
     };

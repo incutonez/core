@@ -52,7 +52,6 @@
         v-show="isExpanded"
         ref="dropdownListEl"
         class="field-combo-box-list-wrapper"
-        tabindex="-1"
       >
         <slot
           name="list"
@@ -60,6 +59,7 @@
           :options="optionsAvailable"
           :selections="selections"
         >
+          <slot name="listBefore" />
           <BaseList
             :selections="selections"
             :options="optionsAvailable"
@@ -75,6 +75,7 @@
               />
             </template>
           </BaseList>
+          <slot name="listAfter" />
         </slot>
       </BaseOverlay>
     </template>
@@ -93,6 +94,7 @@ import {
   isArray,
   isEmpty,
   Enum,
+  makeArray,
 } from "@incutonez/shared";
 import {
   BaseField,
@@ -134,7 +136,7 @@ export default {
     BaseItems,
     BaseField,
   },
-  emits: ["update:expanded", "update:modelValue"],
+  emits: ["update:expanded", "update:modelValue", "update:selected"],
   props: {
     modelValue: {
       type: [String, Number, Array],
@@ -199,8 +201,8 @@ export default {
     const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
     const optionsAvailable = computed(() => {
-      const { idField, groups } = props;
-      let { options, filterFn, displayField } = props;
+      const { groups } = props;
+      let { options, filterFn, displayField, idField } = props;
       /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
        * cause side effects elsewhere... we need our own copy for this component */
       if (options.isCollection) {
@@ -212,6 +214,9 @@ export default {
       // If this is explicitly set, we prefer it
       if (idField) {
         options.idField = idField;
+      }
+      else {
+        idField = options.idField;
       }
       // If this is explicitly set, we prefer it
       if (displayField) {
@@ -235,13 +240,21 @@ export default {
         });
       }
       if (props.multiSelect && props.filterSelections) {
-        // TODOJEF: Selections here triggers this entire computed to be called, which is inefficient
-        // Really should be using addFilters on the collection
+        // TODO: Selections here triggers this entire computed to be called, which is inefficient
         const selectionValues = unref(selections);
         if (!isEmpty(selectionValues)) {
           options.addFilters({
             id: SelectionsFilter,
-            fn: (option) => selectionValues.indexOf(option) === -1,
+            fn: (option) => {
+              let include = true;
+              for (const selection of selectionValues) {
+                if (selection[idField] === option[idField]) {
+                  include = false;
+                  break;
+                }
+              }
+              return include;
+            },
           }, {
             suppress: true,
           });
@@ -273,7 +286,7 @@ export default {
       if (isEmpty(modelValue)) {
         return selections;
       }
-      modelValue = isArray(modelValue) ? modelValue : [modelValue];
+      modelValue = makeArray(modelValue);
       modelValue.forEach((selectedValue) => {
         const foundOption = props.options?.find((option) => option[idField] === selectedValue);
         if (foundOption) {
@@ -282,8 +295,10 @@ export default {
       });
       return selections;
     }
+    // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
     watch(() => props.modelValue, (() => {
       selections.value = getSelections();
+      emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
     }), {
       immediate: true,
     });
@@ -332,8 +347,14 @@ export default {
         remove: true,
       });
     }
-    function onClickField() {
+    /**
+     * There is one minor bug in this implementation, and that's if another combobox is clicked to expand,
+     * the previous one doesn't collapse... I'm not sure how to fix this, as we prevent the bubbling when
+     * it's clicked
+     */
+    function onClickField(event) {
       updateExpanded();
+      event.stopPropagation();
     }
     /**
      * When the user does any sort of input for the single select, we need to update
@@ -368,13 +389,10 @@ export default {
         remove: true,
       });
     }
+
     function onMouseDownDocument(event) {
       const { target } = event;
-      if (isExpanded.value && hasTarget(dropdownListEl.value.$el, target)) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-      else if (!hasTarget(fieldEl.value.$el, target)) {
+      if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
         blurField();
       }
     }
@@ -435,6 +453,8 @@ export default {
       optionsAvailable,
       displayFieldFm,
       isTagVisible,
+      // Exposed for access by the dev
+      getSelections,
       onClickPicker,
       onClickField,
       onInputField,
