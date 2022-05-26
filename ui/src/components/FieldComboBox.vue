@@ -14,17 +14,14 @@
     <template #beforeItems>
       <div v-if="multiSelect">
         <slot name="itemsDisplay">
-          <template
+          <BaseItems
             v-for="(selection, index) in selections"
-            :key="selection[displayFieldFm]"
+            v-show="isTagVisible(selection, index)"
+            :key="selection[optionsAvailable.idField]"
+            @remove:selection="onClickItemRemove(selection)"
           >
-            <BaseItems
-              v-show="isTagVisible(selection, index)"
-              @remove:selection="onClickItemRemove(selection)"
-            >
-              {{ selection[displayFieldFm] }}
-            </BaseItems>
-          </template>
+            {{ selection[displayFieldFm] }}
+          </BaseItems>
         </slot>
         <div
           v-show="showExpandTags"

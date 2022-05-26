@@ -210,7 +210,7 @@ export class Collection extends Array {
   }
 
   sort(sorters = this.sorters, recordSort = true) {
-    if (!sorters) {
+    if (!sorters || this._suspended) {
       return;
     }
     sorters = makeArray(sorters);
@@ -386,12 +386,13 @@ export class Collection extends Array {
 
   set records(value) {
     const records = [];
+    const { model } = this;
     value.forEach((item) => {
       if (item.isModel) {
         records.push(item);
       }
       else {
-        records.push(new this.model(item));
+        records.push(new model(item));
       }
     });
     this._records = records;

@@ -75,6 +75,9 @@ export function parseBoolean(value) {
   if (isBoolean(value)) {
     return value;
   }
+  if (!isDefined(value)) {
+    return value;
+  }
   if (value === "false" || value === "0") {
     return false;
   }

@@ -117,6 +117,7 @@ export class Model {
   isModel = true;
   _snapshot = null;
   _fields = null;
+  _trackChanges = false;
 
   constructor(data) {
     data ??= {};
@@ -128,11 +129,15 @@ export class Model {
       data[name] = null;
     }
     this.set(data);
-    this.commit();
   }
 
-  getTrackChanges() {
-    return true;
+  get TrackChanges() {
+    return this._trackChanges;
+  }
+
+  set TrackChanges(value) {
+    this._trackChanges = value;
+    this.commit();
   }
 
   getDefaultFields() {
@@ -168,8 +173,11 @@ export class Model {
    * instead of the previous snapshot.
    */
   commit() {
-    if (this.getTrackChanges()) {
+    if (this.TrackChanges) {
       this._snapshot = this.getData();
+    }
+    else {
+      delete this._snapshot;
     }
   }
 
