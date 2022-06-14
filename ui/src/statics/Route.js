@@ -9,4 +9,5 @@ export default {
   Percent: `${FieldRoute}/percent`,
   Text: `${FieldRoute}/text`,
   CheckBox: `${FieldRoute}/checkBox`,
+  WizardSteps: "/wizardSteps",
 };

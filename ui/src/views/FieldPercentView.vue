@@ -1,6 +1,6 @@
 ﻿<template>
   <BaseDialog
-    title="Field Currency"
+    title="Field Percent"
     class="header-blue"
   >
     <template #body>

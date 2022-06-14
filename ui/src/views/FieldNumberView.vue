@@ -1,6 +1,6 @@
 ﻿<template>
   <BaseDialog
-    title="Field Currency"
+    title="Field Number"
     class="header-blue"
   >
     <template #body>
