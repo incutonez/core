@@ -23,7 +23,7 @@
 import {
   BaseDialog,
   BaseField,
-} from "ui/index.js";
+} from "ui/index";
 import {
   reactive,
   toRefs,

@@ -2,7 +2,7 @@
 import "@fontsource/open-sans";
 import "@incutonez/shared/src/overrides/index.js";
 import "ui/rules.js";
-import Icon from "ui/statics/Icon.js";
+import Icon from "ui/statics/Icon";
 import { OverlayManager } from "ui/components/OverlayManager.js";
 import {
   mouseDownDocument,

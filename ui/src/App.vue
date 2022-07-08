@@ -46,7 +46,7 @@ import {
 import {
   BaseButton,
   BaseButtonMenu,
-} from "ui/index.js";
+} from "ui/index";
 import Route from "ui/statics/Route.js";
 import {
   computed,

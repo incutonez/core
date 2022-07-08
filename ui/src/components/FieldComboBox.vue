@@ -99,7 +99,7 @@ import {
   BaseItems,
   BaseList,
   BaseOverlay,
-} from "ui/index.js";
+} from "ui/index";
 import { Collection } from "@incutonez/shared/src/Collection.js";
 
 /**

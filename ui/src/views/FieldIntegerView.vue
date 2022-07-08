@@ -31,7 +31,7 @@ import {
   BaseDialog,
   FieldInteger,
   FieldLabelAlign,
-} from "ui/index.js";
+} from "ui/index";
 import FieldComboBox from "ui/components/FieldComboBox.vue";
 
 export default {

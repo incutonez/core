@@ -23,7 +23,7 @@ import {
 import {
   BaseDialog,
   FieldNumber,
-} from "ui/index.js";
+} from "ui/index";
 
 export default {
   name: "FieldNumberView",

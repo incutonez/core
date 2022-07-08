@@ -1,4 +1,6 @@
 ﻿{
+  // Need this parser for SFC
+  "parser": "vue-eslint-parser",
   "extends": [
     "eslint:recommended",
     "plugin:vue/vue3-strongly-recommended"
@@ -9,6 +11,8 @@
     "node": true
   },
   "parserOptions": {
+    // This parser means it parses script tags only, per https://www.npmjs.com/package/vue-eslint-parser
+    "parser": "@typescript-eslint/parser",
     "sourceType": "module",
     "ecmaVersion": "latest"
   },

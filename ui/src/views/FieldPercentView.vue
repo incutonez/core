@@ -23,7 +23,7 @@ import {
 import {
   BaseDialog,
   FieldPercent,
-} from "ui/index.js";
+} from "ui/index";
 
 export default {
   name: "FieldPercentView",

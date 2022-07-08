@@ -67,7 +67,7 @@ import { parseString, Enum } from "@incutonez/shared";
 import {
   BaseLabel,
   BaseIcon,
-} from "ui/index.js";
+} from "ui/index";
 
 /**
  * @property {String} Left

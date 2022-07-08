@@ -27,7 +27,7 @@ import {
 } from "vue";
 import {
   BaseIcon,
-} from "ui/index.js";
+} from "ui/index";
 
 export default {
   name: "BaseButton",
@@ -41,8 +41,8 @@ export default {
       default: "",
     },
     icon: {
-      type: String,
-      default: "",
+      type: [String, Object],
+      default: null,
     },
     toggleable: {
       type: Boolean,
@@ -108,21 +108,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .base-button {
-  .base-button-text {
-    @apply flex;
+  &.default,
+  &.danger,
+  &.toolbar {
+    @apply relative px-2 py-0.5 shadow-sm;
+
+    .base-button-text {
+      @apply flex text-sm uppercase;
+    }
   }
 
   &.default {
-    @apply relative bg-blue-200 hover:bg-blue-300 px-2 py-0.5 shadow-sm;
+    @apply bg-blue-200 hover:bg-blue-300;
 
     &.toggled,
     &:focus-within {
       @apply bg-blue-400;
     }
+  }
+  &.toolbar {
+    @apply bg-slate-700 hover:bg-slate-800 text-white;
 
-    .base-button-text {
-      @apply text-sm uppercase;
+    &.toggled,
+    &:focus-within {
+      @apply bg-slate-900;
+    }
+  }
+  &.danger {
+    @apply bg-red-700 hover:bg-red-800 text-white;
+
+    &.toggled,
+    &:focus-within {
+      @apply bg-red-900;
     }
   }
 

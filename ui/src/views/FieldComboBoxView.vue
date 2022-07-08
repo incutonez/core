@@ -57,7 +57,7 @@ import {
   BaseDialog,
   FieldCheckBox,
   BaseField,
-} from "ui/index.js";
+} from "ui/index";
 import {
   computed,
   reactive,

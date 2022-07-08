@@ -18,7 +18,7 @@
 import {
   BaseDialog,
   FieldCheckBox,
-} from "ui/index.js";
+} from "ui/index";
 import { ref } from "vue";
 
 export default {

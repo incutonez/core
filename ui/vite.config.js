@@ -39,14 +39,14 @@ export default defineConfig(({ mode }) => {
     baseConfig.plugins.push(cssInjectedByJsPlugin());
     baseConfig.build = {
       lib: {
-        entry: "src/index.js",
+        entry: "src/index.ts",
         formats: ["es"],
       },
       rollupOptions: {
         external: ["vue", "vue-router"],
         input: {
           "CoreUI": "src/core.js",
-          "index": "src/index.js",
+          "index": "src/index.ts",
           "tailwind.config": "tailwind.config.js",
         },
         output: {

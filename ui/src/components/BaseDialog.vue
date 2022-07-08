@@ -42,7 +42,7 @@
 import {
   BaseIcon,
   BaseOverlay,
-} from "ui/index.js";
+} from "ui/index";
 import {
   computed,
   ref,

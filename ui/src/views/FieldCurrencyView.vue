@@ -22,7 +22,7 @@ import {
 import {
   BaseDialog,
   FieldCurrency,
-} from "ui/index.js";
+} from "ui/index";
 
 export default {
   name: "FieldCurrencyView",

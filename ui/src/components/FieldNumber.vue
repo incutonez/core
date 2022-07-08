@@ -29,7 +29,7 @@ import {
 import {
   parseNumber,
 } from "@incutonez/shared";
-import { BaseField } from "ui/index.js";
+import { BaseField } from "ui/index";
 
 export default {
   name: "FieldNumber",

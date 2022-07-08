@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { FieldNumber } from "ui/index.js";
+import { FieldNumber } from "ui/index";
 
 export default {
   name: "FieldCurrency",

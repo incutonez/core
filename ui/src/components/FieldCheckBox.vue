@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { BaseField } from "ui/index.js";
+import { BaseField } from "ui/index";
 import { parseBoolean } from "@incutonez/shared";
 
 export default {

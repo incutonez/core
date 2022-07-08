@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { BaseIcon } from "ui/index.js";
+import { BaseIcon } from "ui/index";
 
 export default {
   name: "BaseItems",

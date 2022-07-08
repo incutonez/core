@@ -33,7 +33,7 @@
 <script>
 import {
   BaseDialog,
-} from "ui/index.js";
+} from "ui/index";
 import WizardStep, { StepState } from "ui/components/WizardStep.vue";
 import {
   reactive,
