@@ -43,10 +43,10 @@ export default {
       value: "John",
     });
     function onChangeValidity() {
-      console.log("onChangeValidity");
+      console.info("onChangeValidity");
     }
     function onChangeDirty() {
-      console.log("onChangeDirty");
+      console.info("onChangeDirty");
     }
 
     return {

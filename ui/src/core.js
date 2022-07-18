@@ -8,6 +8,7 @@ import {
   mouseDownDocument,
   scrollDocument,
 } from "ui/directives/document.js";
+import { visible } from "ui/directives/component";
 
 /**
  * Current issue is that I want a global manager component, but I don't want all of the apps to have to
@@ -19,6 +20,7 @@ export default {
     const overlayManager = new OverlayManager();
     app.provide("OverlayManager", overlayManager);
     app.config.globalProperties.Icon = Icon;
+    app.directive("visible", visible);
     app.directive("mousedown-document", mouseDownDocument);
     app.directive("scroll-document", scrollDocument);
   },

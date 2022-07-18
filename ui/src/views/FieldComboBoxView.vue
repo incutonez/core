@@ -14,9 +14,10 @@
           :filter-selections="filterSelections"
           :multi-select="multiSelect"
           :groups="groups"
+          list-height="16rem"
         >
           <template #listAfter>
-            <div class="flex sticky bottom-0 bg-white border-t border-gray-300">
+            <div class="flex sticky bottom-0 p-2 bg-white border-t border-gray-300">
               <span>Content after</span>
               <BaseField />
             </div>
@@ -31,6 +32,7 @@
           v-model="groupField"
           :options="displayFields"
           label="Group By"
+          list-height="auto"
         />
         <FieldCheckBox
           v-model="multiSelect"
@@ -44,6 +46,7 @@
           v-model="tagPosition"
           :options="ComboBoxTagPosition.options"
           label="Tag Position"
+          list-height="auto"
         />
       </section>
     </template>

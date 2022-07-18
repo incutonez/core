@@ -46,9 +46,10 @@
         @click="onClickPicker"
       />
       <BaseOverlay
-        v-show="isExpanded"
         ref="dropdownListEl"
+        v-visible="isExpanded"
         class="field-combo-box-list-wrapper"
+        :style="dropdownListStyle"
       >
         <slot
           name="list"
@@ -119,7 +120,6 @@ const SelectionsFilter = "selectionsFilter";
  * to h-36 in field-combo-box-list-wrapper
  */
 const ListPadding = 8;
-const ListHeight = 144 + ListPadding;
 /**
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
@@ -187,6 +187,10 @@ export default {
       type: Function,
       default: null,
     },
+    listHeight: {
+      type: String,
+      default: "144px",
+    },
   },
   setup(props, { emit }) {
     const fieldEl = ref(null);
@@ -197,6 +201,11 @@ export default {
     const selections = ref(null);
     const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
     const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
+    const dropdownListStyle = computed(() => {
+      return {
+        height: props.listHeight,
+      };
+    });
     const optionsAvailable = computed(() => {
       const { groups } = props;
       let { options, filterFn, displayField, idField } = props;
@@ -313,12 +322,14 @@ export default {
       isExpanded.value = value;
       if (value) {
         const { inputWrapper } = fieldEl.value;
-        const { style: dropdownStyle } = dropdownListEl.value.$el;
+        const $dropdownListEl = dropdownListEl.value.$el;
+        const { style: dropdownStyle } = $dropdownListEl;
+        const { height } = $dropdownListEl.getBoundingClientRect();
         const boundingClientRect = inputWrapper.getBoundingClientRect();
         const { left, width, bottom } = boundingClientRect;
         let { top } = boundingClientRect;
-        if (innerHeight < bottom + ListHeight) {
-          top -= ListHeight;
+        if (innerHeight < bottom + height + ListPadding) {
+          top -= height;
         }
         else {
           top = bottom + ListPadding;
@@ -344,14 +355,8 @@ export default {
         remove: true,
       });
     }
-    /**
-     * There is one minor bug in this implementation, and that's if another combobox is clicked to expand,
-     * the previous one doesn't collapse... I'm not sure how to fix this, as we prevent the bubbling when
-     * it's clicked
-     */
-    function onClickField(event) {
+    function onClickField() {
       updateExpanded();
-      event.stopPropagation();
     }
     /**
      * When the user does any sort of input for the single select, we need to update
@@ -449,6 +454,7 @@ export default {
       componentCls,
       optionsAvailable,
       displayFieldFm,
+      dropdownListStyle,
       isTagVisible,
       // Exposed for access by the dev
       getSelections,

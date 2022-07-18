@@ -3,8 +3,8 @@
     ref="element"
     class="base-button"
     :class="elementCls"
-    @mousedown="onMouseDownButton"
-    @mouseup="onMouseUpButton"
+    @pointerdown="onMouseDownButton"
+    @pointerup="onMouseUpButton"
   >
     <slot name="icon">
       <BaseIcon
