@@ -1,12 +1,13 @@
 ﻿<template>
-  <div
+  <article
     ref="root"
     class="tooltip-base"
+    :class="tooltipCls"
   >
     <slot>
       {{ value }}
     </slot>
-  </div>
+  </article>
 </template>
 
 <script>
@@ -19,17 +20,17 @@ import {
 import { Enum } from "@incutonez/shared";
 
 /**
- * @property {String} RIGHT_MIDDLE
- * @property {String} RIGHT_TOP
- * @property {String} RIGHT_BOTTOM
- * @property {String} MIDDLE
- * @property {String} MIDDLE_TOP
- * @property {String} MIDDLE_BOTTOM
- * @property {String} LEFT_MIDDLE
- * @property {String} LEFT_TOP
- * @property {String} LEFT_BOTTOM
+ * @property {String} RightMiddle
+ * @property {String} RightTop
+ * @property {String} RightBottom
+ * @property {String} Middle
+ * @property {String} MiddleTop
+ * @property {String} MiddleBottom
+ * @property {String} LeftMiddle
+ * @property {String} LeftTop
+ * @property {String} LeftBottom
  */
-export const TooltipPositions = new Enum(["right-middle", "right-top", "right-bottom", "middle", "middle-top", "middle-bottom", "left-middle", "left-top", "left-bottom"], false);
+export const TooltipPosition = new Enum(["right-middle", "right-top", "right-bottom", "middle", "middle-top", "middle-bottom", "left-middle", "left-top", "left-bottom"], false);
 
 export default {
   name: "BaseTooltip",
@@ -40,81 +41,60 @@ export default {
     },
     position: {
       type: String,
-      default: TooltipPositions.RIGHT_MIDDLE,
-    },
-    margin: {
-      type: Number,
-      default: 4,
+      default: TooltipPosition.RightMiddle,
     },
   },
   setup(props) {
     const root = ref(null);
+    const tooltipCls = ref();
     function reposition() {
       const rootEl = unref(root);
       if (!rootEl) {
         return;
       }
-      const { style } = rootEl;
-      const { height, width } = rootEl.getBoundingClientRect();
-      const { height: parentHeight, width: parentWidth } = rootEl.parentNode.getBoundingClientRect();
-      // Must unset the previous values
-      let top = null;
-      let bottom = null;
-      let left = null;
-      let right = null;
+      let cls;
       switch (props.position) {
-        case TooltipPositions.LEFT_TOP:
-          bottom = `${parentHeight + props.margin}px`;
-          right = `${parentWidth + props.margin}px`;
+        case TooltipPosition.LeftTop:
+          // TODO: Impl
           break;
-        case TooltipPositions.LEFT_MIDDLE:
-          top = `${-(height / 2 - parentHeight / 2)}px`;
-          right = `${parentWidth + props.margin}px`;
+        case TooltipPosition.LeftMiddle:
+          cls = "middle-left left";
           break;
-        case TooltipPositions.LEFT_BOTTOM:
-          top = `${parentHeight + props.margin}px`;
-          right = `${parentWidth + props.margin}px`;
+        case TooltipPosition.LeftBottom:
+          // TODO: Impl
           break;
-        case TooltipPositions.MIDDLE:
-          top = `${-(height / 2 - parentHeight / 2)}px`;
-          right = `${-(width / 2 - parentWidth / 2)}px`;
+        case TooltipPosition.Middle:
+          // TODO: Impl
           break;
-        case TooltipPositions.MIDDLE_TOP:
-          bottom = `${(parentHeight + props.margin)}px`;
-          right = `${-(width / 2 - parentWidth / 2)}px`;
+        case TooltipPosition.MiddleTop:
+          cls = "middle-top top";
           break;
-        case TooltipPositions.MIDDLE_BOTTOM:
-          top = `${(parentHeight + props.margin)}px`;
-          right = `${-(width / 2 - parentWidth / 2)}px`;
+        case TooltipPosition.MiddleBottom:
+          cls = "middle-bottom bottom";
           break;
-        case TooltipPositions.RIGHT_TOP:
-          bottom = `${parentHeight + props.margin}px`;
-          left = `${parentWidth + props.margin}px`;
+        case TooltipPosition.RightTop:
+          // TODO: Impl
           break;
-        case TooltipPositions.RIGHT_BOTTOM:
-          top = `${parentHeight + props.margin}px`;
-          left = `${parentWidth + props.margin}px`;
+        case TooltipPosition.RightBottom:
+          // TODO: Impl
           break;
-        case TooltipPositions.RIGHT_MIDDLE:
+        case TooltipPosition.RightMiddle:
         default:
-          top = `${-(height / 2 - parentHeight / 2)}px`;
-          left = `${parentWidth + props.margin}px`;
+          cls = "middle-right right";
           break;
       }
-      style.top = top;
-      style.right = right;
-      style.bottom = bottom;
-      style.left = left;
+      tooltipCls.value = cls;
     }
     onUpdated(() => {
       reposition();
     });
     onMounted(() => {
       reposition();
-      root.value.parentNode.classList.add("cursor-help", "group");
+      root.value.parentNode.classList.add("cursor-help", "group", "relative");
     });
     return {
       root,
+      tooltipCls,
     };
   },
 };
@@ -122,6 +102,65 @@ export default {
 
 <style scoped lang="scss">
 .tooltip-base {
-  @apply cursor-help invisible group-hover:visible absolute border drop-shadow w-32 z-10 bg-white p-2 text-sm text-black font-normal font-sans;
+  @apply rounded cursor-help invisible group-hover:visible absolute border drop-shadow w-32 z-10 bg-white p-2 text-sm text-black font-normal font-sans;
+}
+.tooltip-base::after {
+  @apply border-white absolute h-0 w-0 content-[''];
+}
+.tooltip-base.top,
+.tooltip-base.bottom {
+  &::after {
+    border-right: 1rem solid transparent;
+    border-left: 1rem solid transparent;
+  }
+}
+.tooltip-base.right,
+.tooltip-base.left {
+  &::after {
+    border-top: 1rem solid transparent;
+    border-bottom: 1rem solid transparent;
+  }
+}
+.middle-bottom {
+  @apply left-1/2;
+  top: calc(100% + 1rem);
+  transform: translate(-50%, 0%);
+
+  &::after {
+    @apply left-1/2 -top-4;
+    border-bottom-width: 1rem;
+    transform: translate(-50%, 0);
+  }
+}
+.middle-top {
+  @apply -top-4 left-1/2;
+  transform: translate(-50%, -100%);
+
+  &::after {
+    @apply left-1/2;
+    top: calc(100% - 1rem);
+    border-top-width: 1rem;
+    transform: translate(-50%, 100%);
+  }
+}
+.middle-right {
+  @apply left-full top-1/2;
+  transform: translate(1rem, -50%);
+
+  &::after {
+    @apply -left-4 top-1/2;
+    border-right-width: 1rem;
+    transform: translate(0%, -50%);
+  }
+}
+.middle-left {
+  @apply -left-4 top-1/2;
+  transform: translate(-100%, -50%);
+
+  &::after {
+    @apply left-full top-1/2;
+    border-left-width: 1rem;
+    transform: translate(0%, -50%);
+  }
 }
 </style>

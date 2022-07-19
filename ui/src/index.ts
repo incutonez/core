@@ -1,6 +1,6 @@
 ﻿export { default as Icon } from "ui/statics/Icon";
 export { default as BaseOverlay } from "ui/components/BaseOverlay.vue";
-export { default as BaseTooltip, TooltipPositions } from "ui/components/BaseTooltip.vue";
+export { default as BaseTooltip, TooltipPosition } from "ui/components/BaseTooltip.vue";
 export { default as BaseLabel } from "ui/components/BaseLabel.vue";
 export { default as BaseList } from "ui/components/BaseList.vue";
 

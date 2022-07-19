@@ -25,16 +25,32 @@
         />
       </template>
     </DialogConfirm>
+    <BaseButton>
+      Hi
+      <BaseTooltip :position="TooltipPosition.MiddleBottom">
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+        <div>Hello World!</div>
+      </BaseTooltip>
+    </BaseButton>
   </article>
 </template>
 
 <script>
-import { DialogConfirm, BaseButton } from "ui/index";
+import { DialogConfirm, BaseButton, BaseTooltip, TooltipPosition } from "ui/index";
 import { ref } from "vue";
 
 export default {
   name: "HomeView",
   components: {
+    BaseTooltip,
     DialogConfirm,
     BaseButton,
   },
@@ -45,6 +61,7 @@ export default {
     }
 
     return {
+      TooltipPosition,
       showDialog,
       onClickShowModal,
     };

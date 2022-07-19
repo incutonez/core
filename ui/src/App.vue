@@ -1,7 +1,7 @@
 <template>
-  <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
-    <RouterView v-slot="{ Component }">
-      <KeepAlive :include="cachedDialogs">
+  <RouterView v-slot="{ Component }">
+    <KeepAlive :include="cachedDialogs">
+      <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
         <Component
           :is="Component"
           :key="route.fullPath"
@@ -9,9 +9,9 @@
           @click:close="onClickCloseDialog"
           @click:minimize="onClickMinimizeDialog"
         />
-      </KeepAlive>
-    </RouterView>
-  </main>
+      </main>
+    </KeepAlive>
+  </RouterView>
   <footer class="box-border flex items-stretch bg-slate-700">
     <BaseButtonMenu
       text="Start"
