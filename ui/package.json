@@ -24,26 +24,28 @@
     "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx jest"
   },
   "dependencies": {
-    "@fontsource/open-sans": "^4.5.8",
-    "@incutonez/shared": "^1.0.3",
-    "@vee-validate/i18n": "^4.5.11",
-    "vee-validate": "^4.5.11",
-    "vue": "^3.2.33",
-    "vue-router": "^4.0.14"
+    "@fontsource/open-sans": "^4.5.12",
+    "@incutonez/shared": "^1.1.6",
+    "@vee-validate/i18n": "^4.6.10",
+    "vee-validate": "^4.6.10",
+    "vue": "^3.2.40",
+    "vue-router": "^4.1.5"
   },
   "devDependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@faker-js/faker": "^7.5.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
-    "@typescript-eslint/parser": "^5.30.5",
-    "@vitejs/plugin-vue": "^2.3.1",
-    "autoprefixer": "^10.4.5",
-    "eslint-plugin-tailwindcss": "^3.5.0",
-    "postcss": "^8.4.12",
-    "sass": "^1.51.0",
-    "tailwindcss": "^3.0.24",
-    "typescript": "^4.7.4",
-    "vite": "^2.9.6",
-    "vite-plugin-css-injected-by-js": "^1.4.0",
-    "vue-eslint-parser": "^9.0.3"
+    "@typescript-eslint/parser": "^5.39.0",
+    "@vitejs/plugin-vue": "^3.1.2",
+    "@vueuse/core": "^9.3.0",
+    "autoprefixer": "^10.4.12",
+    "eslint-plugin-tailwindcss": "^3.6.2",
+    "postcss": "^8.4.17",
+    "sass": "^1.55.0",
+    "tailwindcss": "^3.1.8",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.4",
+    "vite-plugin-css-injected-by-js": "^2.1.0",
+    "vue-eslint-parser": "^9.1.0"
   }
 }

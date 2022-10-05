@@ -10,4 +10,5 @@ export default {
   Text: `${FieldRoute}/text`,
   CheckBox: `${FieldRoute}/checkBox`,
   WizardSteps: "/wizardSteps",
+  InfiniteScroll: "/infiniteScroll",
 };

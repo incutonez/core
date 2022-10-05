@@ -108,7 +108,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .base-button {
   &.default,
   &.danger,

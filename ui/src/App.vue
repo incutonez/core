@@ -1,7 +1,7 @@
 <template>
   <RouterView v-slot="{ Component }">
     <KeepAlive :include="cachedDialogs">
-      <main class="flex overflow-auto flex-col flex-1 bg-slate-800">
+      <main class="flex flex-1 flex-col overflow-auto bg-slate-800">
         <Component
           :is="Component"
           :key="route.fullPath"
@@ -20,12 +20,12 @@
       :options="ComponentList"
       @click:item="onClickStartItem"
     />
-    <section class="flex flex-1 mx-2 space-x-2">
+    <section class="mx-2 flex flex-1 space-x-2">
       <BaseButton
         v-for="dialog in activeDialogs"
         :key="dialog.name"
         :text="dialog.name"
-        class="px-2 hover:bg-slate-600 border-b-2 border-gray-300"
+        class="border-b-2 border-gray-300 px-2 hover:bg-slate-600"
         :class="dialog.activeCls"
         @click="onClickToggleDialog(dialog)"
       />

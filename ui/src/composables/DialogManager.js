@@ -26,10 +26,11 @@ export function useDialogManager() {
     else {
       dialog = activeDialogs.find((dialog) => dialog.fullPath === fullPath);
       if (!dialog) {
-        const { name } = current.matched.flatMap(({ components }) => Object.values(components))[0];
+        // script setup doesn't expose a name property, but __name has the value, so it's a fallback
+        const { name, __name } = current.matched.flatMap(({ components }) => Object.values(components))[0];
         dialog = {
           fullPath,
-          name,
+          name: name || __name,
         };
         activeDialogs.push(dialog);
       }
