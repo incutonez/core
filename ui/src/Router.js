@@ -12,7 +12,7 @@ import FieldPercentView from "ui/views/FieldPercentView.vue";
 import FieldTextView from "ui/views/FieldTextView.vue";
 import FieldCheckboxView from "ui/views/FieldCheckboxView.vue";
 import WizardStepsView from "ui/views/WizardStepsView.vue";
-import ViewInfiniteScroll from "ui/views/ViewInfiniteScroll.vue";
+import ViewVirtualScroll from "ui/views/ViewVirtualScroll.vue";
 
 export const Router = createRouter({
   history: createWebHashHistory(),
@@ -44,7 +44,7 @@ export const Router = createRouter({
     path: Route.WizardSteps,
     component: WizardStepsView,
   }, {
-    path: Route.InfiniteScroll,
-    component: ViewInfiniteScroll,
+    path: Route.VirtualScroll,
+    component: ViewVirtualScroll,
   }],
 });
