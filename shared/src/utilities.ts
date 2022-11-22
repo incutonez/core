@@ -148,3 +148,8 @@ export function commonSort(lhs: string | number | Date, rhs: string | number | D
   }
   return lhs < rhs ? identity : -1 * identity;
 }
+
+// Taken from https://stackoverflow.com/a/46320004/1253609
+export function isConstructor(obj: any) {
+  return !!obj.prototype && !!obj.prototype.constructor.name;
+}

@@ -1,4 +1,4 @@
-﻿import "./overrides/index.js";
+﻿import "./overrides/index";
 
 export * from "./utilities";
 export * from "./Enum";

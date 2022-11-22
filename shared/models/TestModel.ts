@@ -1,11 +1,15 @@
-﻿import {
-  FieldType,
-  Model,
-} from "@incutonez/shared";
-import { ChildModel } from "@incutonez/shared/models/ChildModel.js";
-import { ChildCollection } from "@incutonez/shared/collections/ChildCollection.js";
+﻿import { Model } from "@incutonez/shared";
+import { ChildModel } from "@incutonez/shared/models/ChildModel";
+import { ChildCollection } from "@incutonez/shared/collections/ChildCollection";
+import type { IModelField } from "ui/interfaces";
+import { EnumFieldType } from "ui/Enums";
+import { Collection } from "ui/Collection";
 
 export class TestModel extends Model {
+  name = "";
+  _date?: Date;
+  collection?: Collection;
+
   getDefaultFields() {
     return [{
       name: "name",
@@ -27,7 +31,7 @@ export class TestModel extends Model {
       type: Array,
     }, {
       name: "collection",
-      type: FieldType.Collection,
+      type: EnumFieldType.Collection,
       model: ChildModel,
     }, {
       name: "collection2",
@@ -35,14 +39,14 @@ export class TestModel extends Model {
     }, {
       name: "model",
       type: ChildModel,
-    }];
+    }] as IModelField[];
   }
 
-  set date(value) {
+  set date(value: Date) {
     this._date = value;
   }
 
-  get date() {
+  get date(): any {
     return this._date?.getQuarterEnd().toMMDDYYYY();
   }
 

@@ -1,5 +1,5 @@
 ﻿import { GroupKey } from "./Collection";
-import { EnumFieldType } from "./Enums";
+import { ClassField } from "./Enums";
 
 declare global {
   interface String {
@@ -14,13 +14,13 @@ declare global {
   }
 
   interface Date {
-    getWeekStart(config: IDateConfig): Date;
-    getMonthStart(config: IDateConfig): Date;
-    getMonthEnd(config: IDateConfig): Date;
-    getYearStart(config: IDateConfig): Date;
-    getYearEnd(config: IDateConfig): Date;
-    getQuarterStart(config: IDateConfig): Date;
-    getQuarterEnd(config: IDateConfig): Date;
+    getWeekStart(config?: IDateConfig): Date;
+    getMonthStart(config?: IDateConfig): Date;
+    getMonthEnd(config?: IDateConfig): Date;
+    getYearStart(config?: IDateConfig): Date;
+    getYearEnd(config?: IDateConfig): Date;
+    getQuarterStart(config?: IDateConfig): Date;
+    getQuarterEnd(config?: IDateConfig): Date;
     toMMDDYYYY(): string;
   }
 }
@@ -45,35 +45,34 @@ export interface IEnum<T> {
 
 export interface IModel {
   [key: string]: any;
-  _visited?: boolean;
-  isModel?: boolean;
+  [ClassField.Visited]?: boolean;
+  [ClassField.IsModel]?: boolean;
+  [ClassField.Track]?: boolean;
+  [ClassField.Snapshot]?: any;
+  set(data: any, reset?: boolean): void;
+  getData(options: IModelGetData): any;
+}
+
+export interface IModelField {
+  name: string;
+  defaultValue?: any;
+  custom?: boolean;
+  [ClassField.IsCollection]?: boolean;
+  [ClassField.IsModel]?: boolean;
+}
+
+export interface ICollectionAdd {
+  clear?: boolean;
+  suppress?: boolean;
 }
 
 export interface ICollection {
-  [key: string]: any;
-  _visited?: boolean;
-  isCollection?: boolean;
-}
-
-/**
- * @typedef Field
- * @property {String} name
- * @property {String} [type=String|*]
- * @property {Number} [precision=2]
- * This is for type Decimal only... it will set the precision of the decimals to this value.
- * By default, this is 2.
- * @property {Collection} [collection]
- * @property {Model} [model]
- * @property {*} [defaultValue=""]
- */
-export interface IModelField {
-  name: string;
-  type?: keyof typeof EnumFieldType | NumberConstructor | StringConstructor | DateConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor;
-  precision?: number;
-  collection?: any;
-  model?: any;
-  defaultValue?: any;
-  custom?: boolean;
+  model: any;
+  data?: IModel[];
+  [ClassField.IsCollection]?: boolean;
+  [ClassField.Visited]?: boolean;
+  add(data: any, config?: ICollectionAdd): void;
+  getData(options: IModelGetData): any[];
 }
 
 export type TModelValue = string | number | Date | Object;

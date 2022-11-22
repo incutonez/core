@@ -1,8 +1,8 @@
 ﻿import { EnumWeekday, EnumMonth } from "@incutonez/shared/src/Enums";
 
 const proto = Date.prototype;
-const TotalMonths = EnumMonth.count;
-const TotalDays = EnumWeekday.count;
+const TotalMonths = EnumMonth.length;
+const TotalDays = EnumWeekday.length;
 
 proto.getWeekStart = function(config = {}) {
   const { year = this.getFullYear(),
@@ -11,7 +11,7 @@ proto.getWeekStart = function(config = {}) {
     dateOffset = 0,
     // This is for the end of the month
     isEnd = false,
-    startingDay = EnumWeekday.Monday.id,
+    startingDay = EnumWeekday.Monday,
     isWeek = true } = config;
   let { monthOffset = 0,
     date = this.getDate() } = config;
@@ -33,7 +33,7 @@ proto.getWeekStart = function(config = {}) {
       weekDate.setDate(weekDate.getDate() - (day + (TotalDays - startingDay)));
     }
     if (isEnd) {
-      weekDate.setDate(weekDate.getDate() + EnumWeekday.Saturday.id);
+      weekDate.setDate(weekDate.getDate() + EnumWeekday.Saturday);
     }
   }
   return weekDate;
@@ -51,13 +51,13 @@ proto.getMonthEnd = function(config = {}) {
 };
 
 proto.getYearStart = function(config = {}) {
-  config.month = EnumMonth.January.id;
+  config.month = EnumMonth.January;
   return this.getMonthStart(config);
 };
 
 proto.getYearEnd = function(config = {}) {
   config.isEnd = true;
-  config.month = EnumMonth.December.id;
+  config.month = EnumMonth.December;
   return this.getMonthStart(config);
 };
 
@@ -67,24 +67,24 @@ proto.getQuarterStart = function(config = {}) {
   month = month + (config.monthOffset || 0);
   /* Check to see if we're no longer in this year, and if so, we need to determine the
    * yearOffset, as well as what the translated month should be */
-  if (month < 0 || month > EnumMonth.December.id) {
+  if (month < 0 || month > EnumMonth.December) {
     const identity = month < 0 ? -1 : 1;
     const inner = Math.abs(month) / TotalMonths;
     const years = identity === -1 ? Math.ceil(inner) : Math.floor(inner);
     month -= years * TotalMonths * identity;
     config.yearOffset = (config.yearOffset || 0) + years * identity;
   }
-  if (month < EnumMonth.April.id) {
-    month = isEnd ? EnumMonth.March.id : EnumMonth.January.id;
+  if (month < EnumMonth.April) {
+    month = isEnd ? EnumMonth.March : EnumMonth.January;
   }
-  else if (month < EnumMonth.July.id) {
-    month = isEnd ? EnumMonth.June.id : EnumMonth.April.id;
+  else if (month < EnumMonth.July) {
+    month = isEnd ? EnumMonth.June : EnumMonth.April;
   }
-  else if (month < EnumMonth.October.id) {
-    month = isEnd ? EnumMonth.September.id : EnumMonth.July.id;
+  else if (month < EnumMonth.October) {
+    month = isEnd ? EnumMonth.September : EnumMonth.July;
   }
   else {
-    month = isEnd ? EnumMonth.December.id : EnumMonth.October.id;
+    month = isEnd ? EnumMonth.December : EnumMonth.October;
   }
   config.month = month;
   // This config value doesn't make sense, so let's always 0 it out

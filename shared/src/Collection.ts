@@ -6,8 +6,15 @@
   makeArray,
 } from "@incutonez/shared/src/utilities";
 import { Model } from "@incutonez/shared/src/Model.js";
-import { ICollectionFilter, ICollectionSorter, IModelGetData } from "@incutonez/shared/src/interfaces";
-import { ICollectionGroup, IModel } from "./interfaces";
+import type {
+  ICollectionFilter,
+  ICollectionSorter,
+  IModelGetData,
+  ICollectionGroup,
+  IModel,
+  ICollectionAdd,
+} from "@incutonez/shared/src/interfaces";
+import { ClassField } from "ui/Enums";
 
 // TODOJEF: Move to ModelField enum
 export const GroupKey = "groupKey";
@@ -16,7 +23,7 @@ export const ModelKey = "model";
 const SelectedCls = "list-item-selected";
 
 export class Collection extends Array {
-  isCollection = true;
+  [ClassField.IsCollection] = true;
   _idField = "id";
   _displayField = "value";
   _records: any[] = [];
@@ -31,10 +38,10 @@ export class Collection extends Array {
   _sorters: (ICollectionSorter | Function)[] = [];
   _suspended = false;
   _visited = false;
-  parent?: Collection;
+  [ClassField.Parent]?: Collection;
   [GroupKey] = null;
   [GroupDisplay] = null;
-  [ModelKey]?: Model;
+  _model?: any;
 
   // TODO: Type out args
   constructor(args: any, model = Model) {
@@ -42,7 +49,9 @@ export class Collection extends Array {
     args ??= {};
     // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
     this.suspend(true);
-    this[ModelKey] = args[ModelKey] || model;
+    if (!this[ModelKey]) {
+      this[ModelKey] = args[ModelKey] || model;
+    }
     delete args[ModelKey];
     // We always need a reference to the raw source, as that's how we'll be able to build the records
     if (isArray(args)) {
@@ -66,7 +75,7 @@ export class Collection extends Array {
    * @param {Boolean} options.clear
    * @param {Boolean} options.suppress
    */
-  add(data: any, { clear = false, suppress = false } = {}) {
+  add(data: any, { clear = false, suppress = false }: ICollectionAdd = {}) {
     if (isEmpty(data)) {
       return;
     }
@@ -103,7 +112,7 @@ export class Collection extends Array {
    * will update the filtering... if this is false, it's most likely a scenario where we want to remove
    * filters and add some new ones on in succession, so we don't want to do multiple inits.
    */
-  removeFilters(filters: string[], suppress = false) {
+  removeFilters(filters: string[] | string, suppress = false) {
     if (isEmpty(filters)) {
       return;
     }
@@ -247,7 +256,7 @@ export class Collection extends Array {
             value = new RegExp(value, "i");
           }
           fn = (record: Model) => {
-            const recordValue = record[property];
+            const recordValue = Reflect.get(record, property);
             return exact ? recordValue === value : value.test(recordValue);
           };
         }
@@ -285,17 +294,25 @@ export class Collection extends Array {
     }
   }
 
+  get [ModelKey](): any {
+    return this._model;
+  }
+
+  set [ModelKey](value) {
+    this._model = value;
+  }
+
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
   getOptionId(option: Model) {
     if (option) {
-      return isArray(option) ? option[GroupDisplay] : option[this.idField];
+      return Reflect.get(option, isArray(option) ? GroupDisplay : this.idField);
     }
   }
 
   getOptionDisplay(option: Model) {
     if (option) {
       // If the option is an array, it's assumed it's a collection, and we're accessing the group name
-      return isArray(option) ? option[GroupDisplay] : option[this.displayField];
+      return Reflect.get(option, isArray(option) ? GroupDisplay : this.displayField);
     }
   }
 
@@ -305,9 +322,9 @@ export class Collection extends Array {
     }
     const cls = ["list-item"];
     const { idField } = this;
-    const value = option[idField];
+    const value = Reflect.get(option, idField);
     for (const selection of selections) {
-      if (value === selection[idField]) {
+      if (value === Reflect.get(selection, idField)) {
         cls.push(SelectedCls);
         break;
       }
@@ -382,13 +399,15 @@ export class Collection extends Array {
 
   set records(value) {
     const records: any[] = [];
-    const { model } = this;
+    const model = this[ModelKey];
     value.forEach((item) => {
-      if (item.isModel) {
+      if (item[ClassField.IsModel]) {
         records.push(item);
       }
-      else {
-        records.push(new model(item));
+      else if (model) {
+        const record = new model(item);
+        record[ClassField.Parent] = this;
+        records.push(record);
       }
     });
     this._records = records;
@@ -415,7 +434,7 @@ export class Collection extends Array {
   }
 
   get idField(): string {
-    return this.parent?.idField || this._idField;
+    return this[ClassField.Parent]?.idField || this._idField;
   }
 
   set idField(value) {
@@ -423,7 +442,7 @@ export class Collection extends Array {
   }
 
   get displayField(): string {
-    return this.parent?.displayField || this._displayField;
+    return this[ClassField.Parent]?.displayField || this._displayField;
   }
 
   set displayField(value) {

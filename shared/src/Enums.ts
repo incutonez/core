@@ -51,6 +51,36 @@ export class FieldType extends Enum {
   Object = 8;
 }
 
+const IsModel = Symbol("isModel");
+const IsCollection = Symbol("isCollection");
+const Snapshot = Symbol("_snapshot");
+const Track = Symbol("_trackChanges");
+const Visited = Symbol("_visited");
+const Parent = Symbol("_parent");
+const Fields = Symbol("_fields");
+const Types = Symbol("_types");
+
+export const ClassField = {
+  IsModel,
+  IsCollection,
+  Snapshot,
+  Track,
+  Visited,
+  Parent,
+  Fields,
+  Types,
+} as const;
+
+export enum ModelField {
+  IsModel = "isModel",
+  Snapshot = "_snapshot",
+  Track = "_trackChanges",
+  Visited = "_visited",
+  Parent = "_parent",
+  Fields = "_fields",
+  Types = "_types",
+}
+
 export const EnumMonth = new Month();
 export const EnumWeekday = new Weekday();
 export const EnumFieldType = new FieldType();

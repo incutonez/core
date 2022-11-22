@@ -7,3 +7,5 @@ proto.capitalize = function() {
 proto.equals = function(value) {
   return this.toLowerCase() === value?.toLowerCase();
 };
+
+export {};

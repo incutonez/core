@@ -1,4 +1,4 @@
-﻿import { IEnum } from "@incutonez/shared/src/interfaces";
+﻿import type { IEnum } from "@incutonez/shared/src/interfaces";
 
 type T = number | string;
 
