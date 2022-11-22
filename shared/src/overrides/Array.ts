@@ -2,7 +2,7 @@
   isEmpty,
   isFunction,
   makeArray,
-} from "@incutonez/shared/src/utilities.js";
+} from "@incutonez/shared/src/utilities";
 
 const proto = Array.prototype;
 
@@ -18,7 +18,7 @@ proto.remove = function(items) {
   for (const item of items) {
     let fn = item;
     if (!isFunction(fn)) {
-      fn = (record) => record === item;
+      fn = (record: any) => record === item;
     }
     const found = this.findIndex(fn);
     if (found === -1) {
@@ -34,8 +34,8 @@ proto.remove = function(items) {
  * @param {Number} index
  * @returns {*}
  */
-proto.add = function(item, index = this.length) {
-  this.splice(index, 0, item);
+proto.insert = function(item, index: number) {
+  this.splice(index, 0, item ?? this.length);
   return item;
 };
 
@@ -50,6 +50,6 @@ proto.addUnique = function(item, index) {
   if (found) {
     return found;
   }
-  this.add(item, index);
+  this.insert(item, index);
   return item;
 };

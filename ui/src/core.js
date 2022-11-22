@@ -3,7 +3,6 @@ import "@fontsource/open-sans";
 import "@incutonez/shared/src/overrides/index.js";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon";
-import { OverlayManager } from "ui/components/OverlayManager.js";
 import {
   mouseDownDocument,
   scrollDocument,
@@ -17,8 +16,6 @@ import { visible } from "ui/directives/component";
  */
 export default {
   install(app) {
-    const overlayManager = new OverlayManager();
-    app.provide("OverlayManager", overlayManager);
     app.config.globalProperties.Icon = Icon;
     app.directive("visible", visible);
     app.directive("mousedown-document", mouseDownDocument);

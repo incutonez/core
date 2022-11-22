@@ -20,74 +20,53 @@ import {
   parseNumber,
   parseObject,
   parseString,
-  Enum,
   Collection,
   isObject,
   isDefined,
 } from "@incutonez/shared";
-
-/**
- * @property {Number} String
- * @property {String} String_DISPLAY
- * @property {Number} Integer
- * @property {String} Integer_DISPLAY
- * @property {Number} Decimal
- * @property {String} Decimal_DISPLAY
- * @property {Number} Boolean
- * @property {String} Boolean_DISPLAY
- * @property {Number} Date
- * @property {String} Date_DISPLAY
- * @property {Number} Model
- * @property {String} Model_DISPLAY
- * @property {Number} Collection
- * @property {String} Collection_DISPLAY
- * @property {Number} Array
- * @property {String} Array_DISPLAY
- * @property {Number} Object
- * @property {String} Object_DISPLAY
- */
-export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array", "Object"]);
+import { ICollection, IModel, IModelField, IModelGetData, TModelValue } from "./interfaces";
+import { EnumFieldType } from "./Enums";
 
 /**
  * @param {*} value
  * @param {Field} field
  */
-function parseValue(value, field) {
+function parseValue(value: any, field: IModelField) {
   const { type } = field;
   if (isDefined(type)) {
     // TODO: Potentially remove old FieldTypes that I was using here... use native classes instead
     switch (type) {
-      case FieldType.Integer:
+      case EnumFieldType.Integer:
         value = getValue(parseInteger(value), field, 0);
         break;
       case Number:
-      case FieldType.Decimal:
+      case EnumFieldType.Decimal:
         value = getValue(parseNumber(value, field.precision), field, 0);
         break;
       case Boolean:
-      case FieldType.Boolean:
+      case EnumFieldType.Boolean:
         value = getValue(parseBoolean(value), field, false);
         break;
       case Date:
-      case FieldType.Date:
+      case EnumFieldType.Date:
         value = getValue(parseDate(value), field, null);
         break;
-      case FieldType.Collection:
+      case EnumFieldType.Collection:
         value = field.collection ? new field.collection(value) : new Collection(value, field.model);
         break;
-      case FieldType.Model:
+      case EnumFieldType.Model:
         value = new field.model(value);
         break;
       case Array:
-      case FieldType.Array:
+      case EnumFieldType.Array:
         value = parseArray(value);
         break;
       case Object:
-      case FieldType.Object:
+      case EnumFieldType.Object:
         value = getValue(parseObject(value), field, {});
         break;
       case String:
-      case FieldType.String:
+      case EnumFieldType.String:
         value = getValue(parseString(value), field, "");
         break;
         /**
@@ -97,7 +76,8 @@ function parseValue(value, field) {
      */
       default:
         value ??= field.defaultValue;
-        if (isDefined(value) && !(value instanceof type)) {
+        if (isDefined(value) && !(value instanceof (type as any))) {
+          // @ts-ignore
           value = new type(value);
         }
         break;
@@ -106,7 +86,7 @@ function parseValue(value, field) {
   return value;
 }
 
-function getValue(value, field, defaultValue) {
+function getValue(value: TModelValue | undefined, field: IModelField, defaultValue: any) {
   if (isEmpty(value)) {
     value = "defaultValue" in field ? field.defaultValue : defaultValue;
   }
@@ -115,11 +95,12 @@ function getValue(value, field, defaultValue) {
 
 export class Model {
   isModel = true;
-  _snapshot = null;
-  _fields = null;
+  _snapshot?: IModel;
+  _fields?: IModelField[];
   _trackChanges = false;
+  _visited = false;
 
-  constructor(data) {
+  constructor(data?: IModel) {
     data ??= {};
     for (const { name } of this.fields) {
       if (name in data) {
@@ -141,7 +122,7 @@ export class Model {
   }
 
   getDefaultFields() {
-    return [];
+    return [] as IModelField[];
   }
 
   /**
@@ -165,7 +146,9 @@ export class Model {
    * is initially created, it's all of the default values + any values set in the constructor.
    */
   reset() {
-    this.set(this._snapshot);
+    if (this._snapshot) {
+      this.set(this._snapshot);
+    }
   }
 
   /**
@@ -181,7 +164,7 @@ export class Model {
     }
   }
 
-  set(data, reset = false) {
+  set(data: IModel, reset = false) {
     if (reset) {
       this.reset();
     }
@@ -189,7 +172,7 @@ export class Model {
       const found = this.fields.find((field) => field.name === key);
       // If we have a field that was found, let's use the proper way
       if (found) {
-        this[found.name] = parseValue(data[found.name], found);
+        Reflect.set(this, found.name, parseValue(data[found.name], found));
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
       else {
@@ -197,12 +180,13 @@ export class Model {
           name: key,
           custom: true,
         });
-        this[key] = data[key];
+        Reflect.set(this, key, data[key]);
       }
     }
   }
 
-  clone(options) {
+  clone(options: IModelGetData) {
+    // @ts-ignore
     return new this.constructor(this.getData(options));
   }
 
@@ -211,7 +195,7 @@ export class Model {
    * @param {String[]} exclude
    * @returns {Object} data
    */
-  getData({ include, exclude } = {}) {
+  getData({ include, exclude }: IModelGetData = {}) {
     const data = {};
     // Let's copy the fields because we're potentially modifying them with the include
     const fields = [...this.fields];
@@ -227,46 +211,23 @@ export class Model {
       if (exclude && exclude.indexOf(name) !== -1) {
         continue;
       }
-      const value = this[name];
+      const value = Reflect.get(this, name) as IModel | ICollection;
       if (value?.isModel || value?.isCollection) {
         if (!value._visited) {
-          data[name] = value.getData({
+          Reflect.set(data, name, value.getData({
             include,
             exclude,
-          });
+          }));
         }
       }
       else if (isArray(value) || isObject(value)) {
-        data[name] = cloneDeep(value);
+        Reflect.set(data, name, cloneDeep(value));
       }
       else {
-        data[name] = value;
+        Reflect.set(data, name, value);
       }
     }
-    delete this._visited;
+    this._visited = false;
     return data;
-  }
-
-  static toClassDescription() {
-    const props = [];
-    const record = new this();
-    record.fields.forEach((field) => {
-      let { type } = field;
-      // We have a FieldType
-      if (FieldType.values.includes(type)) {
-        if (type === FieldType.Collection) {
-          type = `Collection<${field.model.name}>`;
-        }
-        else if (type === FieldType.Model) {
-          type = `${field.model.name}`;
-        }
-      }
-      // We have an actual class
-      else {
-        type = type.name;
-      }
-      return props.push(`* @property {${type}} ${field.name}`);
-    });
-    return "/**\n" + props.join("\n") + "\n */";
   }
 }

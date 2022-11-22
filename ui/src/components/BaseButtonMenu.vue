@@ -14,7 +14,7 @@
         class="z-10 w-48"
       >
         <BaseList
-          class="bg-slate-100 shadow-top"
+          class="shadow-top bg-slate-100"
           :class="listCls"
           :options="options"
           @click:item="onClickMenuItem"
@@ -24,7 +24,7 @@
   </BaseButton>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   BaseButton,
   BaseList,
@@ -32,52 +32,33 @@ import {
 } from "ui/index";
 import { ref } from "vue";
 
-export default {
-  name: "BaseButtonMenu",
-  emits: ["click:item"],
-  components: {
-    BaseList,
-    BaseOverlay,
-    BaseButton,
-  },
-  props: {
-    options: {
-      type: [Array, Object],
-      default: () => [],
-    },
-    listCls: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props, { emit }) {
-    const rootEl = ref(null);
-    const listEl = ref(null);
-    const menuShowing = ref(false);
-    function hideMenu() {
-      menuShowing.value = false;
-    }
-    function onClickMenuItem(menuItem) {
-      emit("click:item", menuItem);
-      hideMenu();
-    }
-    function onClickDocument({ target }) {
-      if (menuShowing.value && !(rootEl.value.$el.contains(target) || listEl.value.$el.contains(target))) {
-        hideMenu();
-      }
-    }
-    function onClickButton() {
-      listEl.value.$el.style.bottom = `${rootEl.value.$el.clientHeight}px`;
-    }
+export interface IPropsBaseButtonMenu {
+  options?: any | any[];
+  listCls?: string;
+}
 
-    return {
-      rootEl,
-      listEl,
-      menuShowing,
-      onClickButton,
-      onClickDocument,
-      onClickMenuItem,
-    };
-  },
-};
+withDefaults(defineProps<IPropsBaseButtonMenu>(), {
+  options: () => [],
+  listCls: undefined,
+});
+const emit = defineEmits(["click:item"]);
+
+const rootEl = ref<InstanceType<BaseButton>>();
+const listEl = ref<InstanceType<BaseOverlay>>();
+const menuShowing = ref(false);
+function hideMenu() {
+  menuShowing.value = false;
+}
+function onClickMenuItem(menuItem) {
+  emit("click:item", menuItem);
+  hideMenu();
+}
+function onClickDocument({ target }: MouseEvent) {
+  if (menuShowing.value && !(rootEl.value?.$el.contains(target) || listEl.value.$el.contains(target))) {
+    hideMenu();
+  }
+}
+function onClickButton() {
+  listEl.value.$el.style.bottom = `${rootEl.value.$el.clientHeight}px`;
+}
 </script>

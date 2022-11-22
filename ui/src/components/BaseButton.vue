@@ -19,92 +19,66 @@
   </button>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   computed,
   ref,
   watch,
 } from "vue";
-import {
-  BaseIcon,
-} from "ui/index";
+import BaseIcon from "ui/components/BaseIcon.vue";
 
-export default {
-  name: "BaseButton",
-  emits: ["update:toggled"],
-  components: {
-    BaseIcon,
-  },
-  props: {
-    text: {
-      type: String,
-      default: "",
-    },
-    icon: {
-      type: [String, Object],
-      default: null,
-    },
-    toggleable: {
-      type: Boolean,
-      default: false,
-    },
-    toggled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props, { emit }) {
-    const element = ref(null);
-    const toggled = ref(props.toggled);
-    /* When mousedown occurs, we want to ensure that the mouseup event is captured by this button because
-     * we want to remove the focus state properly... this is for cases where mousedown is click on button,
-     * but the user keeps holding it down and clicks outside of the button.
-     * Reference: https://stackoverflow.com/a/71643994/1253609 */
-    function onMouseDownButton({ target, pointerId }) {
-      target.setPointerCapture(pointerId);
-    }
-    function shouldBlur() {
-      if (!toggled.value) {
-        element.value?.blur();
-      }
-    }
-    function onMouseUpButton({ target, pointerId }) {
-      target.releasePointerCapture(pointerId);
-      if (props.toggleable) {
-        toggled.value = !toggled.value;
-        emit("update:toggled", toggled.value);
-      }
-      shouldBlur();
-    }
+export interface IPropsBaseButton {
+  text?: string;
+  icon?: string | Object;
+  toggleable?: boolean;
+  toggled?: boolean;
+}
 
-    /**
-     * TODO: Is there a better way of doing this?  I basically shadow the props.toggled value because
-     * it's possible we don't bind to that, and if a binding isn't present, then we still have our local value
-     */
-    watch(toggled, () => shouldBlur());
-    watch(() => props.toggled, (current) => toggled.value = current);
-    watch(() => props.toggleable, (current) => {
-      if (!current) {
-        // Reset the toggleState
-        toggled.value = false;
-      }
-    });
-    const elementCls = computed(() => {
-      const cls = [];
-      if (toggled.value) {
-        cls.push("toggled");
-      }
-      return cls;
-    });
+const props = defineProps<IPropsBaseButton>();
+const emit = defineEmits(["update:toggled"]);
 
-    return {
-      element,
-      elementCls,
-      onMouseUpButton,
-      onMouseDownButton,
-    };
-  },
-};
+const element = ref<HTMLButtonElement>();
+const toggled = ref(props.toggled);
+/* When mousedown occurs, we want to ensure that the mouseup event is captured by this button because
+ * we want to remove the focus state properly... this is for cases where mousedown is click on button,
+ * but the user keeps holding it down and clicks outside of the button.
+ * Reference: https://stackoverflow.com/a/71643994/1253609 */
+function onMouseDownButton({ target, pointerId }: PointerEvent) {
+  (target as Element)?.setPointerCapture(pointerId);
+}
+function shouldBlur() {
+  if (!toggled.value) {
+    element.value?.blur();
+  }
+}
+function onMouseUpButton({ target, pointerId }: PointerEvent) {
+  (target as Element)?.releasePointerCapture(pointerId);
+  if (props.toggleable) {
+    toggled.value = !toggled.value;
+    emit("update:toggled", toggled.value);
+  }
+  shouldBlur();
+}
+
+/**
+ * TODO: Is there a better way of doing this?  I basically shadow the props.toggled value because
+ * it's possible we don't bind to that, and if a binding isn't present, then we still have our local value
+ */
+watch(toggled, () => shouldBlur());
+watch(() => props.toggled, (current) => toggled.value = current);
+watch(() => props.toggleable, (current) => {
+  if (!current) {
+    // Reset the toggleState
+    toggled.value = false;
+  }
+});
+const elementCls = computed(() => {
+  const cls = [];
+  if (toggled.value) {
+    cls.push("toggled");
+  }
+  return cls;
+});
 </script>
 
 <style lang="scss" scoped>

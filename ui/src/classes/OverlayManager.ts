@@ -17,12 +17,16 @@ export class OverlayManager extends HTMLElement {
     document.body.appendChild(this);
   }
 
-  add(element) {
-    this.appendChild(element);
+  add(element?: HTMLElement) {
+    if (element) {
+      this.appendChild(element);
+    }
   }
 
-  remove(element) {
-    this.removeChild(element);
+  unmount(element?: HTMLElement) {
+    if (element) {
+      this.removeChild(element);
+    }
   }
 }
 

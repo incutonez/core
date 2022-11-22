@@ -1,4 +1,9 @@
-﻿export class Enum {
+﻿// TODOJEF: REMOVE
+/**
+ * @deprecated
+ * Use EnumV2 instead
+ */
+export class Enum {
   constructor(values, useIndex = true) {
     if (Array.isArray(values)) {
       values.forEach((value, index) => {
@@ -42,7 +47,7 @@
   }
 
   toString() {
-    const props = [];
+    const props: any[] = [];
     const keys = Object.keys(this);
     keys.forEach((key) => {
       const type = typeof this[key];

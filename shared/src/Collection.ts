@@ -1,57 +1,49 @@
-﻿/**
- * @typedef CollectionFilter
- * @property {String} property
- * @property {*} value
- * @property {Boolean} or
- * If this is set, then the previous filtered data will act as an OR instead of an AND, so it'll use
- * the same records that were used by the previous filter.
- */
-/**
- * @typedef CollectionSorter
- * If this is passed in as a function, then none of these properties are used, as it's then up to the dev
- * to modify the function.
- * @property {String} property
- * @property {Number} direction
- * This can be 1 or -1... 1 is DESC and -1 is ASC
- */
-import {
+﻿import {
   isArray,
   isEmpty,
   isObject,
   commonSort,
   makeArray,
-} from "@incutonez/shared/src/utilities.js";
+} from "@incutonez/shared/src/utilities";
 import { Model } from "@incutonez/shared/src/Model.js";
+import { ICollectionFilter, ICollectionSorter, IModelGetData } from "@incutonez/shared/src/interfaces";
+import { ICollectionGroup, IModel } from "./interfaces";
 
+// TODOJEF: Move to ModelField enum
 export const GroupKey = "groupKey";
 export const GroupDisplay = "groupDisplay";
+export const ModelKey = "model";
 const SelectedCls = "list-item-selected";
 
 export class Collection extends Array {
   isCollection = true;
   _idField = "id";
   _displayField = "value";
-  _records = [];
-  _groups = null;
+  _records: any[] = [];
+  _groups?: any[];
   /**
    * @type {CollectionFilter[]}
    */
-  _filters = [];
+  _filters: ICollectionFilter[] = [];
   /**
    * @type {CollectionSorter[]}
    */
-  _sorters = [];
-  parent = null;
+  _sorters: (ICollectionSorter | Function)[] = [];
+  _suspended = false;
+  _visited = false;
+  parent?: Collection;
   [GroupKey] = null;
   [GroupDisplay] = null;
+  [ModelKey]?: Model;
 
-  constructor(args, model = Model) {
+  // TODO: Type out args
+  constructor(args: any, model = Model) {
     super();
     args ??= {};
     // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
     this.suspend(true);
-    this.model = args.model || model;
-    delete args.model;
+    this[ModelKey] = args[ModelKey] || model;
+    delete args[ModelKey];
     // We always need a reference to the raw source, as that's how we'll be able to build the records
     if (isArray(args)) {
       this.records = args;
@@ -74,7 +66,7 @@ export class Collection extends Array {
    * @param {Boolean} options.clear
    * @param {Boolean} options.suppress
    */
-  add(data, { clear = false, suppress = false } = {}) {
+  add(data: any, { clear = false, suppress = false } = {}) {
     if (isEmpty(data)) {
       return;
     }
@@ -88,11 +80,11 @@ export class Collection extends Array {
     this.filters = [];
   }
 
-  sum(field) {
+  sum(field: string) {
     return this.records.reduce((value, currentValue) => value + currentValue[field]);
   }
 
-  addFilters(filters, { suppress = false } = {}) {
+  addFilters(filters: ICollectionFilter[], { suppress = false } = {}) {
     if (isEmpty(filters)) {
       return;
     }
@@ -111,13 +103,13 @@ export class Collection extends Array {
    * will update the filtering... if this is false, it's most likely a scenario where we want to remove
    * filters and add some new ones on in succession, so we don't want to do multiple inits.
    */
-  removeFilters(filters, suppress) {
+  removeFilters(filters: string[], suppress = false) {
     if (isEmpty(filters)) {
       return;
     }
     filters = makeArray(filters);
     for (const filter of filters) {
-      this.filters.remove(({ id }) => id === filter);
+      this.filters.remove(({ id }: ICollectionFilter) => id === filter);
     }
     this.suspend(suppress);
     this.init();
@@ -130,11 +122,11 @@ export class Collection extends Array {
    * we're calling multiple setters in sequence, but we don't want each one to run the init
    * @param {Boolean} [value]
    */
-  suspend(value) {
+  suspend(value = false) {
     this._suspended = value;
   }
 
-  addSorters(sorters, { suppress = false } = {}) {
+  addSorters(sorters: ICollectionSorter[], { suppress = false } = {}) {
     if (isEmpty(sorters)) {
       return;
     }
@@ -153,13 +145,13 @@ export class Collection extends Array {
    * will update the filtering... if this is false, it's most likely a scenario where we want to remove
    * filters and add some new ones on in succession, so we don't want to do multiple inits.
    */
-  removeSorters(sorters, { suppress = false } = {}) {
+  removeSorters(sorters: string[], { suppress = false } = {}) {
     if (isEmpty(sorters)) {
       return;
     }
     sorters = makeArray(sorters);
     for (const sorter of sorters) {
-      this.sorters.remove(({ id }) => id === sorter);
+      this.sorters.remove(({ id }: ICollectionSorter) => id === sorter);
     }
     this.suspend(suppress);
     this.init();
@@ -168,14 +160,14 @@ export class Collection extends Array {
 
   // TODOJEF: I think this might need to return the records instead of setting them?
   // This is so we can use the else portion of init and just push them on... maybe?
-  group({ key, display }, records = this.records) {
+  group({ key, display }: {key: string, display: Function}, records = this.records) {
     /* We clear because the previous values for this collection could erroneously be the actual data records,
      * but we don't want to be dealing with those at this point, which is why we use the raw records loop */
     this.clear();
-    const groups = {};
+    const groups: {[key: string]: ICollectionGroup} = {};
     records.forEach((record) => {
       const groupKey = record[key];
-      const group = groups[groupKey];
+      const group = groups[groupKey as keyof typeof groups];
       if (group) {
         group.records.push(record);
       }
@@ -192,12 +184,12 @@ export class Collection extends Array {
         parent: this,
       });
       group[GroupDisplay] = display ? display(group) : groupKey;
-      this[GroupKey] = key;
+      Reflect.set(this, GroupKey, key);
       this.push(group);
     }
-    this.sort({
+    this.sort([{
       property: GroupDisplay,
-    }, false);
+    }], false);
   }
 
   /**
@@ -205,27 +197,28 @@ export class Collection extends Array {
    * @param {Function} fn
    * @returns {Model}
    */
-  find(fn) {
+  find(fn: any) {
     return this.records.find(fn);
   }
 
+  // @ts-ignore
   sort(sorters = this.sorters, recordSort = true) {
     if (!sorters || this._suspended) {
       return;
     }
     sorters = makeArray(sorters);
     sorters.forEach((sorter) => {
-      if (isObject(sorter)) {
+      if (typeof sorter !== "function") {
         const { property, direction = -1 } = sorter;
-        sorter = (lhs, rhs) => commonSort(lhs[property], rhs[property], direction);
+        sorter = (lhs: IModel, rhs: IModel) => commonSort(lhs[property], rhs[property], direction);
       }
       // Either we're wanting to sort the raw data source
       if (recordSort) {
-        this.records.sort(sorter);
+        this.records.sort(sorter as any);
       }
       // Or we're most likely wanting to sort the groups
       else {
-        super.sort(sorter);
+        super.sort(sorter as any);
       }
     });
   }
@@ -239,27 +232,29 @@ export class Collection extends Array {
     const { groups, filters } = this;
     let { records } = this;
     if (!isEmpty(filters)) {
-      let data = [];
+      let data: Model[] = [];
       filters.forEach((filter, index) => {
         // If we have multiple filters, we have to make some swaps if the filter is not an OR
         if (!(index === 0 || filter.or)) {
           records = data;
           data = [];
         }
-        let filterFn = filter.fn;
-        if (!filterFn) {
+        let { fn } = filter;
+        if (!fn) {
           let { value } = filter;
           const { property, exact = false } = filter;
           if (!exact) {
             value = new RegExp(value, "i");
           }
-          filterFn = (record) => {
+          fn = (record: Model) => {
             const recordValue = record[property];
             return exact ? recordValue === value : value.test(recordValue);
           };
         }
         records.forEach((record) => {
-          if (filterFn(record)) {
+          // For some reason, it thinks fn can be undefined here, but it is definitely defined above if it doesn't exist
+          // @ts-ignore
+          if (fn(record)) {
             data.push(record);
           }
         });
@@ -267,14 +262,14 @@ export class Collection extends Array {
       records = data;
     }
     if (groups) {
-      let source = this;
+      let source: Collection = this;
       for (let i = 0; i < groups.length; i++) {
         // Create the initial groups
         if (i === 0) {
           this.group(groups[i], records);
         }
         else {
-          let nextSource = [];
+          let nextSource: any;
           source.forEach((collection) => {
             collection.group(groups[i]);
             nextSource = nextSource.concat(collection);
@@ -291,20 +286,20 @@ export class Collection extends Array {
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
-  getOptionId(option) {
+  getOptionId(option: Model) {
     if (option) {
       return isArray(option) ? option[GroupDisplay] : option[this.idField];
     }
   }
 
-  getOptionDisplay(option) {
+  getOptionDisplay(option: Model) {
     if (option) {
       // If the option is an array, it's assumed it's a collection, and we're accessing the group name
       return isArray(option) ? option[GroupDisplay] : option[this.displayField];
     }
   }
 
-  getOptionCls(option, selections) {
+  getOptionCls(option: Model, selections: Model[]) {
     if (this.isGrouped) {
       return "group-wrapper";
     }
@@ -320,8 +315,9 @@ export class Collection extends Array {
     return cls;
   }
 
-  clone(options) {
+  clone(options: IModelGetData) {
     const { groups, idField, displayField, sorters, filters, model } = this;
+    // @ts-ignore
     return new this.constructor({
       idField,
       displayField,
@@ -333,8 +329,8 @@ export class Collection extends Array {
     });
   }
 
-  getData(options) {
-    const data = [];
+  getData(options: IModelGetData) {
+    const data: any[] = [];
     this._visited = true;
     this.forEach((record) => {
       /* It's possible that the result that returns is an array because the record could potentially be
@@ -342,7 +338,7 @@ export class Collection extends Array {
       const result = makeArray(record.getData(options));
       data.push(...result);
     });
-    delete this._visited;
+    this._visited = false;
     return data;
   }
 
@@ -356,7 +352,7 @@ export class Collection extends Array {
 
   set sorters(sorters) {
     sorters?.map((sorter, index) => {
-      if (!sorter.id) {
+      if (!(typeof sorter === "function" || sorter.id)) {
         sorter.id = index;
       }
       return sorter;
@@ -369,7 +365,7 @@ export class Collection extends Array {
     return this._sorters;
   }
 
-  set filters(filters) {
+  set filters(filters: ICollectionFilter[]) {
     filters?.map((filter, index) => {
       if (!filter.id) {
         filter.id = index;
@@ -385,7 +381,7 @@ export class Collection extends Array {
   }
 
   set records(value) {
-    const records = [];
+    const records: any[] = [];
     const { model } = this;
     value.forEach((item) => {
       if (item.isModel) {
@@ -403,7 +399,7 @@ export class Collection extends Array {
     return this._records;
   }
 
-  set groups(groups) {
+  set groups(groups: any) {
     if (isEmpty(groups)) {
       this[GroupKey] = null;
     }
@@ -418,7 +414,7 @@ export class Collection extends Array {
     return this._groups;
   }
 
-  get idField() {
+  get idField(): string {
     return this.parent?.idField || this._idField;
   }
 
@@ -426,7 +422,7 @@ export class Collection extends Array {
     this._idField = value;
   }
 
-  get displayField() {
+  get displayField(): string {
     return this.parent?.displayField || this._displayField;
   }
 

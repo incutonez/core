@@ -1,20 +1,20 @@
-﻿export function inDateRange({ date, start, end }) {
+﻿export function inDateRange({ date, start, end }: {date: Date, start: Date, end: Date}) {
   return date <= end && date >= start;
 }
 
-export function isUndefined(value) {
+export function isUndefined(value: any) {
   return value === undefined;
 }
 
-export function isNull(value) {
+export function isNull(value: any) {
   return value === null;
 }
 
-export function isDefined(value) {
+export function isDefined(value: any) {
   return value != null;
 }
 
-export function isEmpty(value) {
+export function isEmpty(value: any) {
   return isUndefined(value) ||
     isNull(value) ||
     isNumber(value) && isNaN(value) ||
@@ -23,43 +23,43 @@ export function isEmpty(value) {
     isObject(value) && Object.values(value).length === 0;
 }
 
-export function isString(value) {
+export function isString(value: any) {
   return typeof value === "string";
 }
 
-export function isNumber(value) {
+export function isNumber(value: any) {
   return typeof value === "number";
 }
 
-export function isBoolean(value) {
+export function isBoolean(value: any) {
   return typeof value === "boolean";
 }
 
-export function isDate(value) {
+export function isDate(value: any) {
   return value instanceof Date;
 }
 
-export function isArray(value) {
+export function isArray(value: any) {
   return Array.isArray(value);
 }
 
-export function makeArray(value) {
+export function makeArray(value: any) {
   return isArray(value) ? value : [value];
 }
 
-export function isObject(value) {
+export function isObject(value: any) {
   return value?.constructor === Object;
 }
 
-export function isFunction(value) {
+export function isFunction(value: any) {
   return typeof value === "function";
 }
 
-export function hasTarget(element, target) {
+export function hasTarget(element: HTMLElement, target: HTMLElement) {
   return element === target || element.contains(target);
 }
 
-export function parseNumber(value, precision = 2) {
+export function parseNumber(value: any, precision = 2) {
   if (isDefined(value)) {
     value = isNumber(value) ? value : parseFloat(value);
     return +(value.toFixed(precision));
@@ -67,11 +67,11 @@ export function parseNumber(value, precision = 2) {
   return undefined;
 }
 
-export function parseInteger(value) {
+export function parseInteger(value: any) {
   return parseNumber(value, 0);
 }
 
-export function parseBoolean(value) {
+export function parseBoolean(value: any) {
   if (isBoolean(value)) {
     return value;
   }
@@ -84,7 +84,7 @@ export function parseBoolean(value) {
   return !!value;
 }
 
-export function parseDate(value) {
+export function parseDate(value: any) {
   if (isDate(value)) {
     return value;
   }
@@ -92,7 +92,7 @@ export function parseDate(value) {
   return isNaN(value) ? undefined : value;
 }
 
-export function parseRaw(value) {
+export function parseRaw(value: any) {
   try {
     return JSON.parse(value);
   }
@@ -102,36 +102,36 @@ export function parseRaw(value) {
   }
 }
 
-export function parseArray(value) {
+export function parseArray(value: any) {
   if (isDefined(value)) {
     return isArray(value) ? value : parseRaw(value);
   }
   return undefined;
 }
 
-export function parseObject(value) {
+export function parseObject(value: any) {
   if (isDefined(value)) {
     return isObject(value) ? value : parseRaw(value);
   }
   return undefined;
 }
 
-export function parseString(value) {
+export function parseString(value: any) {
   if (isDefined(value)) {
     return isString(value) ? value : String(value);
   }
   return undefined;
 }
 
-export function cloneDeep(value) {
+export function cloneDeep(value: any) {
   return parseRaw(JSON.stringify(value));
 }
 
-export function collect(items, keys) {
-  const collection = [];
-  if (isArray(keys)) {
+export function collect(items: any[], keys: string[] | string) {
+  const collection: any[] = [];
+  if (Array.isArray(keys)) {
     items.forEach((item) => {
-      const collect = {};
+      const collect: any = {};
       keys.forEach((key) => collect[key] = item[key]);
       collection.push(collect);
     });
@@ -142,7 +142,7 @@ export function collect(items, keys) {
   return collection;
 }
 
-export function commonSort(lhs, rhs, identity = -1) {
+export function commonSort(lhs: string | number | Date, rhs: string | number | Date, identity = -1) {
   if (lhs === rhs) {
     return 0;
   }
