@@ -49,6 +49,9 @@ export interface IModel {
   [ClassField.IsModel]?: boolean;
   [ClassField.Track]?: boolean;
   [ClassField.Snapshot]?: any;
+}
+
+export interface IModelFull extends IModel {
   set(data: any, reset?: boolean): void;
   getData(options: IModelGetData): any;
 }

@@ -1,5 +1,12 @@
 ﻿import { ClassField } from "@incutonez/shared/src/Enums";
-import type { ICollection, IModel, IModelField, IModelGetData } from "@incutonez/shared/src/interfaces";
+import type {
+  ICollection,
+  ICollectionFull,
+  IModel,
+  IModelField,
+  IModelFull,
+  IModelGetData,
+} from "@incutonez/shared/src/interfaces";
 import { cloneDeep, isArray, isConstructor, isObject } from "@incutonez/shared/src/utilities";
 import type { Collection } from "@incutonez/shared/src/Collection";
 
@@ -42,11 +49,11 @@ export class Model {
       if (found) {
         const value = data[key];
         if (found[ClassField.IsCollection]) {
-          const collection = Reflect.get(this, key) as ICollection;
+          const collection = Reflect.get(this, key) as ICollectionFull;
           collection.add(value);
         }
         else if (found[ClassField.IsModel] && value) {
-          const model = Reflect.get(this, key) as IModel;
+          const model = Reflect.get(this, key) as IModelFull;
           if (model) {
             model.set(value);
           }
@@ -183,7 +190,7 @@ export class Model {
       if (exclude && exclude.indexOf(name) !== -1) {
         continue;
       }
-      const value = Reflect.get(this, name) as IModel | ICollection;
+      const value = Reflect.get(this, name) as IModelFull | ICollectionFull;
       if ((value as IModel)?.[ClassField.IsModel] || (value as ICollection)?.[ClassField.IsCollection]) {
         if (!value[ClassField.Visited]) {
           Reflect.set(data, name, value.getData({
