@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { parseInteger } from "@incutonez/shared";
+import { parseInteger } from "ui";
 import { FieldNumber } from "ui/index";
 
 export default {

@@ -63,7 +63,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { parseString, Enum } from "@incutonez/shared";
+import { parseString, Enum } from "ui";
 import {
   BaseLabel,
   BaseIcon,

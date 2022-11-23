@@ -17,7 +17,7 @@ import {
   ref,
   unref,
 } from "vue";
-import { Enum } from "@incutonez/shared";
+import { Enum } from "ui";
 
 /**
  * @property {String} RightMiddle

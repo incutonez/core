@@ -20,53 +20,74 @@ import {
   parseNumber,
   parseObject,
   parseString,
+  Enum,
   Collection,
   isObject,
   isDefined,
 } from "@incutonez/shared";
-import type { ICollection, IModel, IModelField, IModelGetData, TModelValue } from "./interfaces";
-import { EnumFieldType } from "./Enums";
+
+/**
+ * @property {Number} String
+ * @property {String} String_DISPLAY
+ * @property {Number} Integer
+ * @property {String} Integer_DISPLAY
+ * @property {Number} Decimal
+ * @property {String} Decimal_DISPLAY
+ * @property {Number} Boolean
+ * @property {String} Boolean_DISPLAY
+ * @property {Number} Date
+ * @property {String} Date_DISPLAY
+ * @property {Number} Model
+ * @property {String} Model_DISPLAY
+ * @property {Number} Collection
+ * @property {String} Collection_DISPLAY
+ * @property {Number} Array
+ * @property {String} Array_DISPLAY
+ * @property {Number} Object
+ * @property {String} Object_DISPLAY
+ */
+export const FieldType = new Enum(["String", "Integer", "Decimal", "Boolean", "Date", "Model", "Collection", "Array", "Object"]);
 
 /**
  * @param {*} value
  * @param {Field} field
  */
-function parseValue(value: any, field: IModelField) {
+function parseValue(value, field) {
   const { type } = field;
   if (isDefined(type)) {
     // TODO: Potentially remove old FieldTypes that I was using here... use native classes instead
     switch (type) {
-      case EnumFieldType.Integer:
+      case FieldType.Integer:
         value = getValue(parseInteger(value), field, 0);
         break;
       case Number:
-      case EnumFieldType.Decimal:
+      case FieldType.Decimal:
         value = getValue(parseNumber(value, field.precision), field, 0);
         break;
       case Boolean:
-      case EnumFieldType.Boolean:
+      case FieldType.Boolean:
         value = getValue(parseBoolean(value), field, false);
         break;
       case Date:
-      case EnumFieldType.Date:
+      case FieldType.Date:
         value = getValue(parseDate(value), field, null);
         break;
-      case EnumFieldType.Collection:
+      case FieldType.Collection:
         value = field.collection ? new field.collection(value) : new Collection(value, field.model);
         break;
-      case EnumFieldType.Model:
+      case FieldType.Model:
         value = new field.model(value);
         break;
       case Array:
-      case EnumFieldType.Array:
+      case FieldType.Array:
         value = parseArray(value);
         break;
       case Object:
-      case EnumFieldType.Object:
+      case FieldType.Object:
         value = getValue(parseObject(value), field, {});
         break;
       case String:
-      case EnumFieldType.String:
+      case FieldType.String:
         value = getValue(parseString(value), field, "");
         break;
         /**
@@ -76,8 +97,7 @@ function parseValue(value: any, field: IModelField) {
      */
       default:
         value ??= field.defaultValue;
-        if (isDefined(value) && !(value instanceof (type as any))) {
-          // @ts-ignore
+        if (isDefined(value) && !(value instanceof type)) {
           value = new type(value);
         }
         break;
@@ -86,7 +106,7 @@ function parseValue(value: any, field: IModelField) {
   return value;
 }
 
-function getValue(value: TModelValue | undefined, field: IModelField, defaultValue: any) {
+function getValue(value, field, defaultValue) {
   if (isEmpty(value)) {
     value = "defaultValue" in field ? field.defaultValue : defaultValue;
   }
@@ -95,12 +115,11 @@ function getValue(value: TModelValue | undefined, field: IModelField, defaultVal
 
 export class Model {
   isModel = true;
-  _snapshot?: IModel;
-  _fields?: IModelField[];
+  _snapshot = null;
+  _fields = null;
   _trackChanges = false;
-  _visited = false;
 
-  constructor(data?: IModel) {
+  constructor(data) {
     data ??= {};
     for (const { name } of this.fields) {
       if (name in data) {
@@ -122,7 +141,7 @@ export class Model {
   }
 
   getDefaultFields() {
-    return [] as IModelField[];
+    return [];
   }
 
   /**
@@ -146,9 +165,7 @@ export class Model {
    * is initially created, it's all of the default values + any values set in the constructor.
    */
   reset() {
-    if (this._snapshot) {
-      this.set(this._snapshot);
-    }
+    this.set(this._snapshot);
   }
 
   /**
@@ -164,7 +181,7 @@ export class Model {
     }
   }
 
-  set(data: IModel, reset = false) {
+  set(data, reset = false) {
     if (reset) {
       this.reset();
     }
@@ -172,7 +189,7 @@ export class Model {
       const found = this.fields.find((field) => field.name === key);
       // If we have a field that was found, let's use the proper way
       if (found) {
-        Reflect.set(this, found.name, parseValue(data[found.name], found));
+        this[found.name] = parseValue(data[found.name], found);
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
       else {
@@ -180,13 +197,12 @@ export class Model {
           name: key,
           custom: true,
         });
-        Reflect.set(this, key, data[key]);
+        this[key] = data[key];
       }
     }
   }
 
-  clone(options: IModelGetData) {
-    // @ts-ignore
+  clone(options) {
     return new this.constructor(this.getData(options));
   }
 
@@ -195,7 +211,7 @@ export class Model {
    * @param {String[]} exclude
    * @returns {Object} data
    */
-  getData({ include, exclude }: IModelGetData = {}) {
+  getData({ include, exclude } = {}) {
     const data = {};
     // Let's copy the fields because we're potentially modifying them with the include
     const fields = [...this.fields];
@@ -211,24 +227,46 @@ export class Model {
       if (exclude && exclude.indexOf(name) !== -1) {
         continue;
       }
-      const value = Reflect.get(this, name) as IModel | ICollection;
+      const value = this[name];
       if (value?.isModel || value?.isCollection) {
         if (!value._visited) {
-          Reflect.set(data, name, value.getData({
+          data[name] = value.getData({
             include,
             exclude,
-          }));
+          });
         }
       }
       else if (isArray(value) || isObject(value)) {
-        Reflect.set(data, name, cloneDeep(value));
+        data[name] = cloneDeep(value);
       }
       else {
-        Reflect.set(data, name, value);
+        data[name] = value;
       }
     }
-    this._visited = false;
+    delete this._visited;
     return data;
   }
+
+  static toClassDescription() {
+    const props = [];
+    const record = new this();
+    record.fields.forEach((field) => {
+      let { type } = field;
+      // We have a FieldType
+      if (FieldType.values.includes(type)) {
+        if (type === FieldType.Collection) {
+          type = `Collection<${field.model.name}>`;
+        }
+        else if (type === FieldType.Model) {
+          type = `${field.model.name}`;
+        }
+      }
+      // We have an actual class
+      else {
+        type = type.name;
+      }
+      return props.push(`* @property {${type}} ${field.name}`);
+    });
+    return "/**\n" + props.join("\n") + "\n */";
+  }
 }
-// https://www.typescriptlang.org/play?#code/KYOwrgtgBAsg9gE2AGwGIEsUKgbwFBRQCSAzvEslALxQBE6ZiKtANAVAMogCGADiQAs4AF2p0A+iR78hw1uwAqAJ24BjANZja44So0BhAdxABzYCXmEAag3TDg2GtoBut+wktQACtyWhRNADk4ry+-oFshBhYJGLBAGaYyAgkEez6cCCJJrFB4qqZ2alsAL54eKCQUBnIyMCqwuiZ0cm47OQocRBMyGmEpDV1DU0gWgyD9Y2Z8mV46CD2SvFqwMQdlPiEANrqwACeAFxQJLrzJgC6R8Z7ANzsW+stCAB0NiR2DucA-EcARnBwOrGO7bR5JF6kdbfP4AoEgEFQB49J7PZRqdTQqD-QHAYH3MFYZ5cPiCESY653WbzRbLVSrIgTYaZNqEboUK4gW7sBDcYTcH5rHpbc6U8rU4BLFbEJ4sqA8CDAAUnJRnBFIZZgZDCKzcZBgRUcrmEVRgE5wCAC7FwhHjQFDKYgS2w3Hw9gMdZOnF42YFEAnYgLCU8NDgkhHZVnYViADyvwAVpNns5dfqSAAKAnJACUdzwqmQ3BIsXWsqRFBRkJ65zEun1CLLKBRaI01Zoy2QJGA9czL2JMjJAop+OR4Nebk+Ynbne7I8JTxIlyg1yjNGFM-Lo58fgW5M568bo4yWXQOV3ezX5UI8zsaZ5fLEOBKWdlxsy-pwiRiJRrAgYCMI8RwEoUBpr675ytwCosFA6rcJq2opqs35wPEUCfskJDPpshA4egqFpvKqzzDBvLcFh7A4ThvqNOAXYUThZSUYQAD0zFQAAMsAwiBLEEDcLsxxgH4UAAO6rPEdSCFAcBgKI1xQMmermFAwhGHJ26BKI16NLqyB7FAoRFg4UDzNBJBwCpAj7FAZhyTBwAalqCmIfRhAAEoOfazydsIt6kdBhHQbB8E6kpWb0YxOGqQw3lcX5fI5uwsyED58XcEcRDrNBfg+ZOuqduRlF4SBOVcYVTHRSQzylb5iWUZFr5+qIH6ht+NCVf+aFASBYGiLs+nEXeZEvlRb6iIBYAgI4aGhs8iRTWmaY4IRT7UAAfBBCrUFQND9XVTGscQqFiVARjOKs3AzVglm8qJhZdZNCDQXU3GxKaqyqasvBKHAvASndeyuSZ+ETVN5VMVAvXOUpYhDVsoMvIRIpA1eIMyVNzy2rUkwjODEOQ2NBPY0yow0B5EmJrZaaVdBCPPIR+340T9ojM83AIAgaaKfqjNMQ1TEoJ2wMgXT7o9HjENQ2ynRk55lNxTTD0YwznUQ9LyCxb53PAOFTP85RgurNhTPk15qWK3TgXQzzqsMUD+tQId0afUoIkMMA0F2EuvB-b4sQncAdhWcBZ2rOZW0mma0A+Ys0nAXGpp2d9v0SsI+mqbdDAgJpBm+KIKGWeJoZA4bI2UZVDYhnOobnM8vCmgIS0ozhhFHP1kRM5DifmkctYe83T62+5csNJr1O-iQ0HtyRfI7Ps5y84Q-ORcljsAFRrxRa9QAoE+iegtRQDVhdQOrKkWZ91vKRnohicJBb+gUEAQHY7jnyffgFEoLyEAA6lZoxL7qy3iZWI2l0C6X0qoPwvIHCe1ekuQ+BdL7BSctrWIABqJcnIr6xFysRS+vUlBgAaEBZ4W9mLsBqmmPGUMpAklkD+BglcUR9lJMIZGRV8L0P7MICWlkYqpR4ew3mK9LzHC4ldDCXNEJ4wrj2Z485WxXwRKvWyUiUg0JGi9DRuQBEkBYaOJRnVippnQikZ4dRTCqW2jQAADPw2MCZR79XTJVLMc0gIAFE1CNzTHtdaZdcL4SIIGJQwZ5yYxAPmMASB0x7X4ZRPwwghKuj1s3HR5iMoyhoMbfGrcoD9QHkPAmTVSnZDEKbeWvlFZ7RKaY0ChQTxLliIyB0WYvjPC2G0kYFYSA9MyAvIJlFzHPFQQhGGq5OGd1GVjFmzJ2rELoukpmpcGm+gqfddYHSukKMrBQIZeSIajPGaFfUD4SglIAqOMWFAaxLJKQ7Qgaz8IbJPJ0ohJDhDdR2jQJxkxEk4XMQ+Z4oLzHQVBc8N5JhLkD2bqXI5TETkOTglqM5qwaDQsec3cxVV66CDMeCXWfNiVL3osk1JujVF4B9A-VpdocbMmAAAD3sFNWIABBJQKh9LYW6QykmKIoSGnrAMkAfSxXKL7rmRqyovlAUaceEwGUxV4xIGAP6SgaGdQrmKoVVYxDQv5cTB0+qDk6onmzDmirshjNIvtVe7NOZDQFJlIUhz6KmKGvwqWPQmEGL1aOKEtshqeKUD41QfiPgQGfFQDaiLZWiE-kBaaIBgAiVPj0NM0bF44WTd-QxhItz+ClRPEplU64NzTPmhAubB4RSSjS8o+ZCytN-K0FlbKUiwD9dhIg007EIgAHKQQxVAQIhgD4IECDK0pcrSFapdYaNVGqJTavohW7SaViVlFpa2ne5hRCdtAN2ks2EABCBYBBiAAIx2MHewS9wBr00AAEwIiIPYC0RxJ3JA-V+vRaaM1iqbpRdWP721PSSoldgnyF1pUHJyFdmr13l0tVu711KfSExrWIIDB6TigagJe7gAgjg3o7p+4AEAjh5P7UcV996kqUYA0cLYOB6NQAo1AEdCojiBBIwICIUBUAkPUAxko5waUwbAjiSxcATDVvqCm54VGIAGLsQvIAA

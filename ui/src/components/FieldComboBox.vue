@@ -93,7 +93,7 @@ import {
   isEmpty,
   Enum,
   makeArray,
-} from "@incutonez/shared";
+} from "ui";
 import {
   BaseField,
   BaseIcon,
@@ -101,7 +101,7 @@ import {
   BaseList,
   BaseOverlay,
 } from "ui/index";
-import { Collection } from "@incutonez/shared/src/Collection.js";
+import { Collection } from "ui/Collection.js";
 
 /**
  * @property {Number} Above

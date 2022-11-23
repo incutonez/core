@@ -9,7 +9,7 @@
 
 <script>
 import { BaseField } from "ui/index";
-import { parseBoolean } from "@incutonez/shared";
+import { parseBoolean } from "ui";
 
 export default {
   name: "FieldCheckBox",

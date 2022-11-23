@@ -1,6 +1,6 @@
 ﻿import "ui/index.css";
 import "@fontsource/open-sans";
-import "@incutonez/shared/src/overrides/index.js";
+import "ui/overrides";
 import "ui/rules.js";
 import Icon from "ui/statics/Icon";
 import {

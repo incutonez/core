@@ -1,29 +1,4 @@
-﻿import { GroupKey } from "./Collection";
-import { ClassField } from "./Enums";
-
-declare global {
-  interface String {
-    capitalize(): string;
-    equals(value: string): boolean;
-  }
-
-  interface Array<T> {
-    remove(items: T | Function): void;
-    insert(item: T, index: number): T;
-    addUnique(item: T, index: number): T;
-  }
-
-  interface Date {
-    getWeekStart(config?: IDateConfig): Date;
-    getMonthStart(config?: IDateConfig): Date;
-    getMonthEnd(config?: IDateConfig): Date;
-    getYearStart(config?: IDateConfig): Date;
-    getYearEnd(config?: IDateConfig): Date;
-    getQuarterStart(config?: IDateConfig): Date;
-    getQuarterEnd(config?: IDateConfig): Date;
-    toMMDDYYYY(): string;
-  }
-}
+﻿import { EnumProp } from "ui/statics/Enums";
 
 export interface IDateConfig {
   year?: number;
@@ -45,10 +20,10 @@ export interface IEnum<T> {
 
 export interface IModel {
   [key: string]: any;
-  [ClassField.Visited]?: boolean;
-  [ClassField.IsModel]?: boolean;
-  [ClassField.Track]?: boolean;
-  [ClassField.Snapshot]?: any;
+  [EnumProp.Visited]?: boolean;
+  [EnumProp.IsModel]?: boolean;
+  [EnumProp.Track]?: boolean;
+  [EnumProp.Snapshot]?: any;
 }
 
 export interface IModelFull extends IModel {
@@ -60,9 +35,9 @@ export interface IModelField {
   name: string;
   defaultValue?: any;
   custom?: boolean;
-  [ClassField.Nullable]?: boolean;
-  [ClassField.IsCollection]?: boolean;
-  [ClassField.IsModel]?: boolean;
+  [EnumProp.Nullable]?: boolean;
+  [EnumProp.IsCollection]?: boolean;
+  [EnumProp.IsModel]?: boolean;
 }
 
 export interface ICollectionAdd {
@@ -71,21 +46,20 @@ export interface ICollectionAdd {
 }
 
 export interface ICollection {
-  model: any;
-  data?: IModel[];
-  idField?: string;
-  displayField?: string;
-  [ClassField.Parent]?: ICollection;
-  [ClassField.IsCollection]?: boolean;
-  [ClassField.Visited]?: boolean;
+  [EnumProp.Model]: any;
+  [EnumProp.Groups]?: any;
+  [EnumProp.Data]?: IModel[];
+  [EnumProp.IdField]?: string;
+  [EnumProp.DisplayField]?: string;
+  [EnumProp.Parent]?: ICollection;
+  [EnumProp.IsCollection]?: boolean;
+  [EnumProp.Visited]?: boolean;
 }
 
 export interface ICollectionFull extends ICollection {
   add(data: any, config?: ICollectionAdd): void;
   getData(options: IModelGetData): any[];
 }
-
-export type TModelValue = string | number | Date | Object;
 
 export interface IModelGetData {
   include?: string[];
@@ -119,11 +93,11 @@ export interface ICollectionFilter extends Array<any> {
  */
 export interface ICollectionSorter {
   id?: string | number;
-  property: string;
+  property: string | Symbol;
   direction?: number;
 }
 
 export interface ICollectionGroup {
-  [GroupKey]: string;
+  [EnumProp.GroupKey]: string;
   records: IModel[];
 }

@@ -1,9 +1,8 @@
 ﻿import { Collection } from "@incutonez/shared";
-import { ChildModel } from "@incutonez/shared/models/ChildModel";
-import { ModelKey } from "ui/Collection";
+import { ChildModel } from "@incutonez/shared/models/ChildModel.js";
 
 export class ChildCollection extends Collection {
-  get [ModelKey]() {
+  get model() {
     return ChildModel;
   }
 }

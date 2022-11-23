@@ -9,6 +9,7 @@
     "ui": "cd ui && npm start",
     "api": "cd api && npm start",
     "test": "cd shared && npm run test",
+    "test:ui": "cd ui && npm run test",
     "lint": "npx eslint --fix",
     "prepare": "npx husky install",
     "benchmarks": "node benchmarks/index.js",

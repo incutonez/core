@@ -1,4 +1,4 @@
-﻿import { EnumWeekday, EnumMonth } from "@incutonez/shared/src/Enums";
+﻿import { EnumWeekday, EnumMonth } from "ui/statics/Enums";
 
 const proto = Date.prototype;
 const TotalMonths = EnumMonth.length;

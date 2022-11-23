@@ -4,7 +4,7 @@
   isObject,
   commonSort,
   makeArray,
-} from "@incutonez/shared/src/utilities";
+} from "ui/utilities";
 import type {
   ICollectionFilter,
   ICollectionSorter,
@@ -12,46 +12,49 @@ import type {
   ICollectionGroup,
   IModel,
   ICollectionAdd, ICollection,
-} from "@incutonez/shared/src/interfaces";
-import { ClassField } from "@incutonez/shared/src/Enums";
+} from "ui/interfaces";
+import { EnumProp } from "ui/statics/Enums";
 
-// TODOJEF: Move to ModelField enum
-export const GroupKey = "groupKey";
-export const GroupDisplay = "groupDisplay";
-export const ModelKey = "model";
 const SelectedCls = "list-item-selected";
+const IdFieldInternal = "_idField";
+const DisplayFieldInternal = "_displayField";
+const RecordsInternal = "_records";
+const GroupsInternal = "_groups";
+const FiltersInternal = "_filters";
+const SortersInternal = "_sorters";
+const SuspendedInternal = "_suspended";
 
 export class Collection extends Array {
-  [ClassField.IsCollection] = true;
-  _idField = "id";
-  _displayField = "value";
-  _records: any[] = [];
-  _groups?: any[];
+  [EnumProp.IsCollection] = true;
+  [IdFieldInternal] = "id";
+  [DisplayFieldInternal] = "value";
+  [RecordsInternal]: any[] = [];
+  [GroupsInternal]?: any[];
   /**
    * @type {CollectionFilter[]}
    */
-  _filters: ICollectionFilter[] = [];
+  [FiltersInternal]: ICollectionFilter[] = [];
   /**
    * @type {CollectionSorter[]}
    */
-  _sorters: (ICollectionSorter | Function)[] = [];
-  _suspended = false;
-  _visited = false;
-  [ClassField.Parent]?: ICollection;
-  [GroupKey] = null;
-  [GroupDisplay] = null;
-  _model?: any;
+  [SortersInternal]: (ICollectionSorter | Function)[] = [];
+  [SuspendedInternal] = false;
+  [EnumProp.Visited] = false;
+  [EnumProp.Parent]?: ICollection;
+  [EnumProp.GroupKey] = null;
+  [EnumProp.GroupDisplay] = null;
+  [EnumProp.ModelInternal]?: any;
 
-  // TODO: Type out args
-  constructor({ data, model, [ClassField.Parent]: parent }: ICollection) {
+  constructor({ [EnumProp.Data]: data, [EnumProp.Model]: model, [EnumProp.Parent]: parent, [EnumProp.Groups]: groups }: ICollection) {
     super();
     data ??= [];
     // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
     this.suspend(true);
     if (model) {
-      this[ModelKey] = model;
+      this[EnumProp.Model] = model;
     }
-    this[ClassField.Parent] = parent;
+    this[EnumProp.Parent] = parent;
+    this[EnumProp.Groups] = groups;
     // We always need a reference to the raw source, as that's how we'll be able to build the records
     this.records = data;
     this.suspend();
@@ -126,7 +129,7 @@ export class Collection extends Array {
    * @param {Boolean} [value]
    */
   suspend(value = false) {
-    this._suspended = value;
+    this[SuspendedInternal] = value;
   }
 
   addSorters(sorters: ICollectionSorter[], { suppress = false } = {}) {
@@ -176,23 +179,23 @@ export class Collection extends Array {
       }
       else {
         groups[groupKey] = {
-          [GroupKey]: groupKey,
+          [EnumProp.GroupKey]: groupKey,
           records: [record],
         };
       }
     });
-    for (const { [GroupKey]: groupKey, records } of Object.values(groups)) {
+    for (const { [EnumProp.GroupKey]: groupKey, records } of Object.values(groups)) {
       const group = new Collection({
-        model: this._model,
-        data: records,
-        [ClassField.Parent]: this,
+        [EnumProp.Model]: this[EnumProp.ModelInternal],
+        [EnumProp.Data]: records,
+        [EnumProp.Parent]: this,
       });
-      group[GroupDisplay] = display ? display(group) : groupKey;
-      Reflect.set(this, GroupKey, key);
+      group[EnumProp.GroupDisplay] = display ? display(group) : groupKey;
+      Reflect.set(this, EnumProp.GroupKey, key);
       this.push(group);
     }
     this.sort([{
-      property: GroupDisplay,
+      property: EnumProp.GroupDisplay,
     }], false);
   }
 
@@ -207,14 +210,14 @@ export class Collection extends Array {
 
   // @ts-ignore
   sort(sorters = this.sorters, recordSort = true) {
-    if (!sorters || this._suspended) {
+    if (!sorters || this[SuspendedInternal]) {
       return;
     }
     sorters = makeArray(sorters);
     sorters.forEach((sorter) => {
       if (typeof sorter !== "function") {
         const { property, direction = -1 } = sorter;
-        sorter = (lhs: IModel, rhs: IModel) => commonSort(lhs[property], rhs[property], direction);
+        sorter = (lhs: IModel, rhs: IModel) => commonSort(lhs[property as any], rhs[property as any], direction);
       }
       // Either we're wanting to sort the raw data source
       if (recordSort) {
@@ -230,10 +233,10 @@ export class Collection extends Array {
   // TODOJEF: When this is called, we shouldn't re-group if the groups didn't change... instead, we should
   // be looking at each group?
   init() {
-    if (this._suspended) {
+    if (this[SuspendedInternal]) {
       return;
     }
-    const { groups, filters } = this;
+    const { [EnumProp.Groups]: groups, filters } = this;
     let { records } = this;
     if (!isEmpty(filters)) {
       let data: IModel[] = [];
@@ -273,7 +276,7 @@ export class Collection extends Array {
           this.group(groups[i], records);
         }
         else {
-          let nextSource: any;
+          let nextSource = [] as any;
           source.forEach((collection) => {
             collection.group(groups[i]);
             nextSource = nextSource.concat(collection);
@@ -289,25 +292,25 @@ export class Collection extends Array {
     }
   }
 
-  get [ModelKey](): any {
-    return this._model;
+  get [EnumProp.Model](): any {
+    return this[EnumProp.ModelInternal];
   }
 
-  set [ModelKey](value) {
-    this._model = value;
+  set [EnumProp.Model](value) {
+    this[EnumProp.ModelInternal] = value;
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
   getOptionId(option: IModel) {
     if (option) {
-      return Reflect.get(option, isArray(option) ? GroupDisplay : this.idField);
+      return Reflect.get(option, isArray(option) ? EnumProp.GroupDisplay : this.idField);
     }
   }
 
   getOptionDisplay(option: IModel) {
     if (option) {
       // If the option is an array, it's assumed it's a collection, and we're accessing the group name
-      return Reflect.get(option, isArray(option) ? GroupDisplay : this.displayField);
+      return Reflect.get(option, isArray(option) ? EnumProp.GroupDisplay : this.displayField);
     }
   }
 
@@ -328,29 +331,29 @@ export class Collection extends Array {
   }
 
   clone(options: IModelGetData) {
-    const { groups, idField, displayField, sorters, filters, model } = this;
+    const { idField, displayField, sorters, filters } = this;
     // @ts-ignore
     return new this.constructor({
       idField,
       displayField,
-      groups,
+      [EnumProp.Groups]: this[EnumProp.Groups],
       sorters,
       filters,
-      model,
+      [EnumProp.Model]: this[EnumProp.Model],
       records: this.getData(options),
     });
   }
 
   getData(options: IModelGetData) {
     const data: any[] = [];
-    this._visited = true;
+    this[EnumProp.Visited] = true;
     this.forEach((record) => {
       /* It's possible that the result that returns is an array because the record could potentially be
        * a collection, like if a grouping is applied, so let's turn the result into an array */
       const result = makeArray(record.getData(options));
       data.push(...result);
     });
-    this._visited = false;
+    this[EnumProp.Visited] = false;
     return data;
   }
 
@@ -369,12 +372,12 @@ export class Collection extends Array {
       }
       return sorter;
     });
-    this._sorters = sorters;
+    this[SortersInternal] = sorters;
     this.sort();
   }
 
   get sorters() {
-    return this._sorters;
+    return this[SortersInternal];
   }
 
   set filters(filters: ICollectionFilter[]) {
@@ -384,68 +387,68 @@ export class Collection extends Array {
       }
       return filter;
     });
-    this._filters = filters;
+    this[FiltersInternal] = filters;
     this.init();
   }
 
   get filters() {
-    return this._filters;
+    return this[FiltersInternal];
   }
 
   set records(value) {
     const records: any[] = [];
-    const model = this[ModelKey];
+    const model = this[EnumProp.Model];
     value.forEach((item) => {
-      if (item[ClassField.IsModel]) {
+      if (item[EnumProp.IsModel]) {
         records.push(item);
       }
       else if (model) {
         const record = new model(item);
-        record[ClassField.Parent] = this;
+        record[EnumProp.Parent] = this;
         records.push(record);
       }
     });
-    this._records = records;
+    this[RecordsInternal] = records;
     this.init();
   }
 
   get records() {
-    return this._records;
+    return this[RecordsInternal];
   }
 
-  set groups(groups: any) {
+  set [EnumProp.Groups](groups: any) {
     if (isEmpty(groups)) {
-      this[GroupKey] = null;
+      this[EnumProp.GroupKey] = null;
     }
     else if (isObject(groups)) {
       groups = [groups];
     }
-    this._groups = groups;
+    this[GroupsInternal] = groups;
     this.init();
   }
 
-  get groups() {
-    return this._groups;
+  get [EnumProp.Groups]() {
+    return this[GroupsInternal];
   }
 
   get idField(): string {
-    return this[ClassField.Parent]?.idField || this._idField;
+    return this[EnumProp.Parent]?.[EnumProp.IdField] || this[IdFieldInternal];
   }
 
   set idField(value) {
-    this._idField = value;
+    this[IdFieldInternal] = value;
   }
 
   get displayField(): string {
-    return this[ClassField.Parent]?.displayField || this._displayField;
+    return this[EnumProp.Parent]?.[EnumProp.DisplayField] || this[DisplayFieldInternal];
   }
 
   set displayField(value) {
-    this._displayField = value;
+    this[DisplayFieldInternal] = value;
   }
 
   get isGrouped() {
-    return !isEmpty(this[GroupKey]);
+    return !isEmpty(this[EnumProp.GroupKey]);
   }
 
   /**

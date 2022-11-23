@@ -58,7 +58,7 @@ import {
   ref,
   watchEffect,
 } from "vue";
-import { Collection } from "@incutonez/shared/src/Collection";
+import { Collection } from "ui/Collection";
 
 export interface IPropsBaseList {
   /**

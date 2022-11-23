@@ -4,7 +4,7 @@
     class="header-blue"
   >
     <template #body>
-      <section class="space-y-2 base-dialog-body">
+      <section class="base-dialog-body space-y-2">
         <FieldComboBox
           v-model="selectedName"
           label="Combo"
@@ -17,7 +17,7 @@
           list-height="16rem"
         >
           <template #listAfter>
-            <div class="flex sticky bottom-0 p-2 bg-white border-t border-gray-300">
+            <div class="sticky bottom-0 flex border-t border-gray-300 bg-white p-2">
               <span>Content after</span>
               <BaseField />
             </div>
@@ -67,8 +67,8 @@ import {
   ref,
   toRefs,
 } from "vue";
-import { names } from "@incutonez/shared/data/names.js";
-import { Collection } from "@incutonez/shared/src/Collection.js";
+import { names } from "ui/data/names.js";
+import { Collection } from "ui/Collection.js";
 
 export default {
   name: "FieldComboBoxView",

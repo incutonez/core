@@ -1,10 +1,10 @@
-﻿import json from "@incutonez/shared/data";
-import { TestModel } from "@incutonez/shared/models/TestModel";
-import { names } from "@incutonez/shared/data/names";
+﻿import json from "@incutonez/shared/data.js";
+import { TestModel } from "@incutonez/shared/models/TestModel.js";
+import { names } from "@incutonez/shared/data/names.js";
 import {
   Collection,
   GroupDisplay,
-} from "@incutonez/shared/src/Collection";
+} from "@incutonez/shared/src/Collection.js";
 
 describe("Collection Filter", () => {
   test("Adding Single Filter", () => {

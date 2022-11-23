@@ -1,6 +1,6 @@
 ﻿import { defineRule, configure } from "vee-validate";
 import { localize } from "@vee-validate/i18n";
-import { isEmpty } from "@incutonez/shared";
+import { isEmpty } from "ui";
 
 const WHITESPACE_RE = /^\s+$/;
 

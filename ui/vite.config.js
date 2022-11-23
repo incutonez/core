@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
         "ui": path.resolve(path.resolve(), "./src"),
       },
     },
+    test: {
+      globals: true,
+    },
   };
   if (mode === "GitHubPages") {
     baseConfig.base = "/core/";

@@ -12,7 +12,7 @@
  * @property {Number} November
  * @property {Number} December
  */
-import { Enum } from "@incutonez/shared/src/EnumV2";
+import { Enum } from "ui/classes/Enum";
 
 export class Month extends Enum {
   January = 0;
@@ -39,18 +39,6 @@ export class Weekday extends Enum {
   Saturday = 6;
 }
 
-export class FieldType extends Enum {
-  String = 0;
-  Integer = 1;
-  Decimal = 2;
-  Boolean = 3;
-  Date = 4;
-  Model = 5;
-  Collection = 6;
-  Array = 7;
-  Object = 8;
-}
-
 /**
  * There's something goofy with TS and creating Symbols inline in an object, but we can circumvent this with declaring
  * the symbols on their own and then setting them in the object.
@@ -63,21 +51,36 @@ const Snapshot = Symbol("_snapshot");
 const Track = Symbol("_trackChanges");
 const Visited = Symbol("_visited");
 const Parent = Symbol("_parent");
+const Model = Symbol("model");
+const Groups = Symbol("groups");
+const Data = Symbol("data");
+const ModelInternal = Symbol("_model");
 const FieldsInternal = Symbol("_fields");
 const Fields = Symbol("fields");
+const IdField = Symbol("idField");
+const DisplayField = Symbol("displayField");
+const GroupKey = Symbol("groupKey");
+const GroupDisplay = Symbol("groupDisplay");
 
-export const ClassField = {
+export const EnumProp = {
   IsModel,
   IsCollection,
   Snapshot,
   Track,
   Visited,
   Parent,
+  Model,
+  Groups,
+  ModelInternal,
   FieldsInternal,
   Fields,
   Nullable,
+  GroupKey,
+  GroupDisplay,
+  Data,
+  IdField,
+  DisplayField,
 } as const;
 
 export const EnumMonth = new Month();
 export const EnumWeekday = new Weekday();
-export const EnumFieldType = new FieldType();

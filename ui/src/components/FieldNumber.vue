@@ -28,7 +28,7 @@ import {
 } from "ui/composables/BaseField.js";
 import {
   parseNumber,
-} from "@incutonez/shared";
+} from "ui";
 import { BaseField } from "ui/index";
 
 export default {

@@ -1,4 +1,4 @@
-﻿import { ClassField } from "@incutonez/shared/src/Enums";
+﻿import { EnumProp } from "ui/statics/Enums";
 import type {
   ICollection,
   ICollectionFull,
@@ -6,20 +6,19 @@ import type {
   IModelField,
   IModelFull,
   IModelGetData,
-} from "@incutonez/shared/src/interfaces";
-import { cloneDeep, isArray, isConstructor, isObject } from "@incutonez/shared/src/utilities";
-import type { Collection } from "@incutonez/shared/src/Collection";
+} from "ui/interfaces";
+import { cloneDeep, isArray, isConstructor, isObject } from "ui/utilities";
+import type { Collection } from "ui/classes/Collection";
 
-// TODOJEF: Move everything in shared to ui, and revert what was here originally, so we can have the JS version of it too
 export class Model {
-  [ClassField.IsModel] = true;
-  [ClassField.Track] = false;
-  [ClassField.Snapshot]?: any;
-  [ClassField.Visited] = false;
-  [ClassField.FieldsInternal]: any[] = [];
+  [EnumProp.IsModel] = true;
+  [EnumProp.Track] = false;
+  [EnumProp.Snapshot]?: any;
+  [EnumProp.Visited] = false;
+  [EnumProp.FieldsInternal]: any[] = [];
   // TODO: Need to figure out how to implement... get a circular dep if I do try to set it
-  [ClassField.Parent]?: any;
-  [ClassField.Fields]: IModelField[] = [];
+  [EnumProp.Parent]?: any;
+  [EnumProp.Fields]: IModelField[] = [];
 
   init(data = {}) {
     const { fields } = this;
@@ -29,7 +28,7 @@ export class Model {
         continue;
       }
       let { defaultValue } = field;
-      if (field[ClassField.Nullable]) {
+      if (field[EnumProp.Nullable]) {
         defaultValue = undefined;
       }
       // Let's make sure we flesh out any values that aren't initially passed in, so they get a default value
@@ -48,11 +47,11 @@ export class Model {
       // If we have a field that was found, let's use the proper way
       if (found) {
         const value = data[key];
-        if (found[ClassField.IsCollection]) {
+        if (found[EnumProp.IsCollection]) {
           const collection = Reflect.get(this, key) as ICollectionFull;
           collection.add(value);
         }
-        else if (found[ClassField.IsModel] && value) {
+        else if (found[EnumProp.IsModel] && value) {
           const model = Reflect.get(this, key) as IModelFull;
           if (model) {
             model.set(value);
@@ -60,7 +59,7 @@ export class Model {
           /* Otherwise, it appears we need to create a new model instance, so let's see if a definition
            * exists in our types configuration */
           else {
-            const foundType = this[ClassField.Fields].find((item) => item.name === key);
+            const foundType = this[EnumProp.Fields].find((item) => item.name === key);
             if (foundType) {
               const { defaultValue } = foundType;
               if (defaultValue) {
@@ -75,7 +74,7 @@ export class Model {
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
       else {
-        this[ClassField.FieldsInternal].push({
+        this[EnumProp.FieldsInternal].push({
           name: key,
           custom: true,
         });
@@ -89,7 +88,7 @@ export class Model {
    * is initially created, it's all of the default values + any values set in the constructor.
    */
   reset() {
-    const snapshot = this[ClassField.Snapshot];
+    const snapshot = this[EnumProp.Snapshot];
     if (snapshot) {
       this.set(snapshot);
     }
@@ -101,10 +100,10 @@ export class Model {
    */
   commit() {
     if (this.TrackChanges) {
-      this[ClassField.Snapshot] = this.getData();
+      this[EnumProp.Snapshot] = this.getData();
     }
     else {
-      delete this[ClassField.Snapshot];
+      delete this[EnumProp.Snapshot];
     }
   }
 
@@ -114,25 +113,24 @@ export class Model {
   }
 
   set fields(value) {
-    this[ClassField.FieldsInternal] = value;
+    this[EnumProp.FieldsInternal] = value;
   }
 
   get fields() {
-    const fields: IModelField[] = this[ClassField.FieldsInternal];
+    const fields: IModelField[] = this[EnumProp.FieldsInternal];
     if (fields.length === 0) {
-      console.log("here", Object.keys(this));
       Object.keys(this).forEach((key) => {
         let field: IModelField = {
           name: key,
         };
         const config = Reflect.get(this, key);
-        if ((config as Collection)?.[ClassField.IsCollection]) {
+        if ((config as Collection)?.[EnumProp.IsCollection]) {
           field.defaultValue = [];
-          field[ClassField.IsCollection] = true;
+          field[EnumProp.IsCollection] = true;
         }
-        else if ((config as Model)?.[ClassField.IsModel]) {
+        else if ((config as Model)?.[EnumProp.IsModel]) {
           field.defaultValue = {};
-          field[ClassField.IsModel] = true;
+          field[EnumProp.IsModel] = true;
         }
         else if (config?.constructor === Object) {
           field = {
@@ -142,11 +140,11 @@ export class Model {
         }
         else {
           field.defaultValue = config;
-          field[ClassField.Nullable] = config == null;
+          field[EnumProp.Nullable] = config == null;
         }
         fields.push(field);
       });
-      this[ClassField.Fields].forEach((item) => {
+      this[EnumProp.Fields].forEach((item) => {
         const { name } = item;
         const found = fields.find((field) => field.name === name);
         if (found) {
@@ -161,11 +159,11 @@ export class Model {
   }
 
   get TrackChanges() {
-    return this[ClassField.Track];
+    return this[EnumProp.Track];
   }
 
   set TrackChanges(value) {
-    this[ClassField.Track] = value;
+    this[EnumProp.Track] = value;
     this.commit();
   }
 
@@ -184,15 +182,15 @@ export class Model {
       }));
     }
     // Used internally
-    this[ClassField.Visited] = true;
+    this[EnumProp.Visited] = true;
     for (const field of fields) {
       const { name } = field;
       if (exclude && exclude.indexOf(name) !== -1) {
         continue;
       }
       const value = Reflect.get(this, name) as IModelFull | ICollectionFull;
-      if ((value as IModel)?.[ClassField.IsModel] || (value as ICollection)?.[ClassField.IsCollection]) {
-        if (!value[ClassField.Visited]) {
+      if ((value as IModel)?.[EnumProp.IsModel] || (value as ICollection)?.[EnumProp.IsCollection]) {
+        if (!value[EnumProp.Visited]) {
           Reflect.set(data, name, value.getData({
             include,
             exclude,
@@ -206,7 +204,7 @@ export class Model {
         Reflect.set(data, name, value);
       }
     }
-    this[ClassField.Visited] = false;
+    this[EnumProp.Visited] = false;
     return data;
   }
 }

@@ -1,8 +1,7 @@
-﻿import type { IEnum } from "@incutonez/shared/src/interfaces";
+﻿import type { IEnum } from "ui/interfaces";
 
 type T = number | string;
 
-// TODOJEF: RENAME FILE
 export class Enum extends Array {
   init(keys = this.keys) {
     if (!Array.isArray(keys)) {

@@ -1,8 +1,7 @@
-﻿import { Model } from "@incutonez/shared/src/ModelV2";
+﻿import { Model } from "ui/classes/Model";
 import { faker } from "@faker-js/faker";
-import { ClassField } from "@incutonez/shared/src/Enums";
-import type { IModelField } from "@incutonez/shared/src/interfaces";
-import { Collection } from "@incutonez/shared/src/Collection";
+import { EnumProp } from "ui/statics/Enums";
+import { Collection } from "ui/classes/Collection";
 
 const PropNumber = "PropNumber";
 const PropBoolean = "PropBoolean";
@@ -35,14 +34,14 @@ class TestModel extends Model {
   [PropChild] = new Child();
   [PropChildNullable]?: Child;
   [PropCollection] = new Collection({
-    model: Child,
+    [EnumProp.Model]: Child,
   });
 
-  [ClassField.Fields] = [{
+  [EnumProp.Fields] = [{
     name: PropChildNullable,
     defaultValue: Child,
-    [ClassField.IsModel]: true,
-  }] as IModelField[];
+    [EnumProp.IsModel]: true,
+  }];
 
   constructor(data?: any) {
     super();
@@ -58,12 +57,12 @@ describe("Model Creation", () => {
     expect(instance[PropNumber]).toEqual(PropNumberInitial);
     expect(instance[PropBoolean]).toEqual(PropBooleanInitial);
     expect(instance[PropString]).toEqual(PropStringInitial);
-    expect(child[ClassField.IsModel]).toEqual(true);
+    expect(child[EnumProp.IsModel]).toEqual(true);
     expect(child[PropNumber]).toEqual(PropChildNumberInitial);
     expect(child[PropBoolean]).toEqual(PropChildBooleanInitial);
     expect(child[PropString]).toEqual(PropChildStringInitial);
     expect(instance[PropChildNullable]).toEqual(undefined);
-    expect(collection[ClassField.IsCollection]).toEqual(true);
+    expect(collection[EnumProp.IsCollection]).toEqual(true);
     expect(collection.length).toEqual(0);
   });
   test("Instance Values", () => {
@@ -103,21 +102,24 @@ describe("Model Creation", () => {
     expect(instance[PropNumber]).toEqual(PropNumberValue);
     expect(instance[PropBoolean]).toEqual(PropBooleanValue);
     expect(instance[PropString]).toEqual(PropStringValue);
-    expect(child[ClassField.IsModel]).toEqual(true);
+    // Child
+    expect(child[EnumProp.IsModel]).toEqual(true);
     expect(child[PropNumber]).toEqual(PropChildNumberValue);
     expect(child[PropBoolean]).toEqual(PropChildBooleanInitial);
     expect(child[PropString]).toEqual(PropChildStringInitial);
-    expect(childNullable![ClassField.IsModel]).toEqual(true);
+    // Child Nullable
+    expect(childNullable![EnumProp.IsModel]).toEqual(true);
     expect(childNullable![PropNumber]).toEqual(PropChildNumberInitial);
     expect(childNullable![PropBoolean]).toEqual(PropChildBooleanInitial);
     expect(childNullable![PropString]).toEqual(PropChildNullableStringValue);
-    expect(collection[ClassField.IsCollection]).toEqual(true);
+    // Collection
+    expect(collection[EnumProp.IsCollection]).toEqual(true);
     expect(collection.length).toEqual(PropCollectionValue.length);
-    expect(first[ClassField.IsModel]).toEqual(true);
+    expect(first[EnumProp.IsModel]).toEqual(true);
     expect(first[PropNumber]).toEqual(PropNumberValue);
     expect(first[PropBoolean]).toEqual(PropBooleanValue);
     expect(first[PropString]).toEqual(PropStringValue);
-    expect(last[ClassField.IsModel]).toEqual(true);
+    expect(last[EnumProp.IsModel]).toEqual(true);
     expect(last[PropNumber]).toEqual(PropCollectionNumberValue);
     expect(last[PropBoolean]).toEqual(PropCollectionBooleanValue);
     expect(last[PropString]).toEqual(PropCollectionStringValue);
