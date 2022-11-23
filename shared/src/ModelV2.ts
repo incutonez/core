@@ -1,9 +1,7 @@
-﻿import { ClassField, ModelField } from "@incutonez/shared/src/Enums";
+﻿import { ClassField } from "@incutonez/shared/src/Enums";
 import type { ICollection, IModel, IModelField, IModelGetData } from "@incutonez/shared/src/interfaces";
 import { cloneDeep, isArray, isConstructor, isObject } from "@incutonez/shared/src/utilities";
 import type { Collection } from "@incutonez/shared/src/Collection";
-
-const InternalFields: string[] = Object.values(ModelField);
 
 // TODOJEF: Move everything in shared to ui, and revert what was here originally, so we can have the JS version of it too
 export class Model {
@@ -11,16 +9,21 @@ export class Model {
   [ClassField.Track] = false;
   [ClassField.Snapshot]?: any;
   [ClassField.Visited] = false;
-  [ClassField.Fields]: any[] = [];
+  [ClassField.FieldsInternal]: any[] = [];
   // TODO: Need to figure out how to implement... get a circular dep if I do try to set it
   [ClassField.Parent]?: any;
-  [ClassField.Types]: IModelField[] = [];
+  [ClassField.Fields]: IModelField[] = [];
 
   init(data = {}) {
     const { fields } = this;
-    for (const { name, defaultValue } of fields) {
+    for (const field of fields) {
+      const { name } = field;
       if (name in data) {
         continue;
+      }
+      let { defaultValue } = field;
+      if (field[ClassField.Nullable]) {
+        defaultValue = undefined;
       }
       // Let's make sure we flesh out any values that aren't initially passed in, so they get a default value
       Reflect.set(data, name, defaultValue);
@@ -42,7 +45,7 @@ export class Model {
           const collection = Reflect.get(this, key) as ICollection;
           collection.add(value);
         }
-        else if (found[ClassField.IsModel]) {
+        else if (found[ClassField.IsModel] && value) {
           const model = Reflect.get(this, key) as IModel;
           if (model) {
             model.set(value);
@@ -50,7 +53,7 @@ export class Model {
           /* Otherwise, it appears we need to create a new model instance, so let's see if a definition
            * exists in our types configuration */
           else {
-            const foundType = this[ClassField.Types].find((item) => item.name === key);
+            const foundType = this[ClassField.Fields].find((item) => item.name === key);
             if (foundType) {
               const { defaultValue } = foundType;
               if (defaultValue) {
@@ -65,7 +68,7 @@ export class Model {
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
       else {
-        this[ClassField.Fields].push({
+        this[ClassField.FieldsInternal].push({
           name: key,
           custom: true,
         });
@@ -104,16 +107,14 @@ export class Model {
   }
 
   set fields(value) {
-    this[ClassField.Fields] = value;
+    this[ClassField.FieldsInternal] = value;
   }
 
   get fields() {
-    const fields: IModelField[] = this[ClassField.Fields];
+    const fields: IModelField[] = this[ClassField.FieldsInternal];
     if (fields.length === 0) {
+      console.log("here", Object.keys(this));
       Object.keys(this).forEach((key) => {
-        if (InternalFields.includes(key)) {
-          return;
-        }
         let field: IModelField = {
           name: key,
         };
@@ -134,16 +135,19 @@ export class Model {
         }
         else {
           field.defaultValue = config;
+          field[ClassField.Nullable] = config == null;
         }
         fields.push(field);
       });
-      this[ClassField.Types].forEach((item) => {
+      this[ClassField.Fields].forEach((item) => {
         const { name } = item;
         const found = fields.find((field) => field.name === name);
         if (found) {
-          return;
+          Object.assign(found, item);
         }
-        fields.push(item);
+        else {
+          fields.push(item);
+        }
       });
     }
     return fields;

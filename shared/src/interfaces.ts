@@ -57,6 +57,7 @@ export interface IModelField {
   name: string;
   defaultValue?: any;
   custom?: boolean;
+  [ClassField.Nullable]?: boolean;
   [ClassField.IsCollection]?: boolean;
   [ClassField.IsModel]?: boolean;
 }

@@ -51,14 +51,20 @@ export class FieldType extends Enum {
   Object = 8;
 }
 
+/**
+ * There's something goofy with TS and creating Symbols inline in an object, but we can circumvent this with declaring
+ * the symbols on their own and then setting them in the object.
+ * Source: https://www.reddit.com/r/typescript/comments/z1vjpw/using_a_symbol_to_define_a_class_property/
+ */
 const IsModel = Symbol("isModel");
 const IsCollection = Symbol("isCollection");
+const Nullable = Symbol("isNullable");
 const Snapshot = Symbol("_snapshot");
 const Track = Symbol("_trackChanges");
 const Visited = Symbol("_visited");
 const Parent = Symbol("_parent");
-const Fields = Symbol("_fields");
-const Types = Symbol("_types");
+const FieldsInternal = Symbol("_fields");
+const Fields = Symbol("fields");
 
 export const ClassField = {
   IsModel,
@@ -67,19 +73,10 @@ export const ClassField = {
   Track,
   Visited,
   Parent,
+  FieldsInternal,
   Fields,
-  Types,
+  Nullable,
 } as const;
-
-export enum ModelField {
-  IsModel = "isModel",
-  Snapshot = "_snapshot",
-  Track = "_trackChanges",
-  Visited = "_visited",
-  Parent = "_parent",
-  Fields = "_fields",
-  Types = "_types",
-}
 
 export const EnumMonth = new Month();
 export const EnumWeekday = new Weekday();
