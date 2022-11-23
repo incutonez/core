@@ -70,8 +70,14 @@ export interface ICollectionAdd {
 export interface ICollection {
   model: any;
   data?: IModel[];
+  idField?: string;
+  displayField?: string;
+  [ClassField.Parent]?: ICollection;
   [ClassField.IsCollection]?: boolean;
   [ClassField.Visited]?: boolean;
+}
+
+export interface ICollectionFull extends ICollection {
   add(data: any, config?: ICollectionAdd): void;
   getData(options: IModelGetData): any[];
 }

@@ -5,16 +5,15 @@
   commonSort,
   makeArray,
 } from "@incutonez/shared/src/utilities";
-import { Model } from "@incutonez/shared/src/Model.js";
 import type {
   ICollectionFilter,
   ICollectionSorter,
   IModelGetData,
   ICollectionGroup,
   IModel,
-  ICollectionAdd,
+  ICollectionAdd, ICollection,
 } from "@incutonez/shared/src/interfaces";
-import { ClassField } from "ui/Enums";
+import { ClassField } from "@incutonez/shared/src/Enums";
 
 // TODOJEF: Move to ModelField enum
 export const GroupKey = "groupKey";
@@ -38,28 +37,23 @@ export class Collection extends Array {
   _sorters: (ICollectionSorter | Function)[] = [];
   _suspended = false;
   _visited = false;
-  [ClassField.Parent]?: Collection;
+  [ClassField.Parent]?: ICollection;
   [GroupKey] = null;
   [GroupDisplay] = null;
   _model?: any;
 
   // TODO: Type out args
-  constructor(args: any, model = Model) {
+  constructor({ data, model, [ClassField.Parent]: parent }: ICollection) {
     super();
-    args ??= {};
+    data ??= [];
     // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
     this.suspend(true);
-    if (!this[ModelKey]) {
-      this[ModelKey] = args[ModelKey] || model;
+    if (model) {
+      this[ModelKey] = model;
     }
-    delete args[ModelKey];
+    this[ClassField.Parent] = parent;
     // We always need a reference to the raw source, as that's how we'll be able to build the records
-    if (isArray(args)) {
-      this.records = args;
-    }
-    else {
-      Object.assign(this, args);
-    }
+    this.records = data;
     this.suspend();
     // No inits should have fired, and we're done with setting all values, so let's properly init now
     this.init();
@@ -189,8 +183,9 @@ export class Collection extends Array {
     });
     for (const { [GroupKey]: groupKey, records } of Object.values(groups)) {
       const group = new Collection({
-        records,
-        parent: this,
+        model: this._model,
+        data: records,
+        [ClassField.Parent]: this,
       });
       group[GroupDisplay] = display ? display(group) : groupKey;
       Reflect.set(this, GroupKey, key);
@@ -241,7 +236,7 @@ export class Collection extends Array {
     const { groups, filters } = this;
     let { records } = this;
     if (!isEmpty(filters)) {
-      let data: Model[] = [];
+      let data: IModel[] = [];
       filters.forEach((filter, index) => {
         // If we have multiple filters, we have to make some swaps if the filter is not an OR
         if (!(index === 0 || filter.or)) {
@@ -255,7 +250,7 @@ export class Collection extends Array {
           if (!exact) {
             value = new RegExp(value, "i");
           }
-          fn = (record: Model) => {
+          fn = (record: IModel) => {
             const recordValue = Reflect.get(record, property);
             return exact ? recordValue === value : value.test(recordValue);
           };
@@ -303,20 +298,20 @@ export class Collection extends Array {
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
-  getOptionId(option: Model) {
+  getOptionId(option: IModel) {
     if (option) {
       return Reflect.get(option, isArray(option) ? GroupDisplay : this.idField);
     }
   }
 
-  getOptionDisplay(option: Model) {
+  getOptionDisplay(option: IModel) {
     if (option) {
       // If the option is an array, it's assumed it's a collection, and we're accessing the group name
       return Reflect.get(option, isArray(option) ? GroupDisplay : this.displayField);
     }
   }
 
-  getOptionCls(option: Model, selections: Model[]) {
+  getOptionCls(option: IModel, selections: IModel[]) {
     if (this.isGrouped) {
       return "group-wrapper";
     }
