@@ -27,6 +27,11 @@ export class Month extends Enum {
   October = 9;
   November = 10;
   December = 11;
+
+  constructor() {
+    super();
+    this.init();
+  }
 }
 
 export class Weekday extends Enum {
@@ -37,6 +42,11 @@ export class Weekday extends Enum {
   Thursday = 4;
   Friday = 5;
   Saturday = 6;
+
+  constructor() {
+    super();
+    this.init();
+  }
 }
 
 /**

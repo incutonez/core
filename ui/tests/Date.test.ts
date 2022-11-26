@@ -1,6 +1,5 @@
 ﻿import "ui/overrides";
 
-// TODOJEF: Fix this... it has 4 failing tests
 describe("Quarters", () => {
   test("Quarter Start Future", () => {
     let previous;

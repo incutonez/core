@@ -91,9 +91,8 @@ import {
   hasTarget,
   isArray,
   isEmpty,
-  Enum,
   makeArray,
-} from "ui";
+} from "ui/utilities";
 import {
   BaseField,
   BaseIcon,
@@ -101,7 +100,8 @@ import {
   BaseList,
   BaseOverlay,
 } from "ui/index";
-import { Collection } from "ui/Collection.js";
+import { Collection } from "ui/classes/Collection";
+import { Enum } from "ui/classes/Enum";
 
 /**
  * @property {Number} Above
