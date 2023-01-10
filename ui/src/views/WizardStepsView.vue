@@ -30,56 +30,50 @@
   </BaseDialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   BaseDialog,
 } from "ui/index";
-import WizardStep, { StepState } from "ui/components/WizardStep.vue";
+import WizardStep from "ui/components/WizardStep.vue";
 import {
   reactive,
   ref,
   watch,
 } from "vue";
+import { EnumWizardStep } from "ui/statics/Enums";
 
-export default {
-  name: "WizardStepsView",
-  components: {
-    WizardStep,
-    BaseDialog,
-  },
-  setup() {
-    const firstStep = reactive({
-      index: 1,
-      title: "This is One",
-      state: StepState.Active,
-    });
-    const secondStep = reactive({
-      index: 2,
-      title: "This is the 2nd One",
-      state: StepState.Enabled,
-    });
-    const thirdStep = reactive({
-      index: 3,
-      title: "This is the 3rd One with some long text",
-      state: StepState.Enabled,
-    });
-    const activeStep = ref(firstStep);
-    function onClickStep(step) {
-      activeStep.value = step;
-    }
-    watch(activeStep, (current, previous) => {
-      if (previous) {
-        previous.state = previous.state === StepState.InvalidActive ? StepState.Invalid : StepState.Completed;
-      }
-    });
-    return {
-      firstStep,
-      secondStep,
-      thirdStep,
-      onClickStep,
-    };
-  },
-};
+interface IStep {
+  index: number;
+  title: string;
+  state: number;
+}
+
+const firstStep = reactive({
+  index: 1,
+  title: "This is One",
+  state: EnumWizardStep.Active,
+});
+const secondStep = reactive({
+  index: 2,
+  title: "This is the 2nd One",
+  state: EnumWizardStep.Enabled,
+});
+const thirdStep = reactive({
+  index: 3,
+  title: "This is the 3rd One with some long text",
+  state: EnumWizardStep.Enabled,
+});
+const activeStep = ref(firstStep);
+
+function onClickStep(step: IStep) {
+  activeStep.value = step;
+}
+
+watch(activeStep, (current, previous) => {
+  if (previous) {
+    previous.state = previous.state === EnumWizardStep.InvalidActive ? EnumWizardStep.Invalid : EnumWizardStep.Completed;
+  }
+});
 </script>
 
 <style scoped>

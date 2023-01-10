@@ -7,22 +7,18 @@
   />
 </template>
 
-<script>
+<script setup lang="ts">
 import { BaseField } from "ui/index";
-import { parseBoolean } from "ui";
+import type { TFieldValue } from "ui/interfaces";
+import { parseBoolean } from "ui/utilities";
 
-export default {
-  name: "FieldCheckBox",
-  components: {
-    BaseField,
-  },
-  props: {
-    parseValue: {
-      type: Function,
-      default: parseBoolean,
-    },
-  },
-};
+export interface IPropsFieldCheckBox {
+  parseValue: (value: TFieldValue) => TFieldValue;
+}
+
+withDefaults(defineProps<IPropsFieldCheckBox>(), {
+  parseValue: parseBoolean,
+});
 </script>
 
 <style lang="scss" scoped>

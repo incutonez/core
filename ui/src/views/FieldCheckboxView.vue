@@ -14,24 +14,12 @@
   </BaseDialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   BaseDialog,
   FieldCheckBox,
 } from "ui/index";
 import { ref } from "vue";
 
-export default {
-  name: "FieldCheckboxView",
-  components: {
-    BaseDialog,
-    FieldCheckBox,
-  },
-  setup() {
-    const value = ref(true);
-    return {
-      value,
-    };
-  },
-};
+const value = ref(true);
 </script>

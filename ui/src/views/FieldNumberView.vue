@@ -15,32 +15,13 @@
   </BaseDialog>
 </template>
 
-<script>
-import {
-  reactive,
-  toRefs,
-} from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import {
   BaseDialog,
   FieldNumber,
 } from "ui/index";
 
-export default {
-  name: "FieldNumberView",
-  components: {
-    BaseDialog,
-    FieldNumber,
-  },
-  setup() {
-    const state = reactive({
-      isRequired: true,
-      value: 10.203,
-      minValue: 2,
-    });
-
-    return {
-      ...toRefs(state),
-    };
-  },
-};
+const value = ref(10.203);
+const minValue = ref(2);
 </script>

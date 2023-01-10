@@ -3,6 +3,12 @@
 type T = number | string;
 
 export class Enum extends Array {
+  static init(keys: string[]) {
+    const self = new Enum();
+    self.init(keys);
+    return self;
+  }
+
   init(keys = this.keys) {
     if (!Array.isArray(keys)) {
       Object.assign(keys);

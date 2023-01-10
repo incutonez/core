@@ -49,7 +49,7 @@ const menuShowing = ref(false);
 function hideMenu() {
   menuShowing.value = false;
 }
-function onClickMenuItem(menuItem) {
+function onClickMenuItem(menuItem: any) {
   emit("click:item", menuItem);
   hideMenu();
 }

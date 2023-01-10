@@ -2,11 +2,11 @@
   return date <= end && date >= start;
 }
 
-export function isUndefined(value: any) {
+export function isUndefined(value: any): value is undefined {
   return value === undefined;
 }
 
-export function isNull(value: any) {
+export function isNull(value: any): value is null {
   return value === null;
 }
 
@@ -14,7 +14,31 @@ export function isDefined(value: any) {
   return value != null;
 }
 
-export function isEmpty(value: any) {
+export function isString(value: any): value is string {
+  return typeof value === "string";
+}
+
+export function isNumber(value: any): value is number {
+  return typeof value === "number";
+}
+
+export function isBoolean(value: any): value is boolean {
+  return typeof value === "boolean";
+}
+
+export function isDate(value: any): value is Date {
+  return value instanceof Date;
+}
+
+export function isArray(value: any): value is [] {
+  return Array.isArray(value);
+}
+
+export function isObject(value: any) {
+  return value?.constructor === Object;
+}
+
+export function isEmpty(value: any): value is null | undefined {
   return isUndefined(value) ||
     isNull(value) ||
     isNumber(value) && isNaN(value) ||
@@ -23,32 +47,8 @@ export function isEmpty(value: any) {
     isObject(value) && Object.values(value).length === 0;
 }
 
-export function isString(value: any) {
-  return typeof value === "string";
-}
-
-export function isNumber(value: any) {
-  return typeof value === "number";
-}
-
-export function isBoolean(value: any) {
-  return typeof value === "boolean";
-}
-
-export function isDate(value: any) {
-  return value instanceof Date;
-}
-
-export function isArray(value: any) {
-  return Array.isArray(value);
-}
-
-export function makeArray(value: any) {
+export function makeArray(value: any): any[] {
   return isArray(value) ? value : [value];
-}
-
-export function isObject(value: any) {
-  return value?.constructor === Object;
 }
 
 export function isFunction(value: any) {

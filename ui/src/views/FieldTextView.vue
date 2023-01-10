@@ -19,41 +19,22 @@
   </BaseDialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   BaseDialog,
   BaseField,
 } from "ui/index";
-import {
-  reactive,
-  toRefs,
-} from "vue";
+import { ref } from "vue";
 
-export default {
-  name: "BaseFieldView",
-  components: {
-    BaseDialog,
-    BaseField,
-  },
-  setup() {
-    const state = reactive({
-      isRequired: true,
-      minLength: 4,
-      maxLength: 50,
-      value: "John",
-    });
-    function onChangeValidity() {
-      console.info("onChangeValidity");
-    }
-    function onChangeDirty() {
-      console.info("onChangeDirty");
-    }
+const isRequired = ref(true);
+const minLength = ref(4);
+const maxLength = ref(50);
+const value = ref("John");
 
-    return {
-      ...toRefs(state),
-      onChangeValidity,
-      onChangeDirty,
-    };
-  },
-};
+function onChangeValidity() {
+  console.info("onChangeValidity");
+}
+function onChangeDirty() {
+  console.info("onChangeDirty");
+}
 </script>

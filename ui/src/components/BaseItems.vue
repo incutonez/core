@@ -11,22 +11,12 @@
   </div>
 </template>
 
-<script>
-import { BaseIcon } from "ui/index";
+<script setup lang="ts">
+import { BaseIcon, Icon } from "ui/index";
 
-export default {
-  name: "BaseItems",
-  components: {
-    BaseIcon,
-  },
-  emits: ["remove:selection"],
-  setup(props, { emit }) {
-    function onClickRemoveOption(event) {
-      emit("remove:selection", event);
-    }
-    return {
-      onClickRemoveOption,
-    };
-  },
-};
+const emit = defineEmits(["remove:selection"]);
+
+function onClickRemoveOption(event: MouseEvent) {
+  emit("remove:selection", event);
+}
 </script>

@@ -39,54 +39,38 @@
   </article>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, type PropType } from "vue";
-import { BaseButton, BaseIcon, type IBaseIcon } from "ui/index";
+<script setup lang="ts">
+import { computed } from "vue";
+import { BaseButton, BaseIcon, Icon } from "ui/index";
+import type { IPropsBaseIcon } from "ui/interfaces";
 
-export default defineComponent({
-  name: "DialogConfirm",
-  components: {
-    BaseButton,
-    BaseIcon,
-  },
-  props: {
-    title: {
-      type: String,
-      default: null,
-    },
-    titleIcon: {
-      type: Object as PropType<IBaseIcon>,
-      default: null,
-    },
-    modelValue: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const isShowing = computed({
-      get() {
-        return props.modelValue;
-      },
-      set(value) {
-        emit("update:modelValue", value);
-      },
-    });
-    function onClickCloseButton() {
-      isShowing.value = false;
-    }
-    function onClickCancelButton() {
-      isShowing.value = false;
-    }
+export interface IPropsDialogConfirm {
+  title?: string;
+  titleIcon?: IPropsBaseIcon;
+  modelValue?: boolean;
+}
 
-    return {
-      isShowing,
-      onClickCloseButton,
-      onClickCancelButton,
-    };
+const props = withDefaults(defineProps<IPropsDialogConfirm>(), {
+  title: undefined,
+  titleIcon: undefined,
+  modelValue: true,
+});
+const emit = defineEmits(["update:modelValue"]);
+const isShowing = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit("update:modelValue", value);
   },
 });
+
+function onClickCloseButton() {
+  isShowing.value = false;
+}
+function onClickCancelButton() {
+  isShowing.value = false;
+}
 </script>
 
 <style scoped lang="scss">

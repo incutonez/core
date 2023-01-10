@@ -4,7 +4,7 @@
       v-for="option in records"
       :key="option.fullPath"
       :class="records.getOptionCls(option, selections)"
-      @mousedown="onMouseDownListItem($event, option, isGrouped)"
+      @mousedown="onMouseDownListItem($event, option)"
     >
       <template v-if="isGrouped">
         <div class="group">
@@ -58,7 +58,7 @@ import {
   ref,
   watchEffect,
 } from "vue";
-import { Collection } from "ui/Collection";
+import { Collection } from "ui/classes/Collection";
 
 export interface IPropsBaseList {
   /**
@@ -74,26 +74,24 @@ const props = withDefaults(defineProps<IPropsBaseList>(), {
   selections: () => [],
 });
 const emit = defineEmits(["update:selections", "click:item"]);
-const records = ref(null);
+const records = ref<Collection>();
 watchEffect(() => {
   const { options } = props;
   // TODO: Figure out better way to prevent rendering from happening on every click
   // We always want to be dealing with our class, so we can normalize the functionality
   records.value = options?.isCollection ? options : new Collection(options);
 });
-const idField = computed(() => records.value.idField);
-const displayField = computed(() => records.value.displayField);
-const isGrouped = computed(() => records.value.isGrouped);
-function emitUpdate(args) {
+const isGrouped = computed(() => records.value?.isGrouped);
+function emitUpdate(args: any[]) {
   emit("update:selections", ...args);
 }
-function emitClick(args) {
+function emitClick(args: any[]) {
   emit("click:item", ...args);
 }
-function onUpdateSelections(...args) {
+function onUpdateSelections(...args: any[]) {
   emitUpdate(args);
 }
-function onClickItem(...args) {
+function onClickItem(...args: any[]) {
   emitClick(args);
 }
 
@@ -102,14 +100,14 @@ function onClickItem(...args) {
  * on the input field, and that can only be done with mousedown... click happens AFTER focus has already
  * been lost.
  */
-function onMouseDownListItem(event, option, grouped) {
+function onMouseDownListItem(event: MouseEvent, option: any) {
   // We prevent focus from being lost in the parent component
   event.stopPropagation();
   event.preventDefault();
-  if (grouped) {
+  if (isGrouped.value) {
     return;
   }
-  emitUpdate([option, event.target.classList.contains(SelectedCls)]);
+  emitUpdate([option, (event.target as HTMLLIElement).classList.contains(SelectedCls)]);
   emitClick([option]);
 }
 </script>

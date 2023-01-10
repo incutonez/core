@@ -49,6 +49,60 @@ export class Weekday extends Enum {
   }
 }
 
+export class LabelAlign extends Enum {
+  Left = "left";
+  Right = "right";
+  Top = "top";
+  Down = "down";
+
+  constructor() {
+    super();
+    this.init();
+  }
+}
+
+export class TooltipPosition extends Enum {
+  RightMiddle = "right-middle";
+  RightTop = "right-top";
+  RightBottom = "right-bottom";
+  Middle = "middle";
+  MiddleTop = "middle-top";
+  MiddleBottom = "middle-bottom";
+  LeftMiddle = "left-middle";
+  LeftTop = "left-top";
+  LeftBottom = "left-bottom";
+
+  constructor() {
+    super();
+    this.init();
+  }
+}
+
+export class TagPosition extends Enum {
+  Above = "tags-above";
+  Below = "tags-below";
+  Inline = "tags-inline";
+
+  constructor() {
+    super();
+    this.init();
+  }
+}
+
+export class WizardStep extends Enum {
+  Disabled = 0;
+  Enabled = 1;
+  Active = 2;
+  Invalid = 3;
+  InvalidActive = 4;
+  Completed = 5;
+
+  constructor() {
+    super();
+    this.init();
+  }
+}
+
 /**
  * There's something goofy with TS and creating Symbols inline in an object, but we can circumvent this with declaring
  * the symbols on their own and then setting them in the object.
@@ -63,6 +117,7 @@ const Visited = Symbol("_visited");
 const Parent = Symbol("_parent");
 const Model = Symbol("model");
 const Groups = Symbol("groups");
+const Sorters = Symbol("sorters");
 const Data = Symbol("data");
 const ModelInternal = Symbol("_model");
 const FieldsInternal = Symbol("_fields");
@@ -81,6 +136,7 @@ export const EnumProp = {
   Parent,
   Model,
   Groups,
+  Sorters,
   ModelInternal,
   FieldsInternal,
   Fields,
@@ -94,3 +150,7 @@ export const EnumProp = {
 
 export const EnumMonth = new Month();
 export const EnumWeekday = new Weekday();
+export const EnumLabelAlign = new LabelAlign();
+export const EnumTooltipPosition = new TooltipPosition();
+export const EnumTagPosition = new TagPosition();
+export const EnumWizardStep = new WizardStep();

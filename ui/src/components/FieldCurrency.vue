@@ -6,15 +6,8 @@
   </FieldNumber>
 </template>
 
-<script>
+<script setup lang="ts">
 import { FieldNumber } from "ui/index";
-
-export default {
-  name: "FieldCurrency",
-  components: {
-    FieldNumber,
-  },
-};
 </script>
 
 <style scoped>

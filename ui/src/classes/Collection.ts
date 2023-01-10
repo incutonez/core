@@ -37,7 +37,7 @@ export class Collection extends Array {
   /**
    * @type {CollectionSorter[]}
    */
-  [SortersInternal]: (ICollectionSorter | Function)[] = [];
+  [SortersInternal]?: (ICollectionSorter | Function)[];
   [SuspendedInternal] = false;
   [EnumProp.Visited] = false;
   [EnumProp.Parent]?: ICollection;
@@ -45,16 +45,20 @@ export class Collection extends Array {
   [EnumProp.GroupDisplay] = null;
   [EnumProp.ModelInternal]?: any;
 
-  constructor({ [EnumProp.Data]: data, [EnumProp.Model]: model, [EnumProp.Parent]: parent, [EnumProp.Groups]: groups }: ICollection) {
+  constructor(config: ICollection) {
     super();
+    let { [EnumProp.Data]: data } = config;
+    const { [EnumProp.Model]: model } = config;
     data ??= [];
     // We need this set, so our Object.assign doesn't kick off multiple inits when each property is set
     this.suspend(true);
     if (model) {
       this[EnumProp.Model] = model;
     }
-    this[EnumProp.Parent] = parent;
-    this[EnumProp.Groups] = groups;
+    this[EnumProp.Parent] = config[EnumProp.Parent];
+    this[EnumProp.Groups] = config[EnumProp.Groups];
+    this[EnumProp.Sorters] = config[EnumProp.Sorters];
+    this[EnumProp.DisplayField] = config[EnumProp.DisplayField] || "value";
     // We always need a reference to the raw source, as that's how we'll be able to build the records
     this.records = data;
     this.suspend();
@@ -138,7 +142,7 @@ export class Collection extends Array {
     }
     sorters = makeArray(sorters);
     this.suspend(suppress);
-    this.sorters = this.sorters.concat(sorters);
+    this[EnumProp.Sorters] = this[EnumProp.Sorters]?.concat(sorters) || sorters;
     this.suspend();
   }
 
@@ -157,7 +161,7 @@ export class Collection extends Array {
     }
     sorters = makeArray(sorters);
     for (const sorter of sorters) {
-      this.sorters.remove(({ id }: ICollectionSorter) => id === sorter);
+      this[EnumProp.Sorters]?.remove(({ id }: ICollectionSorter) => id === sorter);
     }
     this.suspend(suppress);
     this.init();
@@ -188,7 +192,7 @@ export class Collection extends Array {
       const group = new Collection({
         [EnumProp.Model]: this[EnumProp.ModelInternal],
         [EnumProp.Data]: records,
-        [EnumProp.Parent]: this,
+        [EnumProp.Parent]: this as ICollection,
       });
       group[EnumProp.GroupDisplay] = display ? display(group) : groupKey;
       Reflect.set(this, EnumProp.GroupKey, key);
@@ -209,7 +213,7 @@ export class Collection extends Array {
   }
 
   // @ts-ignore
-  sort(sorters = this.sorters, recordSort = true) {
+  sort(sorters = this[EnumProp.Sorters], recordSort = true) {
     if (!sorters || this[SuspendedInternal]) {
       return;
     }
@@ -254,7 +258,7 @@ export class Collection extends Array {
             value = new RegExp(value, "i");
           }
           fn = (record: IModel) => {
-            const recordValue = Reflect.get(record, property);
+            const recordValue = Reflect.get(record, property as string);
             return exact ? recordValue === value : value.test(recordValue);
           };
         }
@@ -301,7 +305,7 @@ export class Collection extends Array {
   }
 
   // TODO: There's a warning that gets thrown when we choose a key that's the same for each option
-  getOptionId(option: IModel) {
+  getOptionId(option?: IModel) {
     if (option) {
       return Reflect.get(option, isArray(option) ? EnumProp.GroupDisplay : this.idField);
     }
@@ -310,7 +314,7 @@ export class Collection extends Array {
   getOptionDisplay(option: IModel) {
     if (option) {
       // If the option is an array, it's assumed it's a collection, and we're accessing the group name
-      return Reflect.get(option, isArray(option) ? EnumProp.GroupDisplay : this.displayField);
+      return Reflect.get(option, isArray(option) ? EnumProp.GroupDisplay : this[EnumProp.DisplayField]);
     }
   }
 
@@ -330,21 +334,21 @@ export class Collection extends Array {
     return cls;
   }
 
-  clone(options: IModelGetData) {
-    const { idField, displayField, sorters, filters } = this;
+  clone(options?: IModelGetData) {
+    const { idField, filters } = this;
     // @ts-ignore
     return new this.constructor({
       idField,
-      displayField,
+      [EnumProp.DisplayField]: this[EnumProp.DisplayField],
       [EnumProp.Groups]: this[EnumProp.Groups],
-      sorters,
+      [EnumProp.Sorters]: this[EnumProp.Sorters],
       filters,
       [EnumProp.Model]: this[EnumProp.Model],
       records: this.getData(options),
     });
   }
 
-  getData(options: IModelGetData) {
+  getData(options?: IModelGetData) {
     const data: any[] = [];
     this[EnumProp.Visited] = true;
     this.forEach((record) => {
@@ -365,7 +369,7 @@ export class Collection extends Array {
     return this[this.length - 1];
   }
 
-  set sorters(sorters) {
+  set [EnumProp.Sorters](sorters) {
     sorters?.map((sorter, index) => {
       if (!(typeof sorter === "function" || sorter.id)) {
         sorter.id = index;
@@ -376,7 +380,7 @@ export class Collection extends Array {
     this.sort();
   }
 
-  get sorters() {
+  get [EnumProp.Sorters]() {
     return this[SortersInternal];
   }
 
@@ -406,6 +410,10 @@ export class Collection extends Array {
         const record = new model(item);
         record[EnumProp.Parent] = this;
         records.push(record);
+      }
+      // There's no model associated with this collection, so we just have a bunch of plain ole objects
+      else {
+        records.push(item);
       }
     });
     this[RecordsInternal] = records;
@@ -439,12 +447,12 @@ export class Collection extends Array {
     this[IdFieldInternal] = value;
   }
 
-  get displayField(): string {
-    return this[EnumProp.Parent]?.[EnumProp.DisplayField] || this[DisplayFieldInternal];
+  set [EnumProp.DisplayField](value) {
+    this[DisplayFieldInternal] = value;
   }
 
-  set displayField(value) {
-    this[DisplayFieldInternal] = value;
+  get [EnumProp.DisplayField]() {
+    return this[EnumProp.Parent]?.[EnumProp.DisplayField] || this[DisplayFieldInternal];
   }
 
   get isGrouped() {

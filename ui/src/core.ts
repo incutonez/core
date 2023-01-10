@@ -1,13 +1,14 @@
 ﻿import "ui/index.css";
 import "@fontsource/open-sans";
 import "ui/overrides";
-import "ui/rules.js";
+import "ui/rules";
 import Icon from "ui/statics/Icon";
 import {
   mouseDownDocument,
   scrollDocument,
-} from "ui/directives/document.js";
+} from "ui/directives/document";
 import { visible } from "ui/directives/component";
+import type { App } from "vue";
 
 /**
  * Current issue is that I want a global manager component, but I don't want all of the apps to have to
@@ -15,7 +16,7 @@ import { visible } from "ui/directives/component";
  * is through WebComponents (customElements)
  */
 export default {
-  install(app) {
+  install(app: App) {
     app.config.globalProperties.Icon = Icon;
     app.directive("visible", visible);
     app.directive("mousedown-document", mouseDownDocument);

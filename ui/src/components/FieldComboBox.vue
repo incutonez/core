@@ -80,7 +80,11 @@
   </BaseField>
 </template>
 
-<script>
+<script setup lang="ts">
+/**
+ * Implementation concept taken from Atlassian
+ * Reference: https://atlassian.design/components/select/examples
+ */
 import {
   computed,
   ref,
@@ -89,7 +93,6 @@ import {
 } from "vue";
 import {
   hasTarget,
-  isArray,
   isEmpty,
   makeArray,
 } from "ui/utilities";
@@ -99,20 +102,49 @@ import {
   BaseItems,
   BaseList,
   BaseOverlay,
+  Icon,
 } from "ui/index";
 import { Collection } from "ui/classes/Collection";
-import { Enum } from "ui/classes/Enum";
+import { EnumProp } from "ui/statics/Enums";
 
-/**
- * @property {Number} Above
- * @property {Number} Below
- * @property {Number} Inline
- */
-export const ComboBoxTagPosition = new Enum({
-  Above: "tags-above",
-  Below: "tags-below",
-  Inline: "tags-inline",
+export interface IPropsFieldComboBox {
+  modelValue?: string | number | any[];
+  multiSelect?: boolean;
+  options?: any[] | Collection;
+  expanded?: boolean;
+  idField?: string;
+  displayField?: string;
+  maxSelectedTags?: number;
+  filterSelections?: boolean;
+  filterFn?: (options: any) => {};
+  /**
+   * This must be an array of objects, with at least the id property defined
+   * @typedef Group
+   * @property {String|Number} key
+   * @property {String} [display=id]
+   * This is the value that's used when displaying the group.  By default, it uses the id
+   */
+  groups?: any[];
+  listHeight?: string;
+}
+
+interface IUpdateSelection {
+  option?: any;
+  remove?: boolean;
+  shouldBlur?: boolean;
+}
+
+const props = withDefaults(defineProps<IPropsFieldComboBox>(), {
+  modelValue: undefined,
+  options: () => [],
+  idField: "",
+  displayField: "",
+  maxSelectedTags: 2,
+  filterFn: undefined,
+  groups: undefined,
+  listHeight: "144px",
 });
+const emit = defineEmits(["update:expanded", "update:modelValue", "update:selected"]);
 const SearchFilter = "searchFilter";
 const SelectionsFilter = "selectionsFilter";
 /**
@@ -120,358 +152,253 @@ const SelectionsFilter = "selectionsFilter";
  * to h-36 in field-combo-box-list-wrapper
  */
 const ListPadding = 8;
+const fieldEl = ref<InstanceType<typeof BaseField>>();
+const dropdownListEl = ref<InstanceType<typeof BaseOverlay>>();
+const isExpanded = ref(props.expanded);
+const $search = ref(null);
+const showCollapseTags = ref(false);
+const selections = ref<any[]>([]);
+const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
+const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
+const dropdownListStyle = computed(() => {
+  return {
+    height: props.listHeight,
+  };
+});
+const optionsAvailable = computed(() => {
+  const { groups } = props;
+  let { filterFn, displayField, idField } = props;
+  let options = props.options as Collection;
+  /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
+   * cause side effects elsewhere... we need our own copy for this component */
+  if (options[EnumProp.IsCollection]) {
+    options = options.clone();
+  }
+  else {
+    options = new Collection(options);
+  }
+  // If this is explicitly set, we prefer it
+  if (idField) {
+    options.idField = idField;
+  }
+  else {
+    idField = options.idField;
+  }
+  // If this is explicitly set, we prefer it
+  if (displayField) {
+    options.displayField = displayField;
+  }
+  else {
+    displayField = options.displayField;
+  }
+  const search = unref($search);
+  options.removeFilters([SearchFilter, SelectionsFilter], true);
+  if (search) {
+    if (!filterFn) {
+      const searchRe = new RegExp(search, "i");
+      filterFn = (option) => searchRe.test(option[displayField]);
+    }
+    options.addFilters([{
+      id: SearchFilter,
+      fn: filterFn,
+    }], {
+      suppress: true,
+    });
+  }
+  if (props.multiSelect && props.filterSelections) {
+    // TODO: Selections here triggers this entire computed to be called, which is inefficient
+    const selectionValues = unref(selections);
+    if (!isEmpty(selectionValues)) {
+      options.addFilters([{
+        id: SelectionsFilter,
+        fn: (option: any) => {
+          let include = true;
+          for (const selection of selectionValues) {
+            if (selection[idField] === option[idField]) {
+              include = false;
+              break;
+            }
+          }
+          return include;
+        },
+      }], {
+        suppress: true,
+      });
+    }
+  }
+  options[EnumProp.Groups] = groups;
+  return options;
+});
+const displayFieldFm = computed(() => optionsAvailable.value.displayField);
+selections.value = getSelections();
+const displayValue = computed({
+  get() {
+    const search = unref($search);
+    if (isEmpty(search)) {
+      return props.multiSelect ? "" : selections.value[0]?.[displayFieldFm.value];
+    }
+    return search;
+  },
+  // User is typing
+  set(value) {
+    $search.value = value;
+  },
+});
+const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
+function getSelections() {
+  const selections: any[] = [];
+  const { idField } = optionsAvailable.value;
+  let { modelValue } = props;
+  if (isEmpty(modelValue)) {
+    return selections;
+  }
+  modelValue = makeArray(modelValue);
+  modelValue.forEach((selectedValue) => {
+    const foundOption = props.options?.find((option) => option[idField] === selectedValue);
+    if (foundOption) {
+      selections.push(foundOption);
+    }
+  });
+  return selections;
+}
+// We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
+watch(() => props.modelValue, (() => {
+  selections.value = getSelections();
+  emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
+}), {
+  immediate: true,
+});
+watch(() => props.expanded, (value) => updateExpanded(value));
+watch(() => props.multiSelect, (value) => {
+  if (!value) {
+    updateSelections({
+      option: selections.value?.[0],
+    });
+  }
+});
+function updateExpanded(value = !isExpanded.value) {
+  isExpanded.value = value;
+  if (value) {
+    const $dropdownListEl = dropdownListEl.value.$el;
+    const { style: dropdownStyle } = $dropdownListEl;
+    const { height } = $dropdownListEl.getBoundingClientRect();
+    const boundingClientRect = fieldEl.value.inputWrapper.getBoundingClientRect();
+    const { left, width, bottom } = boundingClientRect;
+    let { top } = boundingClientRect;
+    if (innerHeight < bottom + height + ListPadding) {
+      top -= height;
+    }
+    else {
+      top = bottom + ListPadding;
+    }
+    dropdownStyle.top = `${top + scrollY}px`;
+    dropdownStyle.left = `${left - 2}px`;
+    dropdownStyle.width = `${width + 4}px`;
+  }
+  emit("update:expanded", value);
+}
+function onKeyBackspace() {
+  if (!props.multiSelect) {
+    return;
+  }
+  let modelValue = props.modelValue as any[];
+  if (isEmpty(modelValue) || !isEmpty($search.value)) {
+    return;
+  }
+  modelValue = modelValue[modelValue.length - 1];
+  const { idField } = optionsAvailable.value;
+  updateSelections({
+    option: props.options?.find((item) => item[idField] === modelValue),
+    remove: true,
+  });
+}
+function onClickField() {
+  updateExpanded();
+}
 /**
- * Implementation concept taken from Atlassian
- * Reference: https://atlassian.design/components/select/examples
+ * When the user does any sort of input for the single select, we need to update
+ * our search value to what's been typed, as the search acts as both the display
+ * value and the filter value for the dropdown list.  And we don't want to initially
+ * set the search value until the user does some sort of input.
+ * @param {String} value
  */
-export default {
-  name: "FieldComboBox",
-  components: {
-    BaseOverlay,
-    BaseList,
-    BaseIcon,
-    BaseItems,
-    BaseField,
-  },
-  emits: ["update:expanded", "update:modelValue", "update:selected"],
-  props: {
-    modelValue: {
-      type: [String, Number, Array],
-      default: null,
-    },
-    multiSelect: {
-      type: Boolean,
-      default: false,
-    },
-    options: {
-      type: Array,
-      default: () => [],
-    },
-    expanded: {
-      type: Boolean,
-      default: false,
-    },
-    idField: {
-      type: String,
-      default: null,
-    },
-    displayField: {
-      type: String,
-      default: null,
-    },
-    maxSelectedTags: {
-      type: Number,
-      default: 2,
-    },
-    filterSelections: {
-      type: Boolean,
-      default: false,
-    },
-    filterFn: {
-      type: Function,
-      default: null,
-    },
-    /**
-     * This must be an array of objects, with at least the id property defined
-     * @typedef Group
-     * @property {String|Number} key
-     * @property {String} [display=id]
-     * This is the value that's used when displaying the group.  By default, it uses the id
-     */
-    groups: {
-      type: Array,
-      default: null,
-    },
-    // TODOJEF: Get this working
-    groupSort: {
-      type: Function,
-      default: null,
-    },
-    listHeight: {
-      type: String,
-      default: "144px",
-    },
-  },
-  setup(props, { emit }) {
-    const fieldEl = ref(null);
-    const dropdownListEl = ref(null);
-    const isExpanded = ref(props.expanded);
-    const $search = ref(null);
-    const showCollapseTags = ref(false);
-    const selections = ref(null);
-    const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
-    const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
-    const dropdownListStyle = computed(() => {
-      return {
-        height: props.listHeight,
-      };
+function onInputField(value: string) {
+  if (props.multiSelect) {
+    return;
+  }
+  if (isEmpty(value)) {
+    updateSelections({
+      shouldBlur: false,
     });
-    const optionsAvailable = computed(() => {
-      const { groups } = props;
-      let { options, filterFn, displayField, idField } = props;
-      /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
-       * cause side effects elsewhere... we need our own copy for this component */
-      if (options.isCollection) {
-        options = options.clone();
-      }
-      else {
-        options = new Collection(options);
-      }
-      // If this is explicitly set, we prefer it
-      if (idField) {
-        options.idField = idField;
-      }
-      else {
-        idField = options.idField;
-      }
-      // If this is explicitly set, we prefer it
-      if (displayField) {
-        options.displayField = displayField;
-      }
-      else {
-        displayField = options.displayField;
-      }
-      const search = unref($search);
-      options.removeFilters([SearchFilter, SelectionsFilter], true);
-      if (search) {
-        if (!filterFn) {
-          const searchRe = new RegExp(search, "i");
-          filterFn = (option) => searchRe.test(option[displayField]);
-        }
-        options.addFilters({
-          id: SearchFilter,
-          fn: filterFn,
-        }, {
-          suppress: true,
-        });
-      }
-      if (props.multiSelect && props.filterSelections) {
-        // TODO: Selections here triggers this entire computed to be called, which is inefficient
-        const selectionValues = unref(selections);
-        if (!isEmpty(selectionValues)) {
-          options.addFilters({
-            id: SelectionsFilter,
-            fn: (option) => {
-              let include = true;
-              for (const selection of selectionValues) {
-                if (selection[idField] === option[idField]) {
-                  include = false;
-                  break;
-                }
-              }
-              return include;
-            },
-          }, {
-            suppress: true,
-          });
-        }
-      }
-      options.groups = groups;
-      return options;
-    });
-    const displayFieldFm = computed(() => optionsAvailable.value.displayField);
-    selections.value = getSelections();
-    const displayValue = computed({
-      get() {
-        const search = unref($search);
-        if (isEmpty(search)) {
-          return props.multiSelect ? "" : selections.value[0]?.[displayFieldFm.value];
-        }
-        return search;
-      },
-      // User is typing
-      set(value) {
-        $search.value = value;
-      },
-    });
-    const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
-    function getSelections() {
-      const selections = [];
-      const { idField } = optionsAvailable.value;
-      let { modelValue } = props;
-      if (isEmpty(modelValue)) {
-        return selections;
-      }
-      modelValue = makeArray(modelValue);
-      modelValue.forEach((selectedValue) => {
-        const foundOption = props.options?.find((option) => option[idField] === selectedValue);
-        if (foundOption) {
-          selections.push(foundOption);
-        }
-      });
-      return selections;
-    }
-    // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-    watch(() => props.modelValue, (() => {
-      selections.value = getSelections();
-      emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-    }), {
-      immediate: true,
-    });
-    watch(() => props.expanded, (value) => {
-      updateExpanded(value);
-    });
-    watch(() => props.multiSelect, (value) => {
-      if (!value) {
-        updateSelections({
-          option: selections.value?.[0],
-        });
-      }
-    });
-    function updateExpanded(value = !isExpanded.value) {
-      isExpanded.value = value;
-      if (value) {
-        const { inputWrapper } = fieldEl.value;
-        const $dropdownListEl = dropdownListEl.value.$el;
-        const { style: dropdownStyle } = $dropdownListEl;
-        const { height } = $dropdownListEl.getBoundingClientRect();
-        const boundingClientRect = inputWrapper.getBoundingClientRect();
-        const { left, width, bottom } = boundingClientRect;
-        let { top } = boundingClientRect;
-        if (innerHeight < bottom + height + ListPadding) {
-          top -= height;
-        }
-        else {
-          top = bottom + ListPadding;
-        }
-        dropdownStyle.top = `${top + scrollY}px`;
-        dropdownStyle.left = `${left - 2}px`;
-        dropdownStyle.width = `${width + 4}px`;
-      }
-      emit("update:expanded", value);
-    }
-    function onKeyBackspace() {
-      if (!props.multiSelect) {
-        return;
-      }
-      let { modelValue } = props;
-      if (isEmpty(modelValue) || !isEmpty($search.value)) {
-        return;
-      }
-      modelValue = modelValue[modelValue.length - 1];
-      const { idField } = optionsAvailable.value;
-      updateSelections({
-        option: props.options?.find((item) => item[idField] === modelValue),
-        remove: true,
-      });
-    }
-    function onClickField() {
-      updateExpanded();
-    }
-    /**
-     * When the user does any sort of input for the single select, we need to update
-     * our search value to what's been typed, as the search acts as both the display
-     * value and the filter value for the dropdown list.  And we don't want to initially
-     * set the search value until the user does some sort of input.
-     * @param {String} value
-     */
-    function onInputField(value) {
-      if (props.multiSelect) {
-        return;
-      }
-      if (isEmpty(value)) {
-        updateSelections({
-          shouldBlur: false,
-        });
-      }
-    }
-    function onTabField() {
-      blurField();
-    }
-    function blurField() {
-      updateExpanded(false);
-      $search.value = null;
-    }
-    function onClickPicker() {
-      updateExpanded();
-    }
-    function onClickItemRemove(option) {
-      updateSelections({
-        option,
-        remove: true,
-      });
-    }
+  }
+}
+function onTabField() {
+  blurField();
+}
+function blurField() {
+  updateExpanded(false);
+  $search.value = null;
+}
+function onClickPicker() {
+  updateExpanded();
+}
+function onClickItemRemove(option: any) {
+  updateSelections({
+    option,
+    remove: true,
+  });
+}
 
-    function onMouseDownDocument(event) {
-      const { target } = event;
-      if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
-        blurField();
-      }
+function onMouseDownDocument({ target }: { target: HTMLElement }) {
+  if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
+    blurField();
+  }
+}
+function onScrollDocument({ target }: { target: HTMLElement }) {
+  if (isExpanded.value && !dropdownListEl.value.$el.contains(target)) {
+    updateExpanded(false);
+  }
+}
+
+function updateSelections({ option, remove, shouldBlur = !props.multiSelect }: IUpdateSelection = {}) {
+  let updateValue = null;
+  const { multiSelect } = props;
+  let { modelValue } = props;
+  const selectedId = optionsAvailable.value.getOptionId(option);
+  if (multiSelect) {
+    modelValue = makeArray(modelValue);
+    if (remove) {
+      updateValue = modelValue.filter((item) => item !== selectedId);
     }
-    function onScrollDocument({ target }) {
-      if (isExpanded.value && !dropdownListEl.value.$el.contains(target)) {
-        updateExpanded(false);
-      }
+    else {
+      updateValue = modelValue.concat(selectedId);
     }
-    function updateSelections({ option, remove, shouldBlur = !props.multiSelect } = {}) {
-      let updateValue = null;
-      const { multiSelect } = props;
-      let { modelValue } = props;
-      const selectedId = optionsAvailable.value.getOptionId(option);
-      if (multiSelect) {
-        if (!isArray(modelValue)) {
-          modelValue = [modelValue];
-        }
-        if (remove) {
-          updateValue = modelValue.filter((item) => item !== selectedId);
-        }
-        else {
-          updateValue = modelValue.concat(selectedId);
-        }
-      }
-      else if (!remove) {
-        updateValue = selectedId;
-      }
-      if (shouldBlur) {
-        blurField();
-      }
-      emit("update:modelValue", updateValue);
-    }
-    function onUpdateSelections(option, remove) {
-      updateSelections({
-        option,
-        remove,
-      });
-    }
-    function onClickCollapseTags() {
-      showCollapseTags.value = false;
-    }
-    function onClickExpandTags() {
-      showCollapseTags.value = true;
-    }
-    function isTagVisible(selection, index) {
-      return showCollapseTags.value || index < props.maxSelectedTags;
-    }
-    return {
-      selections,
-      showExpandTags,
-      showCollapseTags,
-      collapsedTagCount,
-      isExpanded,
-      fieldEl,
-      dropdownListEl,
-      displayValue,
-      componentCls,
-      optionsAvailable,
-      displayFieldFm,
-      dropdownListStyle,
-      isTagVisible,
-      // Exposed for access by the dev
-      getSelections,
-      onClickPicker,
-      onClickField,
-      onInputField,
-      onTabField,
-      onUpdateSelections,
-      onClickItemRemove,
-      onKeyBackspace,
-      onClickExpandTags,
-      onClickCollapseTags,
-      onMouseDownDocument,
-      onScrollDocument,
-    };
-  },
-};
+  }
+  else if (!remove) {
+    updateValue = selectedId;
+  }
+  if (shouldBlur) {
+    blurField();
+  }
+  emit("update:modelValue", updateValue);
+}
+function onUpdateSelections(option: any, remove: boolean) {
+  updateSelections({
+    option,
+    remove,
+  });
+}
+function onClickCollapseTags() {
+  showCollapseTags.value = false;
+}
+function onClickExpandTags() {
+  showCollapseTags.value = true;
+}
+function isTagVisible(selection: any, index: number) {
+  return showCollapseTags.value || index < props.maxSelectedTags;
+}
+
+defineExpose([getSelections]);
 </script>
 
 <style lang="scss" scoped>

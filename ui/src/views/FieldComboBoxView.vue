@@ -44,7 +44,7 @@
         />
         <FieldComboBox
           v-model="tagPosition"
-          :options="ComboBoxTagPosition.options"
+          :options="EnumTagPosition.options"
           label="Tag Position"
           list-height="auto"
         />
@@ -53,10 +53,9 @@
   </BaseDialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   FieldComboBox,
-  ComboBoxTagPosition,
   BaseDialog,
   FieldCheckBox,
   BaseField,
@@ -65,56 +64,33 @@ import {
   computed,
   reactive,
   ref,
-  toRefs,
 } from "vue";
-import { names } from "ui/data/names.js";
-import { Collection } from "ui/Collection.js";
+import { names } from "ui/statics/names";
+import { Collection } from "ui/classes";
+import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
 
-export default {
-  name: "FieldComboBoxView",
-  components: {
-    BaseField,
-    FieldCheckBox,
-    BaseDialog,
-    FieldComboBox,
-  },
-  setup() {
-    const groupField = ref("color");
-    const groups = computed(() => {
-      const key = groupField.value;
-      return key ? [{
-        key,
-      }] : null;
-    });
-    const displayFields = Object.keys(names[0]).map((name) => {
-      return {
-        id: name,
-        value: name,
-      };
-    });
-    const displayField = ref("name");
-    const state = reactive({
-      ComboBoxTagPosition,
-      groups,
-      displayFields,
-      groupField,
-      selectedName: [1, 5],
-      listOptions: new Collection({
-        records: names,
-        displayField,
-        sorters: [{
-          property: displayField.value,
-        }],
-      }),
-      tagPosition: ComboBoxTagPosition.Above,
-      filterSelections: false,
-      multiSelect: true,
-    });
-
-    return {
-      ...toRefs(state),
-      displayField,
-    };
-  },
-};
+const groupField = ref("color");
+const groups = computed(() => {
+  const key = groupField.value;
+  return key ? [{
+    key,
+  }] : null;
+});
+const displayFields = Object.keys(names[0]).map((name) => {
+  return {
+    id: name,
+    value: name,
+  };
+});
+const displayField = ref("name");
+const selectedName = reactive([1, 5]);
+const listOptions = reactive(new Collection({
+  [EnumProp.Data]: names,
+  [EnumProp.Sorters]: [{
+    property: displayField.value,
+  }],
+}));
+const tagPosition = ref(EnumTagPosition.Above);
+const filterSelections = ref(false);
+const multiSelect = ref(true);
 </script>

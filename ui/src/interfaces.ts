@@ -46,8 +46,9 @@ export interface ICollectionAdd {
 }
 
 export interface ICollection {
-  [EnumProp.Model]: any;
+  [EnumProp.Model]?: any;
   [EnumProp.Groups]?: any;
+  [EnumProp.Sorters]?: ICollectionSorter[];
   [EnumProp.Data]?: IModel[];
   [EnumProp.IdField]?: string;
   [EnumProp.DisplayField]?: string;
@@ -74,11 +75,11 @@ export interface IModelGetData {
  * If this is set, then the previous filtered data will act as an OR instead of an AND, so it'll use
  * the same records that were used by the previous filter.
  */
-export interface ICollectionFilter extends Array<any> {
+export interface ICollectionFilter {
   id?: string | number;
-  property: string;
-  value: any;
-  or: boolean;
+  property?: string;
+  value?: any;
+  or?: boolean;
   exact?: boolean;
   fn?: Function;
 }
@@ -100,4 +101,59 @@ export interface ICollectionSorter {
 export interface ICollectionGroup {
   [EnumProp.GroupKey]: string;
   records: IModel[];
+}
+
+export type TFieldValue = string | number | boolean | undefined;
+
+// TODOJEF: Make components interface file?
+/* Right now we're duping this in BaseIcon and here because of a Vue bug
+ * Source: https://github.com/vuejs/core/issues/4294 */
+export interface IPropsBaseIcon {
+  icon: Object | string;
+}
+
+/* Right now we're duping this in BaseField and here because of a Vue bug
+ * Source: https://github.com/vuejs/core/issues/4294 */
+export interface IPropsBaseField {
+  label?: string;
+  labelWidth?: string;
+  modelValue?: TFieldValue;
+  inputType?: string;
+  inputCls?: string | CSSStyleDeclaration;
+  inputWidth?: string;
+  labelAlign?: string;
+  required?: boolean;
+  allowEmptyWhitespace?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  /**
+   * Only used in number and date like fields.  We have to have it in here, so we can consume it
+   * in the configuration methods that are called.  If we didn't have it, the value would always
+   * be undefined.
+   */
+  minValue?: number;
+  /**
+   * Only used in number and date like fields.  We have to have it in here, so we can consume it
+   * in the configuration methods that are called.  If we didn't have it, the value would always
+   * be undefined.
+   */
+  maxValue?: number;
+  /**
+   * Only used in number like fields.  We have to have it in here, so we can consume it in the
+   * configuration methods that are called.  If we didn't have it, the value would always be
+   * undefined.
+   */
+  step?: number;
+  validateOnInit?: boolean;
+  inputAttrsCfg?: (props: IPropsBaseField) => {};
+  rulesCfg?: (props: IPropsBaseField) => {};
+  parseValue?: (value: any) => TFieldValue;
+  id?: string;
+}
+
+export interface IActiveDialog {
+  fullPath: string;
+  name: string;
+  isActive?: boolean;
+  activeCls?: string;
 }
