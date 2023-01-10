@@ -16,7 +16,8 @@
     "build:ui": "cd ui && npm run build",
     "build:ui:gh": "cd ui && npm run build:gh",
     "publish:ui": "cd ui && npm publish",
-    "publish:shared": "cd shared && npm publish"
+    "publish:shared": "cd shared && npm publish",
+    "update": "node updateWorkspace.js"
   },
   "repository": {
     "type": "git",
