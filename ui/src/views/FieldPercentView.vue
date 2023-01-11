@@ -8,7 +8,7 @@
         <FieldPercent
           v-model="value"
           label="Percent"
-          input-width="w-14"
+          input-width="w-16"
         />
       </section>
     </template>
@@ -22,5 +22,5 @@ import {
 } from "ui/index";
 import { ref } from "vue";
 
-const value = ref(12.42);
+const value = ref(22.2);
 </script>

@@ -1,5 +1,6 @@
 <template>
   <RouterView v-slot="{ Component }">
+    <!-- TODOJEF: This doesn't work... create issue on GH? -->
     <KeepAlive :include="cachedDialogs">
       <main class="flex flex-1 flex-col overflow-auto bg-slate-800">
         <Component
@@ -71,7 +72,6 @@ const router = useRouter();
 const dateTime = ref(new Date());
 const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
 const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
-console.log(cachedDialogs);
 function onClickStartItem(item: any) {
   router.push(item.fullPath);
 }
