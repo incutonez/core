@@ -205,17 +205,12 @@ watch(fieldRules, async(value) => {
   }
 });
 
-// TODO: Does this work?  It used to be wrapped in a computed
-watch(() => props.modelValue, (value) => {
-  field.handleChange(value, false);
-});
-// TODO: Does this work?  It used to be wrapped in a computed
+watch(() => props.modelValue, (value) => field.handleChange(value, false));
 watch(() => field.meta.valid, (valid) => {
   if (field.meta.touched) {
     emit("change:validity", valid);
   }
 });
-// TODO: Does this work?  It used to be wrapped in a computed
 watch(() => field.meta.dirty, (dirty) => {
   if (field.meta.touched) {
     emit("change:dirty", dirty);

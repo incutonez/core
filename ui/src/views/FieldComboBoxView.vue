@@ -65,11 +65,19 @@ import {
   reactive,
   ref,
 } from "vue";
-import { names } from "ui/statics/names";
 import { Collection } from "ui/classes";
 import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
+import { faker } from "@faker-js/faker";
 
-const groupField = ref("color");
+const names: any[] = [];
+for (let i = 0; i < 50; i++) {
+  names.push({
+    id: i,
+    name: faker.name.fullName(),
+    color: faker.color.human(),
+  });
+}
+const groupField = ref();
 const groups = computed(() => {
   const key = groupField.value;
   return key ? [{
@@ -83,7 +91,7 @@ const displayFields = Object.keys(names[0]).map((name) => {
   };
 });
 const displayField = ref("name");
-const selectedName = reactive([1, 5]);
+const selectedName = ref([1, 5]);
 const listOptions = reactive(new Collection({
   [EnumProp.Data]: names,
   [EnumProp.Sorters]: [{

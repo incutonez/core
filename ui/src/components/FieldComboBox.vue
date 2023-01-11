@@ -104,13 +104,14 @@ import {
   BaseOverlay,
   Icon,
 } from "ui/index";
-import { Collection } from "ui/classes/Collection";
+import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
+import type { IModel } from "ui/interfaces";
 
 export interface IPropsFieldComboBox {
   modelValue?: string | number | any[];
   multiSelect?: boolean;
-  options?: any[] | Collection;
+  options?: any[] | Collection | IModel[];
   expanded?: boolean;
   idField?: string;
   displayField?: string;
@@ -165,40 +166,43 @@ const dropdownListStyle = computed(() => {
     height: props.listHeight,
   };
 });
+
 const optionsAvailable = computed(() => {
-  const { groups } = props;
+  const { groups, options } = props;
   let { filterFn, displayField, idField } = props;
-  let options = props.options as Collection;
+  let optionsCollection: Collection;
   /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
    * cause side effects elsewhere... we need our own copy for this component */
-  if (options[EnumProp.IsCollection]) {
-    options = options.clone();
+  if (isCollection(options)) {
+    optionsCollection = options.clone();
   }
   else {
-    options = new Collection(options);
+    optionsCollection = new Collection({
+      [EnumProp.Data]: options as IModel[],
+    });
   }
   // If this is explicitly set, we prefer it
   if (idField) {
-    options.idField = idField;
+    optionsCollection.idField = idField;
   }
   else {
-    idField = options.idField;
+    idField = optionsCollection.idField;
   }
   // If this is explicitly set, we prefer it
   if (displayField) {
-    options.displayField = displayField;
+    optionsCollection[EnumProp.DisplayField] = displayField;
   }
   else {
-    displayField = options.displayField;
+    displayField = optionsCollection[EnumProp.DisplayField];
   }
   const search = unref($search);
-  options.removeFilters([SearchFilter, SelectionsFilter], true);
+  optionsCollection.removeFilters([SearchFilter, SelectionsFilter], true);
   if (search) {
     if (!filterFn) {
       const searchRe = new RegExp(search, "i");
       filterFn = (option) => searchRe.test(option[displayField]);
     }
-    options.addFilters([{
+    optionsCollection.addFilters([{
       id: SearchFilter,
       fn: filterFn,
     }], {
@@ -209,7 +213,7 @@ const optionsAvailable = computed(() => {
     // TODO: Selections here triggers this entire computed to be called, which is inefficient
     const selectionValues = unref(selections);
     if (!isEmpty(selectionValues)) {
-      options.addFilters([{
+      optionsCollection.addFilters([{
         id: SelectionsFilter,
         fn: (option: any) => {
           let include = true;
@@ -226,11 +230,10 @@ const optionsAvailable = computed(() => {
       });
     }
   }
-  options[EnumProp.Groups] = groups;
-  return options;
+  optionsCollection[EnumProp.Groups] = groups;
+  return optionsCollection;
 });
-const displayFieldFm = computed(() => optionsAvailable.value.displayField);
-selections.value = getSelections();
+const displayFieldFm = computed(() => optionsAvailable.value[EnumProp.DisplayField]);
 const displayValue = computed({
   get() {
     const search = unref($search);
@@ -245,6 +248,9 @@ const displayValue = computed({
   },
 });
 const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
+
+selections.value = getSelections();
+
 function getSelections() {
   const selections: any[] = [];
   const { idField } = optionsAvailable.value;
@@ -261,21 +267,6 @@ function getSelections() {
   });
   return selections;
 }
-// We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-watch(() => props.modelValue, (() => {
-  selections.value = getSelections();
-  emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-}), {
-  immediate: true,
-});
-watch(() => props.expanded, (value) => updateExpanded(value));
-watch(() => props.multiSelect, (value) => {
-  if (!value) {
-    updateSelections({
-      option: selections.value?.[0],
-    });
-  }
-});
 function updateExpanded(value = !isExpanded.value) {
   isExpanded.value = value;
   if (value) {
@@ -348,7 +339,6 @@ function onClickItemRemove(option: any) {
     remove: true,
   });
 }
-
 function onMouseDownDocument({ target }: { target: HTMLElement }) {
   if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
     blurField();
@@ -359,7 +349,6 @@ function onScrollDocument({ target }: { target: HTMLElement }) {
     updateExpanded(false);
   }
 }
-
 function updateSelections({ option, remove, shouldBlur = !props.multiSelect }: IUpdateSelection = {}) {
   let updateValue = null;
   const { multiSelect } = props;
@@ -397,6 +386,22 @@ function onClickExpandTags() {
 function isTagVisible(selection: any, index: number) {
   return showCollapseTags.value || index < props.maxSelectedTags;
 }
+
+// We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
+watch(() => props.modelValue, (() => {
+  selections.value = getSelections();
+  emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
+}), {
+  immediate: true,
+});
+watch(() => props.expanded, (value) => updateExpanded(value));
+watch(() => props.multiSelect, (value) => {
+  if (!value) {
+    updateSelections({
+      option: selections.value?.[0],
+    });
+  }
+});
 
 defineExpose([getSelections]);
 </script>

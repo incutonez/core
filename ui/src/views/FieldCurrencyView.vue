@@ -8,6 +8,7 @@
         <FieldCurrency
           v-model="value"
           label="Currency"
+          required
         />
       </section>
     </template>

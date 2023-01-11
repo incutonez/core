@@ -30,7 +30,7 @@ import { BaseField } from "ui/index";
 import type { IPropsBaseField } from "ui/interfaces";
 import { parseNumber } from "ui/utilities";
 
-export interface IPropsFieldNumber {
+export interface IPropsFieldNumber extends IPropsBaseField {
   step?: number;
   inputAttrsCfg?(props: IPropsBaseField): {};
   rulesCfg?(props: IPropsBaseField): {};
@@ -38,7 +38,7 @@ export interface IPropsFieldNumber {
 
 withDefaults(defineProps<IPropsFieldNumber>(), {
   step: 0.01,
-  inputAttrsCfg(props: IPropsBaseField) {
+  inputAttrsCfg: (props: IPropsFieldNumber) => {
     return {
       ...useInputAttrs(props),
       min: props.minValue,
@@ -46,7 +46,7 @@ withDefaults(defineProps<IPropsFieldNumber>(), {
       step: props.step,
     };
   },
-  rulesCfg(props: IPropsBaseField) {
+  rulesCfg: (props: IPropsFieldNumber) => {
     return {
       ...useFieldRules(props),
       minValue: props.minValue ? [props.minValue] : false,

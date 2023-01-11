@@ -25,19 +25,19 @@ const FiltersInternal = "_filters";
 const SortersInternal = "_sorters";
 const SuspendedInternal = "_suspended";
 
+/* It's better to do it this way, so then we can use it in if statements and operate on the value through the lens of a
+ * Collection instance */
+export function isCollection(value?: any): value is Collection {
+  return value?.[EnumProp.IsCollection];
+}
+
 export class Collection extends Array {
   [EnumProp.IsCollection] = true;
   [IdFieldInternal] = "id";
   [DisplayFieldInternal] = "value";
   [RecordsInternal]: any[] = [];
   [GroupsInternal]?: any[];
-  /**
-   * @type {CollectionFilter[]}
-   */
   [FiltersInternal]: ICollectionFilter[] = [];
-  /**
-   * @type {CollectionSorter[]}
-   */
   [SortersInternal]?: (ICollectionSorter | Function)[];
   [SuspendedInternal] = false;
   [EnumProp.Visited] = false;
@@ -345,7 +345,7 @@ export class Collection extends Array {
       [EnumProp.Sorters]: this[EnumProp.Sorters],
       filters,
       [EnumProp.Model]: this[EnumProp.Model],
-      records: this.getData(options),
+      [EnumProp.Data]: this.getData(options),
     });
   }
 

@@ -9,7 +9,7 @@ export class Enum extends Array {
     return self;
   }
 
-  init(keys = this.keys) {
+  init(keys = Object.keys(this)) {
     if (!Array.isArray(keys)) {
       Object.assign(keys);
       keys = Object.keys(keys);
@@ -30,13 +30,12 @@ export class Enum extends Array {
     });
   }
 
-  // @ts-ignore
-  get keys() {
-    return Object.keys(this);
-  }
-
-  // @ts-ignore
-  get values() {
-    return Object.values(this);
+  get options() {
+    return this.map((item) => {
+      return {
+        id: item.value,
+        value: item.key,
+      };
+    });
   }
 }

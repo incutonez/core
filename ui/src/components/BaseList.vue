@@ -58,7 +58,7 @@ import {
   ref,
   watchEffect,
 } from "vue";
-import { Collection } from "ui/classes/Collection";
+import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
 
 export interface IPropsBaseList {
@@ -80,7 +80,9 @@ watchEffect(() => {
   const { options } = props;
   // TODO: Figure out better way to prevent rendering from happening on every click
   // We always want to be dealing with our class, so we can normalize the functionality
-  records.value = options?.[EnumProp.IsCollection] ? options : new Collection(options);
+  records.value = isCollection(options) ? options : new Collection({
+    [EnumProp.Data]: options,
+  });
 });
 const isGrouped = computed(() => records.value?.isGrouped);
 function emitUpdate(args: any[]) {

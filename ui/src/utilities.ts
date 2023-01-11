@@ -38,6 +38,10 @@ export function isObject(value: any) {
   return value?.constructor === Object;
 }
 
+export function isFunction(value: any) {
+  return typeof value === "function";
+}
+
 export function isEmpty(value: any): value is null | undefined {
   return isUndefined(value) ||
     isNull(value) ||
@@ -49,10 +53,6 @@ export function isEmpty(value: any): value is null | undefined {
 
 export function makeArray(value: any): any[] {
   return isArray(value) ? value : [value];
-}
-
-export function isFunction(value: any) {
-  return typeof value === "function";
 }
 
 export function hasTarget(element: HTMLElement, target: HTMLElement) {

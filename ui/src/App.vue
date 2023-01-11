@@ -71,6 +71,7 @@ const router = useRouter();
 const dateTime = ref(new Date());
 const cmpCls = computed(() => route.fullPath === Route.Home ? "" : "view-dialog");
 const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
+console.log(cachedDialogs);
 function onClickStartItem(item: any) {
   router.push(item.fullPath);
 }
