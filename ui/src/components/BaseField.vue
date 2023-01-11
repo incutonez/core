@@ -51,15 +51,10 @@
   </div>
 </template>
 
-<script lang="ts">
-// TODO: Should probably generate guids instead, but this works for right now
-let fieldCount = 1;
-</script>
-
 <script setup lang="ts">
 import {
   useFieldRules,
-  useInputAttrs,
+  useInputAttrs, useUniqueId,
 } from "ui/composables/BaseField";
 import { useField } from "vee-validate";
 import {
@@ -143,11 +138,10 @@ const props = withDefaults(defineProps<IPropsBaseField>(), {
     };
   },
   parseValue: parseString,
-  id: `input-${fieldCount++}`,
+  id: `input-${useUniqueId()}`,
 });
 const emit = defineEmits(["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field", "focus:field", "input:field"]);
 const inputAttrs = props.inputAttrsCfg(props);
-
 const inputEl = ref<HTMLInputElement>();
 const inputWrapper = ref(null);
 const fieldRules = computed(() => props.rulesCfg(props));
@@ -158,42 +152,31 @@ const field = useField(props.label || `field-${props.inputType}`, fieldRules, {
   checkedValue: true,
   uncheckedValue: false,
 });
-field.setTouched(props.validateOnInit);
-function updateValue(value: TFieldValue) {
-  emit("update:modelValue", value);
-}
-watch(computed(() => props.modelValue), (value) => {
-  field.handleChange(value, false);
+const value = computed({
+  get() {
+    return field.value.value;
+  },
+  set(val) {
+    updateValue(val);
+  },
 });
 const inputWrapperCls = computed(() => {
   return {
     "field-invalid": field.meta.touched && !field.meta.valid,
   };
 });
-watch(fieldRules, async(value) => {
-  if (value) {
-    // We have to wait for the field to receive its new rules before validating
-    await nextTick();
-    await field.validate();
-  }
-});
-watch(computed(() => field.meta.valid), (valid) => {
-  if (field.meta.touched) {
-    emit("change:validity", valid);
-  }
-});
-watch(computed(() => field.meta.dirty), (dirty) => {
-  if (field.meta.touched) {
-    emit("change:dirty", dirty);
-  }
-});
 const fieldErrors = computed(() => field.errors.value);
 const showErrors = computed(() => field.meta.touched && fieldErrors.value.length);
 
+field.setTouched(props.validateOnInit);
+
+function updateValue(value: TFieldValue) {
+  emit("update:modelValue", value);
+}
 /**
-     * We use mousedown here because we want it to be able to veto blurring of the field, and the
-     * only way to do that is if we use mousedown
-     */
+ * We use mousedown here because we want it to be able to veto blurring of the field, and the
+ * only way to do that is if we use mousedown
+ */
 function onMouseDownField(event: MouseEvent) {
   emit("click:field", event);
 }
@@ -214,13 +197,33 @@ function onBlurField() {
   field.validate();
   emit("blur:field");
 }
-const value = computed({
-  get() {
-    return field.value.value;
-  },
-  set(val) {
-    updateValue(val);
-  },
+watch(fieldRules, async(value) => {
+  if (value) {
+    // We have to wait for the field to receive its new rules before validating
+    await nextTick();
+    await field.validate();
+  }
+});
+
+// TODO: Does this work?  It used to be wrapped in a computed
+watch(() => props.modelValue, (value) => {
+  field.handleChange(value, false);
+});
+// TODO: Does this work?  It used to be wrapped in a computed
+watch(() => field.meta.valid, (valid) => {
+  if (field.meta.touched) {
+    emit("change:validity", valid);
+  }
+});
+// TODO: Does this work?  It used to be wrapped in a computed
+watch(() => field.meta.dirty, (dirty) => {
+  if (field.meta.touched) {
+    emit("change:dirty", dirty);
+  }
+});
+
+defineExpose({
+  inputWrapper,
 });
 </script>
 

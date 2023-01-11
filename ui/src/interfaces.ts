@@ -32,9 +32,9 @@ export interface IModelFull extends IModel {
 }
 
 export interface IModelField {
-  name: string;
-  defaultValue?: any;
-  custom?: boolean;
+  [EnumProp.Name]: string;
+  [EnumProp.DefaultValue]?: any;
+  [EnumProp.Custom]?: boolean;
   [EnumProp.Nullable]?: boolean;
   [EnumProp.IsCollection]?: boolean;
   [EnumProp.IsModel]?: boolean;

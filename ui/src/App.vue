@@ -55,8 +55,9 @@ import {
 import { useDialogManager } from "ui/composables/DialogManager";
 import type { IActiveDialog } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
+import { Collection } from "ui/classes";
 
-const ComponentList = {
+const ComponentList = new Collection({
   [EnumProp.DisplayField]: "name",
   [EnumProp.Data]: Object.keys(Route).filter((key) => key !== "Home").map((route) => {
     return {
@@ -64,7 +65,7 @@ const ComponentList = {
       fullPath: Route[route as keyof typeof Route],
     };
   }),
-};
+});
 const route = useRoute();
 const router = useRouter();
 const dateTime = ref(new Date());

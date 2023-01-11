@@ -20,21 +20,11 @@ export class Model {
   [EnumProp.Parent]?: any;
   [EnumProp.Fields]: IModelField[] = [];
 
-  init(data = {}) {
-    const { fields } = this;
-    for (const field of fields) {
-      const { name } = field;
-      if (name in data) {
-        continue;
-      }
-      let { defaultValue } = field;
-      if (field[EnumProp.Nullable]) {
-        defaultValue = undefined;
-      }
-      // Let's make sure we flesh out any values that aren't initially passed in, so they get a default value
-      Reflect.set(data, name, defaultValue);
+  constructor(data?: IModel) {
+    if (data) {
+      Object.assign(this, data);
+      this.set(data);
     }
-    this.set(data);
   }
 
   set(data: any, reset = false) {
@@ -43,7 +33,7 @@ export class Model {
     }
     const { fields } = this;
     for (const key in data) {
-      const found = fields.find(({ name }) => name === key);
+      const found = fields.find(({ [EnumProp.Name]: name }) => name === key);
       // If we have a field that was found, let's use the proper way
       if (found) {
         const value = data[key];
@@ -59,9 +49,9 @@ export class Model {
           /* Otherwise, it appears we need to create a new model instance, so let's see if a definition
            * exists in our types configuration */
           else {
-            const foundType = this[EnumProp.Fields].find((item) => item.name === key);
+            const foundType = this[EnumProp.Fields].find((item) => item[EnumProp.Name] === key);
             if (foundType) {
-              const { defaultValue } = foundType;
+              const { [EnumProp.DefaultValue]: defaultValue } = foundType;
               if (defaultValue) {
                 Reflect.set(this, key, isConstructor(defaultValue) ? new defaultValue(value) : defaultValue(value));
               }
@@ -69,7 +59,7 @@ export class Model {
           }
         }
         else {
-          Reflect.set(this, found.name, value);
+          Reflect.set(this, found[EnumProp.Name], value);
         }
       }
       // Otherwise, it appears we either have some custom setter or just a property that isn't part of the fields
@@ -116,20 +106,24 @@ export class Model {
     this[EnumProp.FieldsInternal] = value;
   }
 
+  // TODO: I think I should refactor this... it's a little confusing.  We have FieldsInternal, Fields, and this getter fields
+  // I think the original intent was that Fields was the config for the fields, and then I think we need FieldsInternal
+  // to track the actual fields that we have mapped, but there's still gotta be a less confusing way to do this
   get fields() {
     const fields: IModelField[] = this[EnumProp.FieldsInternal];
     if (fields.length === 0) {
       Object.keys(this).forEach((key) => {
         let field: IModelField = {
-          name: key,
+          [EnumProp.Name]: key,
+          [EnumProp.Custom]: true,
         };
         const config = Reflect.get(this, key);
         if ((config as Collection)?.[EnumProp.IsCollection]) {
-          field.defaultValue = [];
+          field[EnumProp.DefaultValue] = [];
           field[EnumProp.IsCollection] = true;
         }
         else if ((config as Model)?.[EnumProp.IsModel]) {
-          field.defaultValue = {};
+          field[EnumProp.DefaultValue] = {};
           field[EnumProp.IsModel] = true;
         }
         else if (config?.constructor === Object) {
@@ -139,15 +133,16 @@ export class Model {
           };
         }
         else {
-          field.defaultValue = config;
+          field[EnumProp.DefaultValue] = config;
           field[EnumProp.Nullable] = config == null;
         }
         fields.push(field);
       });
       this[EnumProp.Fields].forEach((item) => {
-        const { name } = item;
-        const found = fields.find((field) => field.name === name);
+        const { [EnumProp.Name]: name } = item;
+        const found = fields.find((field) => field[EnumProp.Name] === name);
         if (found) {
+          found[EnumProp.Custom] = false;
           Object.assign(found, item);
         }
         else {
@@ -178,13 +173,13 @@ export class Model {
     const fields = [...this.fields];
     if (include) {
       include.forEach((field) => fields.push({
-        name: field,
+        [EnumProp.Name]: field,
       }));
     }
     // Used internally
     this[EnumProp.Visited] = true;
     for (const field of fields) {
-      const { name } = field;
+      const { [EnumProp.Name]: name } = field;
       if (exclude && exclude.indexOf(name) !== -1) {
         continue;
       }

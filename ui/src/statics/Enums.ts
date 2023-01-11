@@ -126,6 +126,9 @@ const IdField = Symbol("idField");
 const DisplayField = Symbol("displayField");
 const GroupKey = Symbol("groupKey");
 const GroupDisplay = Symbol("groupDisplay");
+const DefaultValue = Symbol("default");
+const Custom = Symbol("custom");
+const Name = Symbol("name");
 
 export const EnumProp = {
   IsModel,
@@ -146,6 +149,9 @@ export const EnumProp = {
   Data,
   IdField,
   DisplayField,
+  DefaultValue,
+  Custom,
+  Name,
 } as const;
 
 export const EnumMonth = new Month();

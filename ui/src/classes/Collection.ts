@@ -14,6 +14,7 @@ import type {
   ICollectionAdd, ICollection,
 } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
+import { Model } from "ui/classes/Model";
 
 const SelectedCls = "list-item-selected";
 const IdFieldInternal = "_idField";
@@ -43,7 +44,7 @@ export class Collection extends Array {
   [EnumProp.Parent]?: ICollection;
   [EnumProp.GroupKey] = null;
   [EnumProp.GroupDisplay] = null;
-  [EnumProp.ModelInternal]?: any;
+  [EnumProp.ModelInternal]: any = Model;
 
   constructor(config: ICollection) {
     super();
@@ -410,10 +411,6 @@ export class Collection extends Array {
         const record = new model(item);
         record[EnumProp.Parent] = this;
         records.push(record);
-      }
-      // There's no model associated with this collection, so we just have a bunch of plain ole objects
-      else {
-        records.push(item);
       }
     });
     this[RecordsInternal] = records;
