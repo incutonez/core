@@ -4,7 +4,7 @@
     class="header-blue"
   >
     <template #body>
-      <section class="space-y-2 base-dialog-body">
+      <section class="base-dialog-body space-y-2">
         <FieldInteger
           v-model="value"
           label="Integer"
@@ -15,44 +15,24 @@
         <FieldComboBox
           v-model="labelAlign"
           label="Label Align"
-          :options="options"
+          :options="EnumLabelAlign.options"
         />
       </section>
     </template>
   </BaseDialog>
 </template>
 
-<script>
-import {
-  reactive,
-  toRefs,
-} from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import {
   BaseDialog,
   FieldInteger,
-  FieldLabelAlign,
 } from "ui/index";
 import FieldComboBox from "ui/components/FieldComboBox.vue";
+import { EnumLabelAlign } from "ui/statics/Enums";
 
-export default {
-  name: "FieldIntegerView",
-  components: {
-    FieldComboBox,
-    BaseDialog,
-    FieldInteger,
-  },
-  setup() {
-    const state = reactive({
-      isRequired: true,
-      value: 0,
-      minValue: 2,
-      labelAlign: FieldLabelAlign.Left,
-    });
-
-    return {
-      options: FieldLabelAlign.options,
-      ...toRefs(state),
-    };
-  },
-};
+const isRequired = ref(true);
+const value = ref(0);
+const minValue = ref(2);
+const labelAlign = ref(EnumLabelAlign.Left);
 </script>

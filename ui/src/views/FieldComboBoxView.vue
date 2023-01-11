@@ -4,7 +4,7 @@
     class="header-blue"
   >
     <template #body>
-      <section class="space-y-2 base-dialog-body">
+      <section class="base-dialog-body space-y-2">
         <FieldComboBox
           v-model="selectedName"
           label="Combo"
@@ -17,7 +17,7 @@
           list-height="16rem"
         >
           <template #listAfter>
-            <div class="flex sticky bottom-0 p-2 bg-white border-t border-gray-300">
+            <div class="sticky bottom-0 flex border-t border-gray-300 bg-white p-2">
               <span>Content after</span>
               <BaseField />
             </div>
@@ -44,7 +44,7 @@
         />
         <FieldComboBox
           v-model="tagPosition"
-          :options="ComboBoxTagPosition.options"
+          :options="EnumTagPosition.options"
           label="Tag Position"
           list-height="auto"
         />
@@ -53,10 +53,9 @@
   </BaseDialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   FieldComboBox,
-  ComboBoxTagPosition,
   BaseDialog,
   FieldCheckBox,
   BaseField,
@@ -65,56 +64,41 @@ import {
   computed,
   reactive,
   ref,
-  toRefs,
 } from "vue";
-import { names } from "@incutonez/shared/data/names.js";
-import { Collection } from "@incutonez/shared/src/Collection.js";
+import { Collection } from "ui/classes";
+import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
+import { faker } from "@faker-js/faker";
 
-export default {
-  name: "FieldComboBoxView",
-  components: {
-    BaseField,
-    FieldCheckBox,
-    BaseDialog,
-    FieldComboBox,
-  },
-  setup() {
-    const groupField = ref("color");
-    const groups = computed(() => {
-      const key = groupField.value;
-      return key ? [{
-        key,
-      }] : null;
-    });
-    const displayFields = Object.keys(names[0]).map((name) => {
-      return {
-        id: name,
-        value: name,
-      };
-    });
-    const displayField = ref("name");
-    const state = reactive({
-      ComboBoxTagPosition,
-      groups,
-      displayFields,
-      groupField,
-      selectedName: [1, 5],
-      listOptions: new Collection({
-        records: names,
-        displayField,
-        sorters: [{
-          property: displayField.value,
-        }],
-      }),
-      tagPosition: ComboBoxTagPosition.Above,
-      filterSelections: false,
-      multiSelect: true,
-    });
-
-    return {
-      ...toRefs(state),
-      displayField,
-    };
-  },
-};
+const names: any[] = [];
+for (let i = 0; i < 50; i++) {
+  names.push({
+    id: i,
+    name: faker.name.fullName(),
+    color: faker.color.human(),
+  });
+}
+const groupField = ref();
+const groups = computed(() => {
+  const key = groupField.value;
+  return key ? [{
+    key,
+  }] : null;
+});
+const displayFields = Object.keys(names[0]).map((name) => {
+  return {
+    id: name,
+    value: name,
+  };
+});
+const displayField = ref("name");
+const selectedName = ref([1, 5]);
+const listOptions = reactive(new Collection({
+  [EnumProp.Data]: names,
+  [EnumProp.Sorters]: [{
+    property: displayField.value,
+  }],
+}));
+const tagPosition = ref(EnumTagPosition.Above);
+const filterSelections = ref(false);
+const multiSelect = ref(true);
 </script>

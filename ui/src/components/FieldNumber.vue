@@ -21,52 +21,37 @@
   </BaseField>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   useFieldRules,
   useInputAttrs,
-} from "ui/composables/BaseField.js";
-import {
-  parseNumber,
-} from "@incutonez/shared";
+} from "ui/composables/BaseField";
 import { BaseField } from "ui/index";
+import type { IPropsBaseField } from "ui/interfaces";
+import { parseNumber } from "ui/utilities";
 
-export default {
-  name: "FieldNumber",
-  components: {
-    BaseField,
-  },
-  props: {
-    step: {
-      type: Number,
-      default: 0.01,
-    },
-    inputAttrsCfg: {
-      type: Function,
-      default: (props) => {
-        return {
-          ...useInputAttrs(props),
-          min: props.minValue,
-          max: props.maxValue,
-          step: props.step,
-        };
-      },
-    },
-    rulesCfg: {
-      type: Function,
-      default: (props) => {
-        return {
-          ...useFieldRules(props),
-          minValue: props.minValue ? [props.minValue] : false,
-          maxValue: props.maxValue ? [props.maxValue] : false,
-        };
-      },
-    },
-  },
-  setup() {
+export interface IPropsFieldNumber extends IPropsBaseField {
+  step?: number;
+  inputAttrsCfg?(props: IPropsBaseField): {};
+  rulesCfg?(props: IPropsBaseField): {};
+}
+
+withDefaults(defineProps<IPropsFieldNumber>(), {
+  step: 0.01,
+  inputAttrsCfg: (props: IPropsFieldNumber) => {
     return {
-      parseNumber,
+      ...useInputAttrs(props),
+      min: props.minValue,
+      max: props.maxValue,
+      step: props.step,
     };
   },
-};
+  rulesCfg: (props: IPropsFieldNumber) => {
+    return {
+      ...useFieldRules(props),
+      minValue: props.minValue ? [props.minValue] : false,
+      maxValue: props.maxValue ? [props.maxValue] : false,
+    };
+  },
+});
 </script>

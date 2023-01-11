@@ -8,36 +8,19 @@
         <FieldCurrency
           v-model="value"
           label="Currency"
+          required
         />
       </section>
     </template>
   </BaseDialog>
 </template>
 
-<script>
-import {
-  reactive,
-  toRefs,
-} from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import {
   BaseDialog,
   FieldCurrency,
 } from "ui/index";
 
-export default {
-  name: "FieldCurrencyView",
-  components: {
-    BaseDialog,
-    FieldCurrency,
-  },
-  setup() {
-    const state = reactive({
-      value: 10.203,
-    });
-
-    return {
-      ...toRefs(state),
-    };
-  },
-};
+const value = ref(10.203);
 </script>

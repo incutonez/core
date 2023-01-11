@@ -4,7 +4,7 @@
       v-for="option in records"
       :key="option.fullPath"
       :class="records.getOptionCls(option, selections)"
-      @mousedown="onMouseDownListItem($event, option, isGrouped)"
+      @mousedown="onMouseDownListItem($event, option)"
     >
       <template v-if="isGrouped">
         <div class="group">
@@ -52,81 +52,67 @@
   </ul>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   computed,
   ref,
   watchEffect,
 } from "vue";
-import { Collection } from "@incutonez/shared/src/Collection.js";
+import { Collection, isCollection } from "ui/classes/Collection";
+import { EnumProp } from "ui/statics/Enums";
+
+export interface IPropsBaseList {
+  /**
+   * @type {Collection}
+   */
+  options?: any | any[];
+  selections?: any[];
+}
 
 const SelectedCls = "list-item-selected";
-export default {
-  name: "BaseList",
-  emits: ["update:selections", "click:item"],
-  props: {
-    /**
-     * @type {Collection}
-     */
-    options: {
-      type: [Array, Object],
-      default: () => [],
-    },
-    selections: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup(props, { emit }) {
-    const records = ref(null);
-    watchEffect(() => {
-      const { options } = props;
-      // TODO: Figure out better way to prevent rendering from happening on every click
-      // We always want to be dealing with our class, so we can normalize the functionality
-      records.value = options?.isCollection ? options : new Collection(options);
-    });
-    const idField = computed(() => records.value.idField);
-    const displayField = computed(() => records.value.displayField);
-    const isGrouped = computed(() => records.value.isGrouped);
-    function emitUpdate(args) {
-      emit("update:selections", ...args);
-    }
-    function emitClick(args) {
-      emit("click:item", ...args);
-    }
-    function onUpdateSelections(...args) {
-      emitUpdate(args);
-    }
-    function onClickItem(...args) {
-      emitClick(args);
-    }
+const props = withDefaults(defineProps<IPropsBaseList>(), {
+  options: () => [],
+  selections: () => [],
+});
+const emit = defineEmits(["update:selections", "click:item"]);
+const records = ref<Collection>();
+watchEffect(() => {
+  const { options } = props;
+  // TODO: Figure out better way to prevent rendering from happening on every click
+  // We always want to be dealing with our class, so we can normalize the functionality
+  records.value = isCollection(options) ? options : new Collection({
+    [EnumProp.Data]: options,
+  });
+});
+const isGrouped = computed(() => records.value?.isGrouped);
+function emitUpdate(args: any[]) {
+  emit("update:selections", ...args);
+}
+function emitClick(args: any[]) {
+  emit("click:item", ...args);
+}
+function onUpdateSelections(...args: any[]) {
+  emitUpdate(args);
+}
+function onClickItem(...args: any[]) {
+  emitClick(args);
+}
 
-    /**
-     * The reason we use mousedown instead of click is because we want to prevent the focus from being lost
-     * on the input field, and that can only be done with mousedown... click happens AFTER focus has already
-     * been lost.
-     */
-    function onMouseDownListItem(event, option, grouped) {
-      // We prevent focus from being lost in the parent component
-      event.stopPropagation();
-      event.preventDefault();
-      if (grouped) {
-        return;
-      }
-      emitUpdate([option, event.target.classList.contains(SelectedCls)]);
-      emitClick([option]);
-    }
-    return {
-      records,
-      isGrouped,
-      idField,
-      displayField,
-      onMouseDownListItem,
-      onUpdateSelections,
-      onClickItem,
-    };
-  },
-};
+/**
+ * The reason we use mousedown instead of click is because we want to prevent the focus from being lost
+ * on the input field, and that can only be done with mousedown... click happens AFTER focus has already
+ * been lost.
+ */
+function onMouseDownListItem(event: MouseEvent, option: any) {
+  // We prevent focus from being lost in the parent component
+  event.stopPropagation();
+  event.preventDefault();
+  if (isGrouped.value) {
+    return;
+  }
+  emitUpdate([option, (event.target as HTMLLIElement).classList.contains(SelectedCls)]);
+  emitClick([option]);
+}
 </script>
 
 <style lang="scss">

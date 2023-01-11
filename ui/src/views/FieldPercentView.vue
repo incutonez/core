@@ -8,37 +8,19 @@
         <FieldPercent
           v-model="value"
           label="Percent"
-          input-width="w-14"
+          input-width="w-16"
         />
       </section>
     </template>
   </BaseDialog>
 </template>
 
-<script>
-import {
-  reactive,
-  toRefs,
-} from "vue";
+<script setup lang="ts">
 import {
   BaseDialog,
   FieldPercent,
 } from "ui/index";
+import { ref } from "vue";
 
-export default {
-  name: "FieldPercentView",
-  components: {
-    BaseDialog,
-    FieldPercent,
-  },
-  setup() {
-    const state = reactive({
-      value: 12.42,
-    });
-
-    return {
-      ...toRefs(state),
-    };
-  },
-};
+const value = ref(22.2);
 </script>

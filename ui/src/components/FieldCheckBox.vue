@@ -3,26 +3,13 @@
     input-type="checkbox"
     input-width="w-auto"
     class="checkbox"
-    :parse-value="parseValue"
+    :parse-value="parseBoolean"
   />
 </template>
 
-<script>
+<script setup lang="ts">
 import { BaseField } from "ui/index";
-import { parseBoolean } from "@incutonez/shared";
-
-export default {
-  name: "FieldCheckBox",
-  components: {
-    BaseField,
-  },
-  props: {
-    parseValue: {
-      type: Function,
-      default: parseBoolean,
-    },
-  },
-};
+import { parseBoolean } from "ui/utilities";
 </script>
 
 <style lang="scss" scoped>

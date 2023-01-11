@@ -2,7 +2,7 @@
   createRouter,
   createWebHashHistory,
 } from "vue-router";
-import Route from "ui/statics/Route.js";
+import Route from "ui/statics/Route";
 import HomeView from "ui/views/HomeView.vue";
 import FieldComboBoxView from "ui/views/FieldComboBoxView.vue";
 import FieldCurrencyView from "ui/views/FieldCurrencyView.vue";

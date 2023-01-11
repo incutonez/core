@@ -23,82 +23,60 @@
   </li>
 </template>
 
-<script>
+<script setup lang="ts">
 import { computed } from "vue";
 import BaseIcon from "ui/components/BaseIcon.vue";
+import { EnumWizardStep } from "ui/statics/Enums";
+import { Icon } from "ui/index";
 
-export const StepState = {
-  Disabled: 0,
-  Enabled: 1,
-  Active: 2,
-  Invalid: 3,
-  InvalidActive: 4,
-  Completed: 5,
-};
-const InvalidClickStates = [StepState.Disabled, StepState.Active, StepState.InvalidActive];
-export default {
-  name: "WizardStep",
-  components: {
-    BaseIcon,
-  },
-  emits: ["click:step", "update:modelValue"],
-  props: {
-    modelValue: {
-      type: Number,
-      default: StepState.Disabled,
-    },
-    index: {
-      type: [String, Number],
-      default: "",
-    },
-    title: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props, { emit }) {
-    const cssClass = computed(() => {
-      let css = "";
-      switch (props.modelValue) {
-        case StepState.Disabled:
-          css = "disabled";
-          break;
-        case StepState.Enabled:
-          css = "enabled";
-          break;
-        case StepState.Active:
-          css = "active";
-          break;
-        case StepState.Invalid:
-          css = "invalid";
-          break;
-        case StepState.InvalidActive:
-          css = "active invalid";
-          break;
-        case StepState.Completed:
-          css = "completed";
-          break;
-      }
-      return css;
-    });
-    const isCompleted = computed(() => props.modelValue === StepState.Completed);
-    const isInvalid = computed(() => props.modelValue === StepState.Invalid);
-    function onClickStep() {
-      const { modelValue } = props;
-      if (InvalidClickStates.indexOf(modelValue) !== -1) {
-        return;
-      }
-      emit("update:modelValue", modelValue === StepState.Invalid ? StepState.InvalidActive : StepState.Active);
-      emit("click:step");
-    }
-    return {
-      cssClass,
-      isCompleted,
-      isInvalid,
-      onClickStep,
-    };
-  },
-};
+export interface IPropsWizardStep {
+  modelValue?: number;
+  index?: string | number;
+  title?: string;
+}
+
+const props = withDefaults(defineProps<IPropsWizardStep>(), {
+  modelValue: EnumWizardStep.Disabled,
+  index: "",
+  title: "",
+});
+const emit = defineEmits(["click:step", "update:modelValue"]);
+const InvalidClickStates = [EnumWizardStep.Disabled, EnumWizardStep.Active, EnumWizardStep.InvalidActive];
+const isCompleted = computed(() => props.modelValue === EnumWizardStep.Completed);
+const isInvalid = computed(() => props.modelValue === EnumWizardStep.Invalid);
+const cssClass = computed(() => {
+  let css = "";
+  switch (props.modelValue) {
+    case EnumWizardStep.Disabled:
+      css = "disabled";
+      break;
+    case EnumWizardStep.Enabled:
+      css = "enabled";
+      break;
+    case EnumWizardStep.Active:
+      css = "active";
+      break;
+    case EnumWizardStep.Invalid:
+      css = "invalid";
+      break;
+    case EnumWizardStep.InvalidActive:
+      css = "active invalid";
+      break;
+    case EnumWizardStep.Completed:
+      css = "completed";
+      break;
+  }
+  return css;
+});
+
+function onClickStep() {
+  const { modelValue } = props;
+  if (InvalidClickStates.indexOf(modelValue) !== -1) {
+    return;
+  }
+  emit("update:modelValue", modelValue === EnumWizardStep.Invalid ? EnumWizardStep.InvalidActive : EnumWizardStep.Active);
+  emit("click:step");
+}
 </script>
 
 <style lang="scss">

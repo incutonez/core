@@ -38,10 +38,11 @@
   </BaseOverlay>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
   BaseIcon,
   BaseOverlay,
+  Icon,
 } from "ui/index";
 import {
   computed,
@@ -49,69 +50,47 @@ import {
   watch,
 } from "vue";
 
-export default {
-  name: "BaseDialog",
-  emits: ["update:open", "click:close", "click:minimize", "click:maximize", "click:restore"],
-  components: {
-    BaseIcon,
-    BaseOverlay,
-  },
-  props: {
-    open: {
-      type: Boolean,
-      default: true,
-    },
-    minimizable: {
-      type: Boolean,
-      default: true,
-    },
-    maximizable: {
-      type: Boolean,
-      default: true,
-    },
-    title: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props, { emit }) {
-    const opened = ref(props.open);
-    const maximized = ref(true);
-    watch(opened, (value) => emit("update:open", value));
-    watch(() => props.open, (value) => {
-      opened.value = value;
-    });
-    const showRestoreDown = computed(() => props.maximizable && maximized.value);
-    const showMaximized = computed(() => props.maximizable && !maximized.value);
-    function hide() {
-      opened.value = false;
-    }
-    function onClickClose() {
-      emit("click:close");
-    }
-    function onClickMinimize() {
-      hide();
-      maximized.value = false;
-      emit("click:minimize");
-    }
-    function onClickMaximize() {
-      maximized.value = true;
-      emit("click:maximize");
-    }
-    function onClickRestoreDown() {
-      maximized.value = false;
-      emit("click:restore");
-    }
-    return {
-      showMaximized,
-      showRestoreDown,
-      onClickClose,
-      onClickMinimize,
-      onClickMaximize,
-      onClickRestoreDown,
-    };
-  },
-};
+export interface IPropsBaseDialog {
+  open?: boolean;
+  minimizable?: boolean;
+  maximizable?: boolean;
+  title?: string;
+}
+
+const props = withDefaults(defineProps<IPropsBaseDialog>(), {
+  open: true,
+  minimizable: true,
+  maximizable: true,
+  title: "",
+});
+const emit = defineEmits(["update:open", "click:close", "click:minimize", "click:maximize", "click:restore"]);
+const opened = ref(props.open);
+const maximized = ref(true);
+const showRestoreDown = computed(() => props.maximizable && maximized.value);
+const showMaximized = computed(() => props.maximizable && !maximized.value);
+
+function hide() {
+  opened.value = false;
+}
+function onClickClose() {
+  emit("click:close");
+}
+function onClickMinimize() {
+  hide();
+  maximized.value = false;
+  emit("click:minimize");
+}
+function onClickMaximize() {
+  maximized.value = true;
+  emit("click:maximize");
+}
+function onClickRestoreDown() {
+  maximized.value = false;
+  emit("click:restore");
+}
+
+watch(opened, (value) => emit("update:open", value));
+watch(() => props.open, (value) => opened.value = value);
 </script>
 
 <style lang="scss" scoped>

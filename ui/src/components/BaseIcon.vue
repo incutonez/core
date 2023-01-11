@@ -10,25 +10,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { defineComponent } from "vue";
 
-export interface IBaseIcon {
+export interface IPropsBaseIcon {
   icon: Object | string;
 }
-export default defineComponent({
-  name: "BaseIcon",
-  components: {
-    FontAwesomeIcon,
-  },
-  props: {
-    icon: {
-      type: Object,
-      required: true,
-    },
-  },
-});
+
+defineProps<IPropsBaseIcon>();
 </script>
 
 <style scoped>

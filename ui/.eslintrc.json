@@ -8,7 +8,8 @@
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "parserOptions": {
     // This parser means it parses script tags only, per https://www.npmjs.com/package/vue-eslint-parser
@@ -16,9 +17,11 @@
     "sourceType": "module",
     "ecmaVersion": "latest"
   },
-  "plugins": ["eslint-plugin-tailwindcss"],
+  "plugins": ["eslint-plugin-tailwindcss", "@typescript-eslint"],
   "rules": {
     "vue/attributes-order": "error",
-    "tailwindcss/classnames-order": "error"
+    "tailwindcss/classnames-order": "error",
+    "@typescript-eslint/indent": ["error", 2, {"SwitchCase":  1}],
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }

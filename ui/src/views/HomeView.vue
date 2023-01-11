@@ -1,7 +1,7 @@
 ﻿<template>
   <article class="home-view">
     <BaseButton
-      class="w-min default"
+      class="default w-min"
       text="Show Modal"
       @click="onClickShowModal"
     />
@@ -27,7 +27,7 @@
     </DialogConfirm>
     <BaseButton>
       Hi
-      <BaseTooltip :position="TooltipPosition.MiddleBottom">
+      <BaseTooltip :position="EnumTooltipPosition.MiddleBottom">
         <div>Hello World!</div>
         <div>Hello World!</div>
         <div>Hello World!</div>
@@ -43,30 +43,16 @@
   </article>
 </template>
 
-<script>
-import { DialogConfirm, BaseButton, BaseTooltip, TooltipPosition } from "ui/index";
+<script setup lang="ts">
+import { DialogConfirm, BaseButton, BaseTooltip, Icon } from "ui/index";
+import { EnumTooltipPosition } from "ui/statics/Enums";
 import { ref } from "vue";
 
-export default {
-  name: "HomeView",
-  components: {
-    BaseTooltip,
-    DialogConfirm,
-    BaseButton,
-  },
-  setup() {
-    const showDialog = ref(false);
-    function onClickShowModal() {
-      showDialog.value = true;
-    }
+const showDialog = ref(false);
 
-    return {
-      TooltipPosition,
-      showDialog,
-      onClickShowModal,
-    };
-  },
-};
+function onClickShowModal() {
+  showDialog.value = true;
+}
 </script>
 
 <style scoped lang="scss">

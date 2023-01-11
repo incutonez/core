@@ -7,28 +7,15 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import {
-  inject,
   onBeforeUnmount,
   onMounted,
   ref,
 } from "vue";
+import { overlayManager } from "ui/globals";
 
-export default {
-  name: "BaseOverlay",
-  setup() {
-    const rootEl = ref(null);
-    const OverlayManager = inject("OverlayManager");
-    onMounted(() => {
-      OverlayManager.add(rootEl.value);
-    });
-    onBeforeUnmount(() => {
-      OverlayManager.remove(rootEl.value);
-    });
-    return {
-      rootEl,
-    };
-  },
-};
+const rootEl = ref<HTMLDivElement>();
+onMounted(() => overlayManager.add(rootEl.value));
+onBeforeUnmount(() => overlayManager.unmount(rootEl.value));
 </script>

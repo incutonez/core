@@ -6,19 +6,7 @@
   />
 </template>
 
-<script>
-import { parseInteger } from "@incutonez/shared";
+<script setup lang="ts">
 import { FieldNumber } from "ui/index";
-
-export default {
-  name: "FieldInteger",
-  components: {
-    FieldNumber,
-  },
-  setup() {
-    return {
-      parseInteger,
-    };
-  },
-};
+import { parseInteger } from "ui/utilities";
 </script>
