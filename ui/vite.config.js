@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         external: ["vue", "vue-router"],
         input: {
-          "CoreUI": "src/core.js",
+          "CoreUI": "src/core.ts",
           "index": "src/index.ts",
           "tailwind.config": "tailwind.config.js",
         },
