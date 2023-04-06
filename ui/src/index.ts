@@ -29,3 +29,5 @@ export { default as FieldCurrency } from "ui/components/FieldCurrency.vue";
 // Depends on BaseField and BaseIcon
 export { default as FieldComboBox } from "ui/components/FieldComboBox.vue";
 export { default as IconAdd } from "ui/components/IconAdd.vue";
+export { default as IconDelete } from "ui/components/IconDelete.vue";
+export { default as IconCheckCircle } from "ui/components/IconCheckCircle.vue";

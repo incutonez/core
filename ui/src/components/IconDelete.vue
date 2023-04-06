@@ -1,5 +1,5 @@
 ﻿<template>
-  <BaseIconV2 icon="add" />
+  <BaseIconV2 icon="delete" />
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 ﻿<template>
-  <BaseIconV2 icon="add" />
+  <BaseIconV2 icon="check_circle" />
 </template>
 
 <script setup lang="ts">

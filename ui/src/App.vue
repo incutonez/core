@@ -21,7 +21,6 @@
       :options="ComponentList"
       @click:item="onClickStartItem"
     />
-    <IconAdd />
     <section class="mx-2 flex flex-1 space-x-2">
       <BaseButton
         v-for="dialog in activeDialogs"
@@ -31,6 +30,7 @@
         :class="dialog.activeCls"
         @click="onClickToggleDialog(dialog)"
       />
+      <IconDelete />
     </section>
     <section class="flex flex-col items-stretch px-2 py-0.5 text-xs text-stone-200">
       <span class="flex-1">{{ dateTime.toLocaleTimeString() }}</span>
@@ -58,7 +58,7 @@ import { useDialogManager } from "ui/composables/DialogManager";
 import type { IActiveDialog } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
 import { Collection } from "ui/classes";
-import IconAdd from "ui/components/IconAdd.vue";
+import IconDelete from "ui/components/IconDelete.vue";
 
 const ComponentList = new Collection({
   [EnumProp.DisplayField]: "name",
