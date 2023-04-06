@@ -28,3 +28,4 @@ export { default as FieldInteger } from "ui/components/FieldInteger.vue";
 export { default as FieldCurrency } from "ui/components/FieldCurrency.vue";
 // Depends on BaseField and BaseIcon
 export { default as FieldComboBox } from "ui/components/FieldComboBox.vue";
+export { default as IconAdd } from "ui/components/IconAdd.vue";
