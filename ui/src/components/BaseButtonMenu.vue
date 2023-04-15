@@ -13,12 +13,14 @@
         ref="listEl"
         class="z-10 w-48"
       >
+        <slot name="beforeList" />
         <BaseList
           class="shadow-top bg-slate-100"
           :class="listCls"
           :options="options"
           @click:item="onClickMenuItem"
         />
+        <slot name="afterList" />
       </BaseOverlay>
     </template>
   </BaseButton>

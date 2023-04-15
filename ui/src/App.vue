@@ -20,7 +20,13 @@
       list-cls="h-64 overflow-auto"
       :options="ComponentList"
       @click:item="onClickStartItem"
-    />
+    >
+      <template #beforeList>
+        <section class="bg-slate-100 p-2">
+          Version: {{ PackageJson.version }}
+        </section>
+      </template>
+    </BaseButtonMenu>
     <section class="mx-2 flex flex-1 space-x-2">
       <BaseButton
         v-for="dialog in activeDialogs"
@@ -59,6 +65,7 @@ import type { IActiveDialog } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
 import { Collection } from "ui/classes";
 import IconDelete from "ui/components/IconDelete.vue";
+import PackageJson from "ui/../package.json";
 
 const ComponentList = new Collection({
   [EnumProp.DisplayField]: "name",
