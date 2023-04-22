@@ -85,25 +85,9 @@
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
  */
-import {
-  computed,
-  ref,
-  unref,
-  watch,
-} from "vue";
-import {
-  hasTarget,
-  isEmpty,
-  makeArray,
-} from "ui/utilities";
-import {
-  BaseField,
-  BaseIcon,
-  BaseItems,
-  BaseList,
-  BaseOverlay,
-  Icon,
-} from "ui/index";
+import { computed, ref, unref, watch } from "vue";
+import { hasTarget, isEmpty, makeArray } from "ui/utilities";
+import { BaseField, BaseIcon, BaseItems, BaseList, BaseOverlay, Icon } from "ui/index";
 import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
 import type { IModel } from "ui/interfaces";
@@ -247,7 +231,7 @@ const displayValue = computed({
     $search.value = value;
   },
 });
-const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
+const componentCls = computed(() => (props.multiSelect ? "multi-select" : ""));
 
 selections.value = getSelections();
 
@@ -388,10 +372,10 @@ function isTagVisible(selection: any, index: number) {
 }
 
 // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-watch(() => props.modelValue, (() => {
+watch(() => props.modelValue, () => {
   selections.value = getSelections();
   emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-}), {
+}, {
   immediate: true,
 });
 watch(() => props.expanded, (value) => updateExpanded(value));

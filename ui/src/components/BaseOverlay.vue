@@ -8,11 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  onBeforeUnmount,
-  onMounted,
-  ref,
-} from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { overlayManager } from "ui/globals";
 
 const rootEl = ref<HTMLDivElement>();

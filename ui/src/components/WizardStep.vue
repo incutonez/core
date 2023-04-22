@@ -87,7 +87,7 @@ function onClickStep() {
   &:not(:first-child) {
     @apply w-48;
     &::before {
-      content: '';
+      content: "";
       z-index: -1;
       @apply bg-gray-300 absolute top-5 h-1 right-2/4 w-full;
     }

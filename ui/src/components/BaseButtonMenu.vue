@@ -27,11 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  BaseButton,
-  BaseList,
-  BaseOverlay,
-} from "ui/index";
+import { BaseButton, BaseList, BaseOverlay } from "ui/index";
 import { ref } from "vue";
 
 export interface IPropsBaseButtonMenu {

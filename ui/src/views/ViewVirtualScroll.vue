@@ -69,34 +69,30 @@ const ItemHeight = 72;
 const RecordThreshold = 20;
 const totalLoaded = ref(0);
 const goto = ref(0);
-const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(
-  data, {
-    itemHeight: ItemHeight,
-  },
-);
+const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(data, {
+  itemHeight: ItemHeight,
+});
 
-const { y } = useScroll(
-  // TODO: At the time of writing this, there's an issue in the throttle composable that was introduced in 9.10, so I removed it for now
-  // Source: https://github.com/vueuse/vueuse/issues/2618
-  containerProps.ref, {
-    onScroll() {
-      const index = Math.ceil(y.value / ItemHeight);
-      // Check the next x records have loaded
-      loadRecords(index + RecordThreshold);
-      // Check the previous x records have loaded
-      loadRecords(index - RecordThreshold);
-    },
-    async onStop(event) {
-      // We want to await the next refresh, so we can get the latest scrollTop value
-      await nextTick();
-      const index = Math.ceil((event.target as HTMLElement).scrollTop / ItemHeight);
-      // Check the next x records have loaded
-      loadRecords(index + RecordThreshold);
-      // Check the previous x records have loaded
-      loadRecords(index - RecordThreshold);
-    },
+// TODO: At the time of writing this, there's an issue in the throttle composable that was introduced in 9.10, so I removed it for now
+// Source: https://github.com/vueuse/vueuse/issues/2618
+const { y } = useScroll(containerProps.ref, {
+  onScroll() {
+    const index = Math.ceil(y.value / ItemHeight);
+    // Check the next x records have loaded
+    loadRecords(index + RecordThreshold);
+    // Check the previous x records have loaded
+    loadRecords(index - RecordThreshold);
   },
-);
+  async onStop(event) {
+    // We want to await the next refresh, so we can get the latest scrollTop value
+    await nextTick();
+    const index = Math.ceil((event.target as HTMLElement).scrollTop / ItemHeight);
+    // Check the next x records have loaded
+    loadRecords(index + RecordThreshold);
+    // Check the previous x records have loaded
+    loadRecords(index - RecordThreshold);
+  },
+});
 
 function getNewTotal() {
   dataTotal.value = Math.floor(Math.random() * 5000);

@@ -22,10 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  useFieldRules,
-  useInputAttrs,
-} from "ui/composables/BaseField";
+import { useFieldRules, useInputAttrs } from "ui/composables/BaseField";
 import { BaseField } from "ui/index";
 import type { IPropsBaseField } from "ui/interfaces";
 import { parseNumber } from "ui/utilities";

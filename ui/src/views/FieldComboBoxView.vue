@@ -54,17 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  FieldComboBox,
-  BaseDialog,
-  FieldCheckBox,
-  BaseField,
-} from "ui/index";
-import {
-  computed,
-  reactive,
-  ref,
-} from "vue";
+import { FieldComboBox, BaseDialog, FieldCheckBox, BaseField } from "ui/index";
+import { computed, reactive, ref } from "vue";
 import { Collection } from "ui/classes";
 import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
 import { faker } from "@faker-js/faker";

@@ -11,12 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  onMounted,
-  onUpdated,
-  ref,
-  unref,
-} from "vue";
+import { onMounted, onUpdated, ref, unref } from "vue";
 import { EnumTooltipPosition } from "ui/statics/Enums";
 
 export interface IPropsBaseTooltip {

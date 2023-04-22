@@ -15,12 +15,15 @@
   "plugins": ["eslint-plugin-import", "@typescript-eslint"],
   "rules": {
     "space-before-function-paren": ["error", "never"],
+    "function-call-argument-newline": ["error", "never"],
+    "function-paren-newline": ["error", "never"],
     "indent": ["error", 2, {"SwitchCase": 1}],
     "@typescript-eslint/indent": ["error", 2, {"SwitchCase":  1}],
     "@typescript-eslint/no-unused-vars": "error",
     "semi": [2, "always"],
     "quotes": ["error", "double"],
     "curly": "error",
+    "multiline-ternary": ["error", "never"],
     "brace-style": ["error", "stroustrup"],
     "comma-dangle": [
       "error",

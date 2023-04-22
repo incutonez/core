@@ -53,11 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watchEffect,
-} from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
 
@@ -124,7 +120,7 @@ function onMouseDownListItem(event: MouseEvent, option: any) {
   @apply py-1 px-2 hover:bg-slate-300 cursor-pointer;
   &.list-item-selected,
   &:hover {
-    box-shadow: inset 2px 0 #3B82F6;
+    box-shadow: inset 2px 0 #3b82f6;
   }
 
   &.list-item-selected {

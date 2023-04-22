@@ -52,22 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  useFieldRules,
-  useInputAttrs, useUniqueId,
-} from "ui/composables/BaseField";
+import { useFieldRules, useInputAttrs, useUniqueId } from "ui/composables/BaseField";
 import { useField } from "vee-validate";
-import {
-  computed,
-  nextTick,
-  ref,
-  watch,
-} from "vue";
-import {
-  BaseLabel,
-  BaseIcon,
-  Icon,
-} from "ui/index";
+import { computed, nextTick, ref, watch } from "vue";
+import { BaseLabel, BaseIcon, Icon } from "ui/index";
 import { parseString } from "ui/utilities";
 import { EnumLabelAlign } from "ui/statics/Enums";
 import type { TFieldValue } from "ui/interfaces";
@@ -254,7 +242,7 @@ defineExpose({
 
 .field-text {
   @apply bg-slate-100 rounded-sm border border-gray-300 flex relative focus-within:outline-2 focus-within:outline focus-within:outline-blue-500;
-  input:not([type='checkbox']) {
+  input:not([type="checkbox"]) {
     @apply bg-transparent px-1;
     &:focus {
       @apply outline-none;

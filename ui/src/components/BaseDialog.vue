@@ -39,16 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  BaseIcon,
-  BaseOverlay,
-  Icon,
-} from "ui/index";
-import {
-  computed,
-  ref,
-  watch,
-} from "vue";
+import { BaseIcon, BaseOverlay, Icon } from "ui/index";
+import { computed, ref, watch } from "vue";
 
 export interface IPropsBaseDialog {
   open?: boolean;
@@ -90,7 +82,7 @@ function onClickRestoreDown() {
 }
 
 watch(opened, (value) => emit("update:open", value));
-watch(() => props.open, (value) => opened.value = value);
+watch(() => props.open, (value) => (opened.value = value));
 </script>
 
 <style lang="scss" scoped>

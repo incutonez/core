@@ -21,7 +21,7 @@ import { parseBoolean } from "ui/utilities";
 
       &:checked:after {
         @apply h-full w-full inline-block text-center text-xl leading-5;
-        content: '✔';
+        content: "✔";
       }
     }
   }
