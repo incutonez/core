@@ -83,14 +83,12 @@ const displayFields = Object.keys(names[0]).map((name) => {
 });
 const displayField = ref("name");
 const selectedName = ref([1, 5]);
-const listOptions = reactive(
-  new Collection({
-    [EnumProp.Data]: names,
-    [EnumProp.Sorters]: [{
-      property: displayField.value,
-    }],
-  }),
-);
+const listOptions = reactive(new Collection({
+  [EnumProp.Data]: names,
+  [EnumProp.Sorters]: [{
+    property: displayField.value,
+  }],
+}));
 const tagPosition = ref(EnumTagPosition.Above);
 const filterSelections = ref(false);
 const multiSelect = ref(true);

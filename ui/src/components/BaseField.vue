@@ -193,26 +193,17 @@ watch(fieldRules, async(value) => {
   }
 });
 
-watch(
-  () => props.modelValue,
-  (value) => field.handleChange(value, false),
-);
-watch(
-  () => field.meta.valid,
-  (valid) => {
-    if (field.meta.touched) {
-      emit("change:validity", valid);
-    }
-  },
-);
-watch(
-  () => field.meta.dirty,
-  (dirty) => {
-    if (field.meta.touched) {
-      emit("change:dirty", dirty);
-    }
-  },
-);
+watch(() => props.modelValue, (value) => field.handleChange(value, false));
+watch(() => field.meta.valid, (valid) => {
+  if (field.meta.touched) {
+    emit("change:validity", valid);
+  }
+});
+watch(() => field.meta.dirty, (dirty) => {
+  if (field.meta.touched) {
+    emit("change:dirty", dirty);
+  }
+});
 
 defineExpose({
   inputWrapper,

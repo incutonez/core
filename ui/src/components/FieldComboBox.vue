@@ -186,38 +186,32 @@ const optionsAvailable = computed(() => {
       const searchRe = new RegExp(search, "i");
       filterFn = (option) => searchRe.test(option[displayField]);
     }
-    optionsCollection.addFilters(
-      [{
-        id: SearchFilter,
-        fn: filterFn,
-      }],
-      {
-        suppress: true,
-      },
-    );
+    optionsCollection.addFilters([{
+      id: SearchFilter,
+      fn: filterFn,
+    }], {
+      suppress: true,
+    });
   }
   if (props.multiSelect && props.filterSelections) {
     // TODO: Selections here triggers this entire computed to be called, which is inefficient
     const selectionValues = unref(selections);
     if (!isEmpty(selectionValues)) {
-      optionsCollection.addFilters(
-        [{
-          id: SelectionsFilter,
-          fn: (option: any) => {
-            let include = true;
-            for (const selection of selectionValues) {
-              if (selection[idField] === option[idField]) {
-                include = false;
-                break;
-              }
+      optionsCollection.addFilters([{
+        id: SelectionsFilter,
+        fn: (option: any) => {
+          let include = true;
+          for (const selection of selectionValues) {
+            if (selection[idField] === option[idField]) {
+              include = false;
+              break;
             }
-            return include;
-          },
-        }],
-        {
-          suppress: true,
+          }
+          return include;
         },
-      );
+      }], {
+        suppress: true,
+      });
     }
   }
   optionsCollection[EnumProp.Groups] = groups;
@@ -378,30 +372,20 @@ function isTagVisible(selection: any, index: number) {
 }
 
 // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-watch(
-  () => props.modelValue,
-  () => {
-    selections.value = getSelections();
-    emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-  },
-  {
-    immediate: true,
-  },
-);
-watch(
-  () => props.expanded,
-  (value) => updateExpanded(value),
-);
-watch(
-  () => props.multiSelect,
-  (value) => {
-    if (!value) {
-      updateSelections({
-        option: selections.value?.[0],
-      });
-    }
-  },
-);
+watch(() => props.modelValue, () => {
+  selections.value = getSelections();
+  emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
+}, {
+  immediate: true,
+});
+watch(() => props.expanded, (value) => updateExpanded(value));
+watch(() => props.multiSelect, (value) => {
+  if (!value) {
+    updateSelections({
+      option: selections.value?.[0],
+    });
+  }
+});
 
 defineExpose([getSelections]);
 </script>

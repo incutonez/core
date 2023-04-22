@@ -82,10 +82,7 @@ function onClickRestoreDown() {
 }
 
 watch(opened, (value) => emit("update:open", value));
-watch(
-  () => props.open,
-  (value) => (opened.value = value),
-);
+watch(() => props.open, (value) => (opened.value = value));
 </script>
 
 <style lang="scss" scoped>
