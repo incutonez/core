@@ -85,25 +85,9 @@
  * Implementation concept taken from Atlassian
  * Reference: https://atlassian.design/components/select/examples
  */
-import {
-  computed,
-  ref,
-  unref,
-  watch,
-} from "vue";
-import {
-  hasTarget,
-  isEmpty,
-  makeArray,
-} from "ui/utilities";
-import {
-  BaseField,
-  BaseIcon,
-  BaseItems,
-  BaseList,
-  BaseOverlay,
-  Icon,
-} from "ui/index";
+import { computed, ref, unref, watch } from "vue";
+import { hasTarget, isEmpty, makeArray } from "ui/utilities";
+import { BaseField, BaseIcon, BaseItems, BaseList, BaseOverlay, Icon } from "ui/index";
 import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
 import type { IModel } from "ui/interfaces";
@@ -202,32 +186,38 @@ const optionsAvailable = computed(() => {
       const searchRe = new RegExp(search, "i");
       filterFn = (option) => searchRe.test(option[displayField]);
     }
-    optionsCollection.addFilters([{
-      id: SearchFilter,
-      fn: filterFn,
-    }], {
-      suppress: true,
-    });
+    optionsCollection.addFilters(
+      [{
+        id: SearchFilter,
+        fn: filterFn,
+      }],
+      {
+        suppress: true,
+      },
+    );
   }
   if (props.multiSelect && props.filterSelections) {
     // TODO: Selections here triggers this entire computed to be called, which is inefficient
     const selectionValues = unref(selections);
     if (!isEmpty(selectionValues)) {
-      optionsCollection.addFilters([{
-        id: SelectionsFilter,
-        fn: (option: any) => {
-          let include = true;
-          for (const selection of selectionValues) {
-            if (selection[idField] === option[idField]) {
-              include = false;
-              break;
+      optionsCollection.addFilters(
+        [{
+          id: SelectionsFilter,
+          fn: (option: any) => {
+            let include = true;
+            for (const selection of selectionValues) {
+              if (selection[idField] === option[idField]) {
+                include = false;
+                break;
+              }
             }
-          }
-          return include;
+            return include;
+          },
+        }],
+        {
+          suppress: true,
         },
-      }], {
-        suppress: true,
-      });
+      );
     }
   }
   optionsCollection[EnumProp.Groups] = groups;
@@ -247,7 +237,7 @@ const displayValue = computed({
     $search.value = value;
   },
 });
-const componentCls = computed(() => props.multiSelect ? "multi-select" : "");
+const componentCls = computed(() => (props.multiSelect ? "multi-select" : ""));
 
 selections.value = getSelections();
 
@@ -388,20 +378,30 @@ function isTagVisible(selection: any, index: number) {
 }
 
 // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-watch(() => props.modelValue, (() => {
-  selections.value = getSelections();
-  emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-}), {
-  immediate: true,
-});
-watch(() => props.expanded, (value) => updateExpanded(value));
-watch(() => props.multiSelect, (value) => {
-  if (!value) {
-    updateSelections({
-      option: selections.value?.[0],
-    });
-  }
-});
+watch(
+  () => props.modelValue,
+  () => {
+    selections.value = getSelections();
+    emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
+  },
+  {
+    immediate: true,
+  },
+);
+watch(
+  () => props.expanded,
+  (value) => updateExpanded(value),
+);
+watch(
+  () => props.multiSelect,
+  (value) => {
+    if (!value) {
+      updateSelections({
+        option: selections.value?.[0],
+      });
+    }
+  },
+);
 
 defineExpose([getSelections]);
 </script>

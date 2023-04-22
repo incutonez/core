@@ -17,10 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  BaseDialog,
-  FieldCurrency,
-} from "ui/index";
+import { BaseDialog, FieldCurrency } from "ui/index";
 
 const value = ref(10.203);
 </script>

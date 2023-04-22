@@ -20,11 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-} from "vue";
+import { computed, ref, watch } from "vue";
 import BaseIcon from "ui/components/BaseIcon.vue";
 
 export interface IPropsBaseButton {
@@ -65,13 +61,19 @@ function onMouseUpButton({ target, pointerId }: PointerEvent) {
  * it's possible we don't bind to that, and if a binding isn't present, then we still have our local value
  */
 watch(toggled, () => shouldBlur());
-watch(() => props.toggled, (current) => toggled.value = current);
-watch(() => props.toggleable, (current) => {
-  if (!current) {
-    // Reset the toggleState
-    toggled.value = false;
-  }
-});
+watch(
+  () => props.toggled,
+  (current) => (toggled.value = current),
+);
+watch(
+  () => props.toggleable,
+  (current) => {
+    if (!current) {
+      // Reset the toggleState
+      toggled.value = false;
+    }
+  },
+);
 const elementCls = computed(() => {
   const cls = [];
   if (toggled.value) {

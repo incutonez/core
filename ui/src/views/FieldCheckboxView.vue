@@ -15,10 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  BaseDialog,
-  FieldCheckBox,
-} from "ui/index";
+import { BaseDialog, FieldCheckBox } from "ui/index";
 import { ref } from "vue";
 
 const value = ref(true);

@@ -24,10 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  BaseDialog,
-  FieldInteger,
-} from "ui/index";
+import { BaseDialog, FieldInteger } from "ui/index";
 import FieldComboBox from "ui/components/FieldComboBox.vue";
 import { EnumLabelAlign } from "ui/statics/Enums";
 

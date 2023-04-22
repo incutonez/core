@@ -69,16 +69,15 @@ const ItemHeight = 72;
 const RecordThreshold = 20;
 const totalLoaded = ref(0);
 const goto = ref(0);
-const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(
-  data, {
-    itemHeight: ItemHeight,
-  },
-);
+const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(data, {
+  itemHeight: ItemHeight,
+});
 
 const { y } = useScroll(
   // TODO: At the time of writing this, there's an issue in the throttle composable that was introduced in 9.10, so I removed it for now
   // Source: https://github.com/vueuse/vueuse/issues/2618
-  containerProps.ref, {
+  containerProps.ref,
+  {
     onScroll() {
       const index = Math.ceil(y.value / ItemHeight);
       // Check the next x records have loaded

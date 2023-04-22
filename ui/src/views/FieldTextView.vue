@@ -20,10 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  BaseDialog,
-  BaseField,
-} from "ui/index";
+import { BaseDialog, BaseField } from "ui/index";
 import { ref } from "vue";
 
 const isRequired = ref(true);

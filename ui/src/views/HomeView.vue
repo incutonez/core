@@ -8,15 +8,11 @@
     <DialogConfirm
       v-model="showDialog"
       title="Warning!"
-      :title-icon="{icon: Icon.AlertTriangle}"
+      :title-icon="{ icon: Icon.AlertTriangle }"
     >
       <template #body>
-        <div>
-          Hello World!
-        </div>
-        <div>
-          Are you sure?
-        </div>
+        <div>Hello World!</div>
+        <div>Are you sure?</div>
       </template>
       <template #afterCancel>
         <BaseButton

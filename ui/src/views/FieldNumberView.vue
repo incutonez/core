@@ -17,10 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  BaseDialog,
-  FieldNumber,
-} from "ui/index";
+import { BaseDialog, FieldNumber } from "ui/index";
 
 const value = ref(10.203);
 const minValue = ref(2);

@@ -19,7 +19,7 @@
     "build": "vite build",
     "build:gh": "vite build --mode=GitHubPages",
     "preview": "vite preview",
-    "lint": "eslint \"src/**/*.{js,vue}\"",
+    "lint": "npx prettier-eslint-cli \"src/**/*.{js,vue}\" --write",
     "prepublishOnly": "npm run build",
     "test": "set \"NODE_OPTIONS=--experimental-vm-modules\" && npx vitest run"
   },
