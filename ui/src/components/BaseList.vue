@@ -76,11 +76,9 @@ watchEffect(() => {
   const { options } = props;
   // TODO: Figure out better way to prevent rendering from happening on every click
   // We always want to be dealing with our class, so we can normalize the functionality
-  records.value = isCollection(options)
-    ? options
-    : new Collection({
-      [EnumProp.Data]: options,
-    });
+  records.value = isCollection(options) ? options : new Collection({
+    [EnumProp.Data]: options,
+  });
 });
 const isGrouped = computed(() => records.value?.isGrouped);
 function emitUpdate(args: any[]) {

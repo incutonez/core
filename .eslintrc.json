@@ -21,6 +21,7 @@
     "semi": [2, "always"],
     "quotes": ["error", "double"],
     "curly": "error",
+    "multiline-ternary": ["error", "never"],
     "brace-style": ["error", "stroustrup"],
     "comma-dangle": [
       "error",

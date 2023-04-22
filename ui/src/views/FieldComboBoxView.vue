@@ -71,11 +71,9 @@ for (let i = 0; i < 50; i++) {
 const groupField = ref();
 const groups = computed(() => {
   const key = groupField.value;
-  return key
-    ? [{
-      key,
-    }]
-    : null;
+  return key ? [{
+    key,
+  }] : null;
 });
 const displayFields = Object.keys(names[0]).map((name) => {
   return {
