@@ -26,7 +26,7 @@ import { ref } from "vue";
 const isRequired = ref(true);
 const minLength = ref(4);
 const maxLength = ref(50);
-const value = ref("John");
+const value = ref("");
 
 function onChangeValidity() {
   console.info("onChangeValidity");
