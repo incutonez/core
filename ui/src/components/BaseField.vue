@@ -33,12 +33,12 @@
         >
         <slot name="afterItems" />
       </div>
-      <BaseIcon
+      <section
         v-show="showErrors"
-        :icon="Icon.AlertTriangle"
-        class="text-red-800"
+        class="flex text-red-800"
       >
-        <ul>
+        <BaseIcon :icon="Icon.AlertTriangle" />
+        <ul class="ml-1">
           <li
             v-for="(fieldError, index) in fieldErrors"
             :key="index"
@@ -46,7 +46,7 @@
             {{ fieldError }}
           </li>
         </ul>
-      </BaseIcon>
+      </section>
     </div>
   </div>
 </template>
