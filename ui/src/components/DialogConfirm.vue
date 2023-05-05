@@ -19,7 +19,7 @@
         <BaseButton
           :icon="Icon.Close"
           class="button-close"
-          @click="onClickCloseButton"
+          @click="handleClose"
         />
       </section>
       <section class="container-body">
@@ -30,7 +30,7 @@
           <BaseButton
             class="toolbar"
             text="Cancel"
-            @click="onClickCancelButton"
+            @click="handleCancel"
           />
           <slot name="afterCancel" />
         </slot>
@@ -65,10 +65,10 @@ const isShowing = computed({
   },
 });
 
-function onClickCloseButton() {
+function handleClose() {
   isShowing.value = false;
 }
-function onClickCancelButton() {
+function handleCancel() {
   isShowing.value = false;
 }
 </script>
@@ -83,9 +83,9 @@ function onClickCancelButton() {
 }
 
 .dialog-container {
-  @apply w-48 bg-white top-1/2 left-1/2 absolute shadow-md;
+  // This is so we can center the dialog in the middle of the screen
+  @apply w-48 bg-white top-1/2 left-1/2 absolute shadow-md -translate-x-2/4 -translate-y-2/4;
   min-width: 20rem;
-  transform: translate(-50%, -50%);
 }
 
 .container-body {

@@ -16,8 +16,14 @@
       </template>
       <template #afterCancel>
         <BaseButton
-          text="Action"
+          text="Global Err"
           class="danger"
+          @click="handleGlobalError"
+        />
+        <BaseButton
+          text="Local Err"
+          class="danger"
+          @click="handleLocalError"
         />
       </template>
     </DialogConfirm>
@@ -48,6 +54,19 @@ const showDialog = ref(false);
 
 function onClickShowModal() {
   showDialog.value = true;
+}
+
+function handleGlobalError() {
+  throw new Error("Oops!  An error was thrown!");
+}
+
+function handleLocalError() {
+  try {
+    handleGlobalError();
+  }
+  catch (ex) {
+    alert(ex);
+  }
 }
 </script>
 

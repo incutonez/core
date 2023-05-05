@@ -43,19 +43,30 @@
       <span class="flex-1">{{ dateTime.toMMDDYYYY() }}</span>
     </section>
   </footer>
+  <DialogConfirm
+    v-model="showErrorDialog"
+    title="Global Error Caught!"
+    :title-icon="{ icon: Icon.AlertTriangle }"
+  >
+    <template #body>
+      <div>{{ errorMessage }}</div>
+    </template>
+  </DialogConfirm>
 </template>
 
 <script setup lang="ts">
 import { RouterView, useRoute, useRouter } from "vue-router";
-import { BaseButton, BaseButtonMenu } from "ui/index";
+import { BaseButton, BaseButtonMenu, Icon } from "ui/index";
 import Route from "ui/statics/Route";
-import { computed, ref } from "vue";
+import { computed, onErrorCaptured, ref } from "vue";
 import { useDialogManager } from "ui/composables/DialogManager";
 import type { IActiveDialog } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
 import { Collection } from "ui/classes";
 import IconDelete from "ui/components/IconDelete.vue";
 import PackageJson from "ui/../package.json";
+import { errorMessage } from "ui/globals";
+import DialogConfirm from "ui/components/DialogConfirm.vue";
 
 const ComponentList = new Collection({
   [EnumProp.DisplayField]: "name",
@@ -71,6 +82,14 @@ const ComponentList = new Collection({
 const route = useRoute();
 const router = useRouter();
 const dateTime = ref(new Date());
+const showErrorDialog = computed({
+  get() {
+    return !!errorMessage.value;
+  },
+  set(value) {
+    errorMessage.value = "";
+  },
+});
 const cmpCls = computed(() => (route.fullPath === Route.Home ? "" : "view-dialog"));
 const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
 function onClickStartItem(item: any) {
@@ -91,4 +110,9 @@ setInterval(() => {
   // Reactivity won't work unless we have a brand new object
   dateTime.value = new Date(dateTime.value.getTime() + 1000);
 }, 1000);
+
+onErrorCaptured((ex) => {
+  errorMessage.value = ex;
+  return false;
+});
 </script>
