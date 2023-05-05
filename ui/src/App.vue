@@ -45,11 +45,11 @@
   </footer>
   <DialogConfirm
     v-model="showErrorDialog"
-    title="Global Error Caught!"
+    :title="globalError.title"
     :title-icon="{ icon: Icon.AlertTriangle }"
   >
     <template #body>
-      <div>{{ errorMessage }}</div>
+      <div>{{ globalError.message }}</div>
     </template>
   </DialogConfirm>
 </template>
@@ -65,7 +65,7 @@ import { EnumProp } from "ui/statics/Enums";
 import { Collection } from "ui/classes";
 import IconDelete from "ui/components/IconDelete.vue";
 import PackageJson from "ui/../package.json";
-import { errorMessage } from "ui/globals";
+import { globalError } from "ui/globals";
 import DialogConfirm from "ui/components/DialogConfirm.vue";
 
 const ComponentList = new Collection({
@@ -84,10 +84,11 @@ const router = useRouter();
 const dateTime = ref(new Date());
 const showErrorDialog = computed({
   get() {
-    return !!errorMessage.value;
+    return !!globalError.message;
   },
-  set(value) {
-    errorMessage.value = "";
+  set() {
+    globalError.message = "";
+    globalError.title = "Globally Caught";
   },
 });
 const cmpCls = computed(() => (route.fullPath === Route.Home ? "" : "view-dialog"));
@@ -112,7 +113,7 @@ setInterval(() => {
 }, 1000);
 
 onErrorCaptured((ex) => {
-  errorMessage.value = ex;
+  globalError.message = ex.toString();
   return false;
 });
 </script>

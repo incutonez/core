@@ -49,6 +49,7 @@
 import { DialogConfirm, BaseButton, BaseTooltip, Icon } from "ui/index";
 import { EnumTooltipPosition } from "ui/statics/Enums";
 import { ref } from "vue";
+import { globalError } from "ui/globals";
 
 const showDialog = ref(false);
 
@@ -65,7 +66,8 @@ function handleLocalError() {
     handleGlobalError();
   }
   catch (ex) {
-    alert(ex);
+    globalError.message = "Caught in HomeView and now showing in App";
+    globalError.title = "Locally Caught";
   }
 }
 </script>
