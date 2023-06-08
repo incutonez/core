@@ -14,7 +14,7 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 export interface IPropsBaseIcon {
-  icon: Object | string;
+	icon: Object | string;
 }
 
 defineProps<IPropsBaseIcon>();

@@ -15,7 +15,7 @@
       >
         <slot name="beforeList" />
         <BaseList
-          class="shadow-top bg-slate-100"
+          class="bg-slate-100 shadow-top"
           :class="listCls"
           :options="options"
           @click:item="onClickMenuItem"
@@ -31,13 +31,13 @@ import { BaseButton, BaseList, BaseOverlay } from "ui/index";
 import { ref } from "vue";
 
 export interface IPropsBaseButtonMenu {
-  options?: any | any[];
-  listCls?: string;
+	options?: any | any[];
+	listCls?: string;
 }
 
 withDefaults(defineProps<IPropsBaseButtonMenu>(), {
-  options: () => [],
-  listCls: undefined,
+	options: () => [],
+	listCls: undefined,
 });
 const emit = defineEmits(["click:item"]);
 
@@ -45,18 +45,18 @@ const rootEl = ref<InstanceType<BaseButton>>();
 const listEl = ref<InstanceType<BaseOverlay>>();
 const menuShowing = ref(false);
 function hideMenu() {
-  menuShowing.value = false;
+	menuShowing.value = false;
 }
 function onClickMenuItem(menuItem: any) {
-  emit("click:item", menuItem);
-  hideMenu();
+	emit("click:item", menuItem);
+	hideMenu();
 }
 function onClickDocument({ target }: MouseEvent) {
-  if (menuShowing.value && !(rootEl.value?.$el.contains(target) || listEl.value.$el.contains(target))) {
-    hideMenu();
-  }
+	if (menuShowing.value && !(rootEl.value?.$el.contains(target) || listEl.value.$el.contains(target))) {
+		hideMenu();
+	}
 }
 function onClickButton() {
-  listEl.value.$el.style.bottom = `${rootEl.value.$el.clientHeight}px`;
+	listEl.value.$el.style.bottom = `${rootEl.value.$el.clientHeight}px`;
 }
 </script>

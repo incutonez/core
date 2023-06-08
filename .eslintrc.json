@@ -17,8 +17,11 @@
     "space-before-function-paren": ["error", "never"],
     "function-call-argument-newline": ["error", "never"],
     "function-paren-newline": ["error", "never"],
-    "indent": ["error", 2, {"SwitchCase": 1}],
-    "@typescript-eslint/indent": ["error", 2, {"SwitchCase":  1}],
+    "indent": "off",
+    "@typescript-eslint/indent": ["error", "tab", {
+      "SwitchCase": 1,
+      "ignoredNodes": ["ConditionalExpression", "PropertyDefinition"]
+    }],
     "@typescript-eslint/no-unused-vars": "error",
     "semi": [2, "always"],
     "quotes": ["error", "double"],
@@ -61,7 +64,6 @@
     "computed-property-spacing": ["error", "never"],
     "func-call-spacing": ["error", "never"],
     "new-parens": "error",
-    "no-tabs": "error",
     "prefer-const": "error",
     "array-bracket-spacing": ["error", "never"],
     "comma-spacing": ["error", { "before": false, "after": true }],

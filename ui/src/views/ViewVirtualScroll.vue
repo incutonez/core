@@ -70,92 +70,92 @@ const RecordThreshold = 20;
 const totalLoaded = ref(0);
 const goto = ref(0);
 const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(data, {
-  itemHeight: ItemHeight,
+	itemHeight: ItemHeight,
 });
 
 // TODO: At the time of writing this, there's an issue in the throttle composable that was introduced in 9.10, so I removed it for now
 // Source: https://github.com/vueuse/vueuse/issues/2618
 const { y } = useScroll(containerProps.ref, {
-  onScroll() {
-    const index = Math.ceil(y.value / ItemHeight);
-    // Check the next x records have loaded
-    loadRecords(index + RecordThreshold);
-    // Check the previous x records have loaded
-    loadRecords(index - RecordThreshold);
-  },
-  async onStop(event) {
-    // We want to await the next refresh, so we can get the latest scrollTop value
-    await nextTick();
-    const index = Math.ceil((event.target as HTMLElement).scrollTop / ItemHeight);
-    // Check the next x records have loaded
-    loadRecords(index + RecordThreshold);
-    // Check the previous x records have loaded
-    loadRecords(index - RecordThreshold);
-  },
+	onScroll() {
+		const index = Math.ceil(y.value / ItemHeight);
+		// Check the next x records have loaded
+		loadRecords(index + RecordThreshold);
+		// Check the previous x records have loaded
+		loadRecords(index - RecordThreshold);
+	},
+	async onStop(event) {
+		// We want to await the next refresh, so we can get the latest scrollTop value
+		await nextTick();
+		const index = Math.ceil((event.target as HTMLElement).scrollTop / ItemHeight);
+		// Check the next x records have loaded
+		loadRecords(index + RecordThreshold);
+		// Check the previous x records have loaded
+		loadRecords(index - RecordThreshold);
+	},
 });
 
 function getNewTotal() {
-  dataTotal.value = Math.floor(Math.random() * 5000);
+	dataTotal.value = Math.floor(Math.random() * 5000);
 }
 
 async function loadRecords(take = 0) {
-  const $pageSize = unref(pageSize);
-  const page = Math.floor(take / $pageSize);
-  if (page < 0 || loadedPages.includes(page)) {
-    return;
-  }
-  // Normalize the amount we want to take
-  take = page * $pageSize;
-  loadedPages.push(page);
-  // Reset our data if we don't match
-  if (data.length !== dataTotal.value) {
-    data.splice(0);
-    for (let i = 0; i < dataTotal.value; i++) {
-      data.push(null);
-    }
-  }
-  return new Promise((resolve) => {
-    // Simulate async request
-    setTimeout(() => {
-      let count = $pageSize * (page + 1);
-      const $dataTotal = unref(dataTotal);
-      if ($dataTotal < $pageSize || $dataTotal - take < $pageSize) {
-        count = $dataTotal;
-      }
-      for (let i = take; i < count; i++) {
-        data.splice(i, 1, {
-          index: i,
-          name: faker.name.fullName(),
-        });
-        totalLoaded.value++;
-      }
-      resolve(true);
-    }, 1000);
-  });
+	const $pageSize = unref(pageSize);
+	const page = Math.floor(take / $pageSize);
+	if (page < 0 || loadedPages.includes(page)) {
+		return;
+	}
+	// Normalize the amount we want to take
+	take = page * $pageSize;
+	loadedPages.push(page);
+	// Reset our data if we don't match
+	if (data.length !== dataTotal.value) {
+		data.splice(0);
+		for (let i = 0; i < dataTotal.value; i++) {
+			data.push(null);
+		}
+	}
+	return new Promise((resolve) => {
+		// Simulate async request
+		setTimeout(() => {
+			let count = $pageSize * (page + 1);
+			const $dataTotal = unref(dataTotal);
+			if ($dataTotal < $pageSize || $dataTotal - take < $pageSize) {
+				count = $dataTotal;
+			}
+			for (let i = take; i < count; i++) {
+				data.splice(i, 1, {
+					index: i,
+					name: faker.name.fullName(),
+				});
+				totalLoaded.value++;
+			}
+			resolve(true);
+		}, 1000);
+	});
 }
 
 function reloadRecords() {
-  scrollTo(0);
-  goto.value = 0;
-  data.splice(0);
-  getNewTotal();
-  totalLoaded.value = 0;
-  loadedPages.splice(0);
-  loadRecords();
+	scrollTo(0);
+	goto.value = 0;
+	data.splice(0);
+	getNewTotal();
+	totalLoaded.value = 0;
+	loadedPages.splice(0);
+	loadRecords();
 }
 
 function onClickRefreshButton() {
-  reloadRecords();
+	reloadRecords();
 }
 
 function inputAttrs() {
-  return {
-    readonly: true,
-  };
+	return {
+		readonly: true,
+	};
 }
 
 function onEnterGoto() {
-  scrollTo(goto.value);
+	scrollTo(goto.value);
 }
 
 getNewTotal();

@@ -30,52 +30,52 @@ import { EnumWizardStep } from "ui/statics/Enums";
 import { Icon } from "ui/index";
 
 export interface IPropsWizardStep {
-  modelValue?: number;
-  index?: string | number;
-  title?: string;
+	modelValue?: number;
+	index?: string | number;
+	title?: string;
 }
 
 const props = withDefaults(defineProps<IPropsWizardStep>(), {
-  modelValue: EnumWizardStep.Disabled,
-  index: "",
-  title: "",
+	modelValue: EnumWizardStep.Disabled,
+	index: "",
+	title: "",
 });
 const emit = defineEmits(["click:step", "update:modelValue"]);
 const InvalidClickStates = [EnumWizardStep.Disabled, EnumWizardStep.Active, EnumWizardStep.InvalidActive];
 const isCompleted = computed(() => props.modelValue === EnumWizardStep.Completed);
 const isInvalid = computed(() => props.modelValue === EnumWizardStep.Invalid);
 const cssClass = computed(() => {
-  let css = "";
-  switch (props.modelValue) {
-    case EnumWizardStep.Disabled:
-      css = "disabled";
-      break;
-    case EnumWizardStep.Enabled:
-      css = "enabled";
-      break;
-    case EnumWizardStep.Active:
-      css = "active";
-      break;
-    case EnumWizardStep.Invalid:
-      css = "invalid";
-      break;
-    case EnumWizardStep.InvalidActive:
-      css = "active invalid";
-      break;
-    case EnumWizardStep.Completed:
-      css = "completed";
-      break;
-  }
-  return css;
+	let css = "";
+	switch (props.modelValue) {
+		case EnumWizardStep.Disabled:
+			css = "disabled";
+			break;
+		case EnumWizardStep.Enabled:
+			css = "enabled";
+			break;
+		case EnumWizardStep.Active:
+			css = "active";
+			break;
+		case EnumWizardStep.Invalid:
+			css = "invalid";
+			break;
+		case EnumWizardStep.InvalidActive:
+			css = "active invalid";
+			break;
+		case EnumWizardStep.Completed:
+			css = "completed";
+			break;
+	}
+	return css;
 });
 
 function onClickStep() {
-  const { modelValue } = props;
-  if (InvalidClickStates.indexOf(modelValue) !== -1) {
-    return;
-  }
-  emit("update:modelValue", modelValue === EnumWizardStep.Invalid ? EnumWizardStep.InvalidActive : EnumWizardStep.Active);
-  emit("click:step");
+	const { modelValue } = props;
+	if (InvalidClickStates.indexOf(modelValue) !== -1) {
+		return;
+	}
+	emit("update:modelValue", modelValue === EnumWizardStep.Invalid ? EnumWizardStep.InvalidActive : EnumWizardStep.Active);
+	emit("click:step");
 }
 </script>
 

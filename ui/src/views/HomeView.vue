@@ -54,21 +54,21 @@ import { globalError } from "ui/globals";
 const showDialog = ref(false);
 
 function onClickShowModal() {
-  showDialog.value = true;
+	showDialog.value = true;
 }
 
 function handleGlobalError() {
-  throw new Error("Oops!  An error was thrown!");
+	throw new Error("Oops!  An error was thrown!");
 }
 
 function handleLocalError() {
-  try {
-    handleGlobalError();
-  }
-  catch (ex) {
-    globalError.message = "Caught in HomeView and now showing in App";
-    globalError.title = "Locally Caught";
-  }
+	try {
+		handleGlobalError();
+	}
+	catch (ex) {
+		globalError.message = "Caught in HomeView and now showing in App";
+		globalError.title = "Locally Caught";
+	}
 }
 </script>
 

@@ -15,60 +15,60 @@ import { onMounted, onUpdated, ref, unref } from "vue";
 import { EnumTooltipPosition } from "ui/statics/Enums";
 
 export interface IPropsBaseTooltip {
-  value?: string;
-  position?: string;
+	value?: string;
+	position?: string;
 }
 
 const props = withDefaults(defineProps<IPropsBaseTooltip>(), {
-  value: "",
-  position: EnumTooltipPosition.RightMiddle,
+	value: "",
+	position: EnumTooltipPosition.RightMiddle,
 });
 const root = ref();
 const tooltipCls = ref();
 
 function reposition() {
-  const rootEl = unref(root);
-  if (!rootEl) {
-    return;
-  }
-  let cls;
-  switch (props.position) {
-    case EnumTooltipPosition.LeftTop:
-      // TODO: Impl
-      break;
-    case EnumTooltipPosition.LeftMiddle:
-      cls = "middle-left left";
-      break;
-    case EnumTooltipPosition.LeftBottom:
-      // TODO: Impl
-      break;
-    case EnumTooltipPosition.Middle:
-      // TODO: Impl
-      break;
-    case EnumTooltipPosition.MiddleTop:
-      cls = "middle-top top";
-      break;
-    case EnumTooltipPosition.MiddleBottom:
-      cls = "middle-bottom bottom";
-      break;
-    case EnumTooltipPosition.RightTop:
-      // TODO: Impl
-      break;
-    case EnumTooltipPosition.RightBottom:
-      // TODO: Impl
-      break;
-    case EnumTooltipPosition.RightMiddle:
-    default:
-      cls = "middle-right right";
-      break;
-  }
-  tooltipCls.value = cls;
+	const rootEl = unref(root);
+	if (!rootEl) {
+		return;
+	}
+	let cls;
+	switch (props.position) {
+		case EnumTooltipPosition.LeftTop:
+			// TODO: Impl
+			break;
+		case EnumTooltipPosition.LeftMiddle:
+			cls = "middle-left left";
+			break;
+		case EnumTooltipPosition.LeftBottom:
+			// TODO: Impl
+			break;
+		case EnumTooltipPosition.Middle:
+			// TODO: Impl
+			break;
+		case EnumTooltipPosition.MiddleTop:
+			cls = "middle-top top";
+			break;
+		case EnumTooltipPosition.MiddleBottom:
+			cls = "middle-bottom bottom";
+			break;
+		case EnumTooltipPosition.RightTop:
+			// TODO: Impl
+			break;
+		case EnumTooltipPosition.RightBottom:
+			// TODO: Impl
+			break;
+		case EnumTooltipPosition.RightMiddle:
+		default:
+			cls = "middle-right right";
+			break;
+	}
+	tooltipCls.value = cls;
 }
 
 onUpdated(() => reposition());
 onMounted(() => {
-  reposition();
-  root.value?.parentNode.classList.add("cursor-help", "group", "relative");
+	reposition();
+	root.value?.parentNode.classList.add("cursor-help", "group", "relative");
 });
 </script>
 

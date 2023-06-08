@@ -43,17 +43,17 @@ import { BaseIcon, BaseOverlay, Icon } from "ui/index";
 import { computed, ref, watch } from "vue";
 
 export interface IPropsBaseDialog {
-  open?: boolean;
-  minimizable?: boolean;
-  maximizable?: boolean;
-  title?: string;
+	open?: boolean;
+	minimizable?: boolean;
+	maximizable?: boolean;
+	title?: string;
 }
 
 const props = withDefaults(defineProps<IPropsBaseDialog>(), {
-  open: true,
-  minimizable: true,
-  maximizable: true,
-  title: "",
+	open: true,
+	minimizable: true,
+	maximizable: true,
+	title: "",
 });
 const emit = defineEmits(["update:open", "click:close", "click:minimize", "click:maximize", "click:restore"]);
 const opened = ref(props.open);
@@ -62,23 +62,23 @@ const showRestoreDown = computed(() => props.maximizable && maximized.value);
 const showMaximized = computed(() => props.maximizable && !maximized.value);
 
 function hide() {
-  opened.value = false;
+	opened.value = false;
 }
 function onClickClose() {
-  emit("click:close");
+	emit("click:close");
 }
 function onClickMinimize() {
-  hide();
-  maximized.value = false;
-  emit("click:minimize");
+	hide();
+	maximized.value = false;
+	emit("click:minimize");
 }
 function onClickMaximize() {
-  maximized.value = true;
-  emit("click:maximize");
+	maximized.value = true;
+	emit("click:maximize");
 }
 function onClickRestoreDown() {
-  maximized.value = false;
-  emit("click:restore");
+	maximized.value = false;
+	emit("click:restore");
 }
 
 watch(opened, (value) => emit("update:open", value));

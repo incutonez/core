@@ -62,32 +62,32 @@ import { faker } from "@faker-js/faker";
 
 const names: any[] = [];
 for (let i = 0; i < 50; i++) {
-  names.push({
-    id: i,
-    name: faker.name.fullName(),
-    color: faker.color.human(),
-  });
+	names.push({
+		id: i,
+		name: faker.name.fullName(),
+		color: faker.color.human(),
+	});
 }
 const groupField = ref();
 const groups = computed(() => {
-  const key = groupField.value;
-  return key ? [{
-    key,
-  }] : null;
+	const key = groupField.value;
+	return key ? [{
+		key,
+	}] : null;
 });
 const displayFields = Object.keys(names[0]).map((name) => {
-  return {
-    id: name,
-    value: name,
-  };
+	return {
+		id: name,
+		value: name,
+	};
 });
 const displayField = ref("name");
 const selectedName = ref([1, 5]);
 const listOptions = reactive(new Collection({
-  [EnumProp.Data]: names,
-  [EnumProp.Sorters]: [{
-    property: displayField.value,
-  }],
+	[EnumProp.Data]: names,
+	[EnumProp.Sorters]: [{
+		property: displayField.value,
+	}],
 }));
 const tagPosition = ref(EnumTagPosition.Above);
 const filterSelections = ref(false);

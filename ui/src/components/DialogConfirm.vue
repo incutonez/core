@@ -45,31 +45,31 @@ import { BaseButton, BaseIcon, Icon } from "ui/index";
 import type { IPropsBaseIcon } from "ui/interfaces";
 
 export interface IPropsDialogConfirm {
-  title?: string;
-  titleIcon?: IPropsBaseIcon;
-  modelValue?: boolean;
+	title?: string;
+	titleIcon?: IPropsBaseIcon;
+	modelValue?: boolean;
 }
 
 const props = withDefaults(defineProps<IPropsDialogConfirm>(), {
-  title: undefined,
-  titleIcon: undefined,
-  modelValue: true,
+	title: undefined,
+	titleIcon: undefined,
+	modelValue: true,
 });
 const emit = defineEmits(["update:modelValue"]);
 const isShowing = computed({
-  get() {
-    return props.modelValue;
-  },
-  set(value) {
-    emit("update:modelValue", value);
-  },
+	get() {
+		return props.modelValue;
+	},
+	set(value) {
+		emit("update:modelValue", value);
+	},
 });
 
 function handleClose() {
-  isShowing.value = false;
+	isShowing.value = false;
 }
 function handleCancel() {
-  isShowing.value = false;
+	isShowing.value = false;
 }
 </script>
 

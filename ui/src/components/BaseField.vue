@@ -61,72 +61,72 @@ import { EnumLabelAlign } from "ui/statics/Enums";
 import type { TFieldValue } from "ui/interfaces";
 
 export interface IPropsBaseField {
-  label?: string;
-  labelWidth?: string;
-  modelValue?: TFieldValue;
-  inputType?: string;
-  inputCls?: string | CSSStyleDeclaration;
-  inputWidth?: string;
-  labelAlign?: string;
-  required?: boolean;
-  allowEmptyWhitespace?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  /**
+	label?: string;
+	labelWidth?: string;
+	modelValue?: TFieldValue;
+	inputType?: string;
+	inputCls?: string | CSSStyleDeclaration;
+	inputWidth?: string;
+	labelAlign?: string;
+	required?: boolean;
+	allowEmptyWhitespace?: boolean;
+	minLength?: number;
+	maxLength?: number;
+	/**
    * Only used in number and date like fields.  We have to have it in here, so we can consume it
    * in the configuration methods that are called.  If we didn't have it, the value would always
    * be undefined.
    */
-  minValue?: number;
-  /**
+	minValue?: number;
+	/**
    * Only used in number and date like fields.  We have to have it in here, so we can consume it
    * in the configuration methods that are called.  If we didn't have it, the value would always
    * be undefined.
    */
-  maxValue?: number;
-  /**
+	maxValue?: number;
+	/**
    * Only used in number like fields.  We have to have it in here, so we can consume it in the
    * configuration methods that are called.  If we didn't have it, the value would always be
    * undefined.
    */
-  step?: number;
-  validateOnInit?: boolean;
-  inputAttrsCfg?: (props: IPropsBaseField) => {};
-  rulesCfg?: (props: IPropsBaseField) => {};
-  parseValue?: (value: any) => TFieldValue;
-  id?: string;
+	step?: number;
+	validateOnInit?: boolean;
+	inputAttrsCfg?: (props: IPropsBaseField) => {};
+	rulesCfg?: (props: IPropsBaseField) => {};
+	parseValue?: (value: any) => TFieldValue;
+	id?: string;
 }
 
 const props = withDefaults(defineProps<IPropsBaseField>(), {
-  label: "",
-  labelWidth: "w-24",
-  modelValue: "",
-  inputType: "text",
-  inputCls: "w-full",
-  inputWidth: "flex-1",
-  labelAlign: EnumLabelAlign.Left,
-  minLength: undefined,
-  maxLength: undefined,
-  minValue: undefined,
-  maxValue: undefined,
-  step: undefined,
-  validateOnInit: false,
-  inputAttrsCfg: (props: IPropsBaseField) => {
-    return {
-      ...useInputAttrs(props),
-      minlength: props.minLength,
-      maxlength: props.maxLength,
-    };
-  },
-  rulesCfg: (props: IPropsBaseField) => {
-    return {
-      ...useFieldRules(props),
-      minLength: props.minLength ? [props.minLength] : false,
-      maxLength: props.maxLength ? [props.maxLength] : false,
-    };
-  },
-  parseValue: parseString,
-  id: `input-${useUniqueId()}`,
+	label: "",
+	labelWidth: "w-24",
+	modelValue: "",
+	inputType: "text",
+	inputCls: "w-full",
+	inputWidth: "flex-1",
+	labelAlign: EnumLabelAlign.Left,
+	minLength: undefined,
+	maxLength: undefined,
+	minValue: undefined,
+	maxValue: undefined,
+	step: undefined,
+	validateOnInit: false,
+	inputAttrsCfg: (props: IPropsBaseField) => {
+		return {
+			...useInputAttrs(props),
+			minlength: props.minLength,
+			maxlength: props.maxLength,
+		};
+	},
+	rulesCfg: (props: IPropsBaseField) => {
+		return {
+			...useFieldRules(props),
+			minLength: props.minLength ? [props.minLength] : false,
+			maxLength: props.maxLength ? [props.maxLength] : false,
+		};
+	},
+	parseValue: parseString,
+	id: `input-${useUniqueId()}`,
 });
 const emit = defineEmits(["update:modelValue", "change:validity", "change:dirty", "click:field", "blur:field", "focus:field", "input:field"]);
 const inputAttrs = props.inputAttrsCfg(props);
@@ -134,24 +134,24 @@ const inputEl = ref<HTMLInputElement>();
 const inputWrapper = ref(null);
 const fieldRules = computed(() => props.rulesCfg(props));
 const field = useField(props.label || `field-${props.inputType}`, fieldRules, {
-  initialValue: props.modelValue,
-  validateOnMount: props.validateOnInit,
-  type: props.inputType,
-  checkedValue: true,
-  uncheckedValue: false,
+	initialValue: props.modelValue,
+	validateOnMount: props.validateOnInit,
+	type: props.inputType,
+	checkedValue: true,
+	uncheckedValue: false,
 });
 const value = computed({
-  get() {
-    return field.value.value;
-  },
-  set(val) {
-    updateValue(val);
-  },
+	get() {
+		return field.value.value;
+	},
+	set(val) {
+		updateValue(val);
+	},
 });
 const inputWrapperCls = computed(() => {
-  return {
-    "field-invalid": field.meta.touched && !field.meta.valid,
-  };
+	return {
+		"field-invalid": field.meta.touched && !field.meta.valid,
+	};
 });
 const fieldErrors = computed(() => field.errors.value);
 const showErrors = computed(() => field.meta.touched && fieldErrors.value.length);
@@ -159,54 +159,54 @@ const showErrors = computed(() => field.meta.touched && fieldErrors.value.length
 field.setTouched(props.validateOnInit);
 
 function updateValue(value: TFieldValue) {
-  emit("update:modelValue", value);
+	emit("update:modelValue", value);
 }
 /**
  * We use mousedown here because we want it to be able to veto blurring of the field, and the
  * only way to do that is if we use mousedown
  */
 function onMouseDownField(event: MouseEvent) {
-  emit("click:field", event);
+	emit("click:field", event);
 }
 function onInputField(event: InputEvent) {
-  emit("input:field", (event.target as HTMLInputElement).value);
+	emit("input:field", (event.target as HTMLInputElement).value);
 }
 function onFocusField() {
-  inputEl.value?.select();
-  emit("focus:field");
+	inputEl.value?.select();
+	emit("focus:field");
 }
 // We have to make sure that when we lose focus that we parse the value appropriately
 function onBlurField() {
-  field.setTouched(true);
-  const value = props.parseValue(props.modelValue);
-  if (value !== props.modelValue) {
-    updateValue(value);
-  }
-  field.validate();
-  emit("blur:field");
+	field.setTouched(true);
+	const value = props.parseValue(props.modelValue);
+	if (value !== props.modelValue) {
+		updateValue(value);
+	}
+	field.validate();
+	emit("blur:field");
 }
 watch(fieldRules, async(value) => {
-  if (value) {
-    // We have to wait for the field to receive its new rules before validating
-    await nextTick();
-    await field.validate();
-  }
+	if (value) {
+		// We have to wait for the field to receive its new rules before validating
+		await nextTick();
+		await field.validate();
+	}
 });
 
 watch(() => props.modelValue, (value) => field.handleChange(value, false));
 watch(() => field.meta.valid, (valid) => {
-  if (field.meta.touched) {
-    emit("change:validity", valid);
-  }
+	if (field.meta.touched) {
+		emit("change:validity", valid);
+	}
 });
 watch(() => field.meta.dirty, (dirty) => {
-  if (field.meta.touched) {
-    emit("change:dirty", dirty);
-  }
+	if (field.meta.touched) {
+		emit("change:dirty", dirty);
+	}
 });
 
 defineExpose({
-  inputWrapper,
+	inputWrapper,
 });
 </script>
 

@@ -21,7 +21,7 @@
   "rules": {
     "vue/attributes-order": "error",
     "tailwindcss/classnames-order": "error",
-    "@typescript-eslint/indent": ["error", 2, {"SwitchCase":  1}],
+    "@typescript-eslint/indent": ["error", "tab", {"SwitchCase":  1}],
     "@typescript-eslint/no-unused-vars": "error"
   }
 }

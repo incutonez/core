@@ -69,51 +69,51 @@ import { globalError } from "ui/globals";
 import DialogConfirm from "ui/components/DialogConfirm.vue";
 
 const ComponentList = new Collection({
-  [EnumProp.DisplayField]: "name",
-  [EnumProp.Data]: Object.keys(Route)
-    .filter((key) => key !== "Home")
-    .map((route) => {
-      return {
-        name: route,
-        fullPath: Route[route as keyof typeof Route],
-      };
-    }),
+	[EnumProp.DisplayField]: "name",
+	[EnumProp.Data]: Object.keys(Route)
+		.filter((key) => key !== "Home")
+		.map((route) => {
+			return {
+				name: route,
+				fullPath: Route[route as keyof typeof Route],
+			};
+		}),
 });
 const route = useRoute();
 const router = useRouter();
 const dateTime = ref(new Date());
 const showErrorDialog = computed({
-  get() {
-    return !!globalError.message;
-  },
-  set() {
-    globalError.message = "";
-    globalError.title = "Globally Caught";
-  },
+	get() {
+		return !!globalError.message;
+	},
+	set() {
+		globalError.message = "";
+		globalError.title = "Globally Caught";
+	},
 });
 const cmpCls = computed(() => (route.fullPath === Route.Home ? "" : "view-dialog"));
 const { cachedDialogs, activeDialogs, removeDialog, toggleDialog } = useDialogManager();
 function onClickStartItem(item: any) {
-  router.push(item.fullPath);
+	router.push(item.fullPath);
 }
 function onClickCloseDialog() {
-  removeDialog();
-  router.push(Route.Home);
+	removeDialog();
+	router.push(Route.Home);
 }
 function onClickMinimizeDialog() {
-  router.push(Route.Home);
+	router.push(Route.Home);
 }
 function onClickToggleDialog(dialog: IActiveDialog) {
-  toggleDialog(dialog);
+	toggleDialog(dialog);
 }
 
 setInterval(() => {
-  // Reactivity won't work unless we have a brand new object
-  dateTime.value = new Date(dateTime.value.getTime() + 1000);
+	// Reactivity won't work unless we have a brand new object
+	dateTime.value = new Date(dateTime.value.getTime() + 1000);
 }, 1000);
 
 onErrorCaptured((ex) => {
-  globalError.message = ex.toString();
-  return false;
+	globalError.message = ex.toString();
+	return false;
 });
 </script>

@@ -17,6 +17,6 @@ import { BaseIcon, Icon } from "ui/index";
 const emit = defineEmits(["remove:selection"]);
 
 function onClickRemoveOption(event: MouseEvent) {
-  emit("remove:selection", event);
+	emit("remove:selection", event);
 }
 </script>

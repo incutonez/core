@@ -29,9 +29,9 @@ const maxLength = ref(50);
 const value = ref("");
 
 function onChangeValidity() {
-  console.info("onChangeValidity");
+	console.info("onChangeValidity");
 }
 function onChangeDirty() {
-  console.info("onChangeDirty");
+	console.info("onChangeDirty");
 }
 </script>

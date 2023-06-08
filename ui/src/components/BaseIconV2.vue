@@ -6,7 +6,7 @@
 import type { MaterialIcon } from "material-icons";
 
 export interface IPropsBaseIcon {
-  icon: MaterialIcon;
+	icon: MaterialIcon;
 }
 
 defineProps<IPropsBaseIcon>();
