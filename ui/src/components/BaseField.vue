@@ -185,7 +185,7 @@ function onBlurField() {
 	field.validate();
 	emit("blur:field");
 }
-watch(fieldRules, async(value) => {
+watch(fieldRules, async (value) => {
 	if (value) {
 		// We have to wait for the field to receive its new rules before validating
 		await nextTick();
