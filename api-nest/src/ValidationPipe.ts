@@ -1,22 +1,23 @@
-﻿import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import { Model } from 'shared-ts/dist/Model';
+﻿import {
+  ArgumentMetadata,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  ValidationPipe as OriginalValidation,
+} from '@nestjs/common';
+import { Errors, Model } from 'shared-ts/dist/Model';
 
 @Injectable()
-export class ValidationPipe implements PipeTransform {
-  async transform(value: any, { metatype }: ArgumentMetadata) {
-    if (!metatype || !this.toValidate(metatype)) {
+export class ValidationPipe extends OriginalValidation {
+  async transform(value: any, metadata: ArgumentMetadata) {
+    if (!metadata || !this.toValidate(metadata)) {
       return value;
     }
-    const record: Model = (metatype as typeof Model).create(value);
-    const isValid = await record.isValid({ whitelist: true });
+    const record = (metadata.metatype as typeof Model).create(value);
+    const isValid = await record.isValid(this.validatorOptions);
     if (isValid) {
       return record;
     }
-    throw new Error('Validation failed');
-  }
-
-  private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
-    return !types.includes(metatype);
+    throw new HttpException(record[Errors], HttpStatus.UNPROCESSABLE_ENTITY);
   }
 }

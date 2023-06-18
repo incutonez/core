@@ -1,10 +1,11 @@
 ﻿import { Model } from "@/Model";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class AddressModel extends Model {
 	@IsNotEmpty()
 	line1 = "";
 
+	@IsString()
 	line2? = "";
 
 	@IsNotEmpty()

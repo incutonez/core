@@ -1,4 +1,5 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
+import { Body, Controller, Post, Get, UsePipes } from '@nestjs/common';
+import { ValidationPipe } from 'src/ValidationPipe';
 import { AppService } from './app.service';
 import { UserModel } from 'shared-ts/dist/models/UserModel';
 
@@ -12,8 +13,8 @@ export class AppController {
   }
 
   @Post('user')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   createUser(@Body() user: UserModel) {
-    console.log('here', user);
     return user;
   }
 }

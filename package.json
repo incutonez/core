@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "ui": "cd ui && npm start",
-    "api": "cd api && npm start",
+    "api": "cd api-nest && npm run start:dev",
     "test": "cd shared && npm run test",
     "test:ui": "cd ui && npm run test",
     "lint:ui": "cd ui && npm run lint",
