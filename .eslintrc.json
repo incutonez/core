@@ -1,4 +1,5 @@
 ﻿{
+  "root": true,
   "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended"
@@ -22,11 +23,11 @@
       }],
     "function-call-argument-newline": ["error", "never"],
     "function-paren-newline": ["error", "never"],
-    "indent": "off",
     "@typescript-eslint/indent": ["error", "tab", {
       "SwitchCase": 1,
       "ignoredNodes": ["ConditionalExpression", "PropertyDefinition"]
     }],
+    "no-var": "error",
     "@typescript-eslint/no-unused-vars": "error",
     "semi": [2, "always"],
     "quotes": ["error", "double"],

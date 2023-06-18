@@ -2,20 +2,34 @@ import type { RecursiveObject } from "@/types";
 import {
 	instanceToInstance,
 	plainToInstance,
-	type ClassTransformOptions,
+	type ClassTransformOptions, instanceToPlain,
 } from "class-transformer";
 import { validate, ValidationError, type ValidatorOptions } from "class-validator";
 import isEmpty from "just-is-empty";
+import compare from "just-compare";
+import "reflect-metadata";
 
 export const IsModel = Symbol("IsModel");
 export const Errors = Symbol("Errors");
+export const IsDirty = Symbol("IsDirty");
+export const Loaded = Symbol("Loaded");
+export const Snapshot = Symbol("Snapshot");
 
 export class Model {
 	[IsModel] = true;
+	[Loaded] = false;
 	[Errors]: ValidationError[] = [];
+	[Snapshot]: any;
 
-	static create<T>(this: new () => T, data?: RecursiveObject<T>, options?: ClassTransformOptions) {
-		return plainToInstance(this, data ?? {}, options);
+	static create<T>(this: new () => T, data?: RecursiveObject<T>, options: ClassTransformOptions & {[Loaded]?: boolean} = {}) {
+		const record = plainToInstance(this, data ?? {}, options) as Model;
+		record[Snapshot] = record.getData();
+		record[Loaded] = options[Loaded] ?? false;
+		return record as T;
+	}
+
+	get [IsDirty]() {
+		return compare(this.getData(), this[Snapshot]);
 	}
 
 	async isValid(options?: ValidatorOptions) {
@@ -27,17 +41,17 @@ export class Model {
 		for (const key in this) {
 			const value = this[key] as Model | Model[];
 			if (Array.isArray(value)) {
-				value.forEach((item) => {
+				await Promise.allSettled(value.map((item) => {
 					if (item?.[IsModel]) {
-						item.validate(options);
+						return item.validate(options);
 					}
-				});
+				}));
 			}
 			else if (value?.[IsModel]) {
 				await value.validate(options);
 			}
 		}
-		return this[Errors] = await validate(this, options);
+		this[Errors] = await validate(this, options);
 	}
 
 	setData(data: Partial<RecursiveObject<typeof this>>) {
@@ -45,6 +59,10 @@ export class Model {
 		for (const key in data) {
 			Reflect.set(this, key, record[key as keyof typeof record]);
 		}
+	}
+
+	getData(options?: ClassTransformOptions) {
+		return instanceToPlain(this, options);
 	}
 
 	clone(options?: ClassTransformOptions) {
