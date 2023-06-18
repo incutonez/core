@@ -5,7 +5,8 @@
   "main": "dist",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx rimraf dist && npx tsc && npx tsc-alias"
+    "lint": "npx tsc --project tsconfig.build.json",
+    "build": "npx rimraf dist && npm run lint && npx tsc-alias"
   },
   "author": "",
   "license": "ISC",

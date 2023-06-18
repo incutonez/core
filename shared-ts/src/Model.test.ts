@@ -15,6 +15,7 @@ class Child extends Model {
 }
 
 class Parent extends Model {
+	@IsString()
 	name?: string;
 
 	@IsArray()
@@ -83,7 +84,7 @@ describe("Model", () => {
 			let isValid = await record.isValid({
 				strictGroups: true,
 			});
-			expect(isValid).toStrictEqual(true);
+			expect(isValid).toStrictEqual(false);
 			// @ts-ignore We're expecting this to be invalid
 			record.name = name;
 			isValid = await record.isValid();
