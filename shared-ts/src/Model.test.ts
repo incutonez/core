@@ -1,6 +1,6 @@
 import { Model } from "@/Model";
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsString, validateSync } from "class-validator";
+import { IsArray, IsNotEmpty, IsString } from "class-validator";
 import { describe, it, expect } from "vitest";
 import "reflect-metadata";
 
@@ -55,7 +55,7 @@ describe("Model", () => {
 			expect(isValid).toStrictEqual(false);
 		});
 
-		it("Should validate create", async () => {
+		it("Should validate create group", async () => {
 			const record = Parent.create({
 				children: [{
 					name: undefined,
@@ -91,7 +91,7 @@ describe("Model", () => {
 			expect(isValid).toStrictEqual(true);
 		});
 
-		it("Should validate edits", async () => {
+		it("Should strip invalid properties", async () => {
 			const record = Parent.create({
 				name,
 				// @ts-ignore We're testing to see that this property won't be in the final record

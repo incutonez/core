@@ -28,17 +28,18 @@ function sanitize(data: any) {
 	const storage = getMetadataStorage();
 	const targetMetadatas = storage.getTargetValidationMetadatas(data.constructor, "", false, false, []);
 	const groupedMetadatas = storage.groupByPropertyName(targetMetadatas);
-	Object.keys(data).forEach((propertyName) => {
-		const groupedMetadata = groupedMetadatas[propertyName];
+	Object.keys(data).forEach((key) => {
+		const value = data[key];
+		const groupedMetadata = groupedMetadatas[key];
 		// does this property have no metadata?
 		if (!groupedMetadata || groupedMetadata.length === 0) {
-			delete data[propertyName as keyof typeof data];
+			delete data[key as keyof typeof data];
 		}
-		else if (data[propertyName]?.constructor === Object) {
-			sanitize(data[propertyName]);
+		else if (value?.[IsModel]) {
+			sanitize(value);
 		}
-		else if (Array.isArray(data[propertyName])) {
-			data[propertyName].forEach((item: any) => sanitize(item));
+		else if (Array.isArray(value)) {
+			value.forEach((item: any) => sanitize(item));
 		}
 	});
 }
