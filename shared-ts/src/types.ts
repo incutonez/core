@@ -23,3 +23,7 @@ export interface ModelCreateOptions extends ClassTransformOptions {
 	[Loaded]?: boolean;
 	sanitize?: boolean;
 }
+
+export interface ModelGetDataOptions extends ClassTransformOptions {
+	exclude?: string[];
+}

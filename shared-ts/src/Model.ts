@@ -1,4 +1,4 @@
-import type { ModelCreateOptions, RecursiveObject } from "@/types";
+import type { ModelGetDataOptions, ModelCreateOptions, RecursiveObject } from "@/types";
 import {
 	instanceToInstance,
 	plainToInstance,
@@ -13,12 +13,16 @@ import {
 import isEmpty from "just-is-empty";
 import compare from "just-compare";
 import "reflect-metadata";
+import get from "just-safe-get";
+import _ from "lodash";
 
 export const IsModel = Symbol("IsModel");
 export const Errors = Symbol("Errors");
 export const IsDirty = Symbol("IsDirty");
 export const Loaded = Symbol("Loaded");
 export const Snapshot = Symbol("Snapshot");
+
+const LastKeyRegex = /\.(?=[^\.]+$)/;
 
 /**
  * This basically mimics the whitelist function in ValidationExecutor
@@ -93,8 +97,38 @@ export class Model {
 		}
 	}
 
-	getData(options?: ClassTransformOptions) {
-		return instanceToPlain(this, options);
+	getData(options: ModelGetDataOptions = {}) {
+		const data = instanceToPlain(this, options);
+		const { exclude = [] } = options;
+		exclude.forEach((field) => {
+			if (field.includes(".")) {
+				const [parentKey, key] = field.split(LastKeyRegex);
+				const value = get(data, parentKey);
+				if (Array.isArray(value)) {
+					for (let i = value.length - 1; i >= 0; i--) {
+						const item = value[i];
+						delete item[key];
+						// If our object is now empty because that was the last property, let's just remove it from the array
+						if (isEmpty(item)) {
+							value.splice(i, 1);
+						}
+					}
+				}
+				// TODO: What about Set/Map?
+				else if (value instanceof Object) {
+					delete value[key];
+				}
+				// If our object is now empty because that was the last property, let's just remove it from the array
+				if (isEmpty(value)) {
+					// TODO: Figure out how to do this without lodash
+					_.unset(data, parentKey);
+				}
+			}
+			else {
+				delete data[field];
+			}
+		});
+		return data;
 	}
 
 	clone(options?: ClassTransformOptions) {
