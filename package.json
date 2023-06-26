@@ -41,6 +41,8 @@
   ],
   "homepage": "https://github.com/incutonez/core#readme",
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/jest": "^29.2.3",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
@@ -53,7 +55,9 @@
     "typescript": "^4.9.3"
   },
   "release": {
-    "branches": ["main"],
+    "branches": [
+      "main"
+    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
