@@ -68,6 +68,7 @@ import PackageJson from "ui/../package.json";
 import { globalError } from "ui/globals";
 import DialogConfirm from "ui/components/DialogConfirm.vue";
 
+// TODO: Adding comment to test semantic release
 const ComponentList = new Collection({
   [EnumProp.DisplayField]: "name",
   [EnumProp.Data]: Object.keys(Route)
