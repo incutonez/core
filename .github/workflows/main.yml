@@ -19,7 +19,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: cd ui && npx semantic-release
+        run: npx multi-semantic-release --ignore-packages=api/**,shared/**,shared-ts/**,api-nest/**
   build:
     runs-on: ubuntu-latest
     needs:
