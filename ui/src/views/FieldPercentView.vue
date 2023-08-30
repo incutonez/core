@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import { BaseDialog, FieldPercent } from "ui/index";
 import { ref } from "vue";
+import { BaseDialog, FieldPercent } from "ui/index";
 
 const value = ref(22.2);
 </script>

@@ -31,9 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { BaseDialog } from "ui/index";
-import WizardStep from "ui/components/WizardStep.vue";
 import { reactive, ref, watch } from "vue";
+import WizardStep from "ui/components/WizardStep.vue";
+import { BaseDialog } from "ui/index";
 import { EnumWizardStep } from "ui/statics/Enums";
 
 interface IStep {

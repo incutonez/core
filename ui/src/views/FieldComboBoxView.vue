@@ -54,11 +54,11 @@
 </template>
 
 <script setup lang="ts">
-import { FieldComboBox, BaseDialog, FieldCheckBox, BaseField } from "ui/index";
 import { computed, reactive, ref } from "vue";
-import { Collection } from "ui/classes";
-import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
 import { faker } from "@faker-js/faker";
+import { Collection } from "ui/classes";
+import { BaseDialog, BaseField, FieldCheckBox, FieldComboBox } from "ui/index";
+import { EnumProp, EnumTagPosition } from "ui/statics/Enums";
 
 const names: any[] = [];
 for (let i = 0; i < 50; i++) {
@@ -71,9 +71,11 @@ for (let i = 0; i < 50; i++) {
 const groupField = ref();
 const groups = computed(() => {
   const key = groupField.value;
-  return key ? [{
-    key,
-  }] : null;
+  return key
+    ? [{
+      key,
+    }]
+    : null;
 });
 const displayFields = Object.keys(names[0]).map((name) => {
   return {
@@ -83,12 +85,14 @@ const displayFields = Object.keys(names[0]).map((name) => {
 });
 const displayField = ref("name");
 const selectedName = ref([1, 5]);
-const listOptions = reactive(new Collection({
-  [EnumProp.Data]: names,
-  [EnumProp.Sorters]: [{
-    property: displayField.value,
-  }],
-}));
+const listOptions = reactive(
+  new Collection({
+    [EnumProp.Data]: names,
+    [EnumProp.Sorters]: [{
+      property: displayField.value,
+    }],
+  }),
+);
 const tagPosition = ref(EnumTagPosition.Above);
 const filterSelections = ref(false);
 const multiSelect = ref(true);

@@ -55,18 +55,18 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView, useRoute, useRouter } from "vue-router";
-import { BaseButton, BaseButtonMenu, Icon } from "ui/index";
-import Route from "ui/statics/Route";
 import { computed, onErrorCaptured, ref } from "vue";
+import { RouterView, useRoute, useRouter } from "vue-router";
+import PackageJson from "ui/../package.json";
+import { Collection } from "ui/classes";
+import DialogConfirm from "ui/components/DialogConfirm.vue";
+import IconDelete from "ui/components/IconDelete.vue";
 import { useDialogManager } from "ui/composables/DialogManager";
+import { globalError } from "ui/globals";
+import { BaseButton, BaseButtonMenu, Icon } from "ui/index";
 import type { IActiveDialog } from "ui/interfaces";
 import { EnumProp } from "ui/statics/Enums";
-import { Collection } from "ui/classes";
-import IconDelete from "ui/components/IconDelete.vue";
-import PackageJson from "ui/../package.json";
-import { globalError } from "ui/globals";
-import DialogConfirm from "ui/components/DialogConfirm.vue";
+import Route from "ui/statics/Route";
 
 // TODO: Adding comment to test semantic release
 const ComponentList = new Collection({

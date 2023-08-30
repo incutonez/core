@@ -1,4 +1,4 @@
-﻿const FieldRoute = "/field";
+﻿export const FieldRoute = "/field";
 
 export default {
   Home: "/",
@@ -6,6 +6,7 @@ export default {
   Currency: `${FieldRoute}/currency`,
   Integer: `${FieldRoute}/integer`,
   Number: `${FieldRoute}/number`,
+  Color: `${FieldRoute}/color`,
   Percent: `${FieldRoute}/percent`,
   Text: `${FieldRoute}/text`,
   CheckBox: `${FieldRoute}/checkBox`,

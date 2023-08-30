@@ -46,10 +46,10 @@
 </template>
 
 <script setup lang="ts">
-import { DialogConfirm, BaseButton, BaseTooltip, Icon } from "ui/index";
-import { EnumTooltipPosition } from "ui/statics/Enums";
 import { ref } from "vue";
 import { globalError } from "ui/globals";
+import { BaseButton, BaseTooltip, DialogConfirm, Icon } from "ui/index";
+import { EnumTooltipPosition } from "ui/statics/Enums";
 
 const showDialog = ref(false);
 

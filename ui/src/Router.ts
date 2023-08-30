@@ -3,16 +3,17 @@
   createWebHashHistory,
 } from "vue-router";
 import Route from "ui/statics/Route";
-import HomeView from "ui/views/HomeView.vue";
+import FieldCheckboxView from "ui/views/FieldCheckboxView.vue";
+import FieldColorView from "ui/views/FieldColorView.vue";
 import FieldComboBoxView from "ui/views/FieldComboBoxView.vue";
 import FieldCurrencyView from "ui/views/FieldCurrencyView.vue";
 import FieldIntegerView from "ui/views/FieldIntegerView.vue";
 import FieldNumberView from "ui/views/FieldNumberView.vue";
 import FieldPercentView from "ui/views/FieldPercentView.vue";
 import FieldTextView from "ui/views/FieldTextView.vue";
-import FieldCheckboxView from "ui/views/FieldCheckboxView.vue";
-import WizardStepsView from "ui/views/WizardStepsView.vue";
+import HomeView from "ui/views/HomeView.vue";
 import ViewVirtualScroll from "ui/views/ViewVirtualScroll.vue";
+import WizardStepsView from "ui/views/WizardStepsView.vue";
 
 export const Router = createRouter({
   history: createWebHashHistory(),
@@ -31,6 +32,9 @@ export const Router = createRouter({
   }, {
     path: Route.Number,
     component: FieldNumberView,
+  }, {
+    path: Route.Color,
+    component: FieldColorView,
   }, {
     path: Route.Percent,
     component: FieldPercentView,

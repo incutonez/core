@@ -1,16 +1,13 @@
 ﻿<template>
   <BaseDialog
-    title="Field Text"
+    title="Field Color"
     class="header-blue"
   >
     <template #body>
       <section class="base-dialog-body">
-        <BaseField
+        <FieldColor
           v-model="value"
-          label="First Name"
           :required="isRequired"
-          :min-length="minLength"
-          :max-length="maxLength"
           @change:validity="onChangeValidity"
           @change:dirty="onChangeDirty"
         />
@@ -21,12 +18,11 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { BaseDialog, BaseField } from "ui/index";
+import FieldColor from "ui/components/FieldColor.vue";
+import { BaseDialog } from "ui/index";
 
 const isRequired = ref(true);
-const minLength = ref(4);
-const maxLength = ref(50);
-const value = ref("");
+const value = ref("#867530");
 
 function onChangeValidity() {
   console.info("onChangeValidity");

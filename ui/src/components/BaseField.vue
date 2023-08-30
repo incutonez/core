@@ -52,13 +52,13 @@
 </template>
 
 <script setup lang="ts">
-import { useFieldRules, useInputAttrs, useUniqueId } from "ui/composables/BaseField";
-import { useField } from "vee-validate";
 import { computed, nextTick, ref, watch } from "vue";
-import { BaseLabel, BaseIcon, Icon } from "ui/index";
-import { parseString } from "ui/utilities";
-import { EnumLabelAlign } from "ui/statics/Enums";
+import { useFieldRules, useInputAttrs, useUniqueId } from "ui/composables/BaseField";
+import { BaseIcon, BaseLabel, Icon } from "ui/index";
 import type { TFieldValue } from "ui/interfaces";
+import { EnumLabelAlign } from "ui/statics/Enums";
+import { parseString } from "ui/utilities";
+import { useField } from "vee-validate";
 
 export interface IPropsBaseField {
   label?: string;
@@ -193,20 +193,30 @@ watch(fieldRules, async(value) => {
   }
 });
 
-watch(() => props.modelValue, (value) => field.handleChange(value, false));
-watch(() => field.meta.valid, (valid) => {
-  if (field.meta.touched) {
-    emit("change:validity", valid);
-  }
-});
-watch(() => field.meta.dirty, (dirty) => {
-  if (field.meta.touched) {
-    emit("change:dirty", dirty);
-  }
-});
+watch(
+  () => props.modelValue,
+  (value) => field.handleChange(value, false),
+);
+watch(
+  () => field.meta.valid,
+  (valid) => {
+    if (field.meta.touched) {
+      emit("change:validity", valid);
+    }
+  },
+);
+watch(
+  () => field.meta.dirty,
+  (dirty) => {
+    if (field.meta.touched) {
+      emit("change:dirty", dirty);
+    }
+  },
+);
 
 defineExpose({
   inputWrapper,
+  value,
 });
 </script>
 

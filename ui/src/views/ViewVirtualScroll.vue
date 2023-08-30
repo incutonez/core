@@ -57,9 +57,9 @@
 
 <script setup lang="ts">
 import { nextTick, reactive, ref, unref } from "vue";
-import { useScroll, useVirtualList } from "@vueuse/core";
-import { BaseDialog, BaseButton, BaseField } from "ui/index";
 import { faker } from "@faker-js/faker";
+import { useScroll, useVirtualList } from "@vueuse/core";
+import { BaseButton, BaseDialog, BaseField } from "ui/index";
 
 const data = reactive<any[]>([]);
 const dataTotal = ref(0);

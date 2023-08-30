@@ -26,8 +26,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseIcon from "ui/components/BaseIcon.vue";
-import { EnumWizardStep } from "ui/statics/Enums";
 import { Icon } from "ui/index";
+import { EnumWizardStep } from "ui/statics/Enums";
 
 export interface IPropsWizardStep {
   modelValue?: number;
