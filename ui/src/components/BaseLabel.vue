@@ -4,12 +4,12 @@
 
 <script setup lang="ts">
 export interface IPropsBaseLabel {
-	value: string;
-	separator?: string;
+  value: string;
+  separator?: string;
 }
 
 withDefaults(defineProps<IPropsBaseLabel>(), {
-	separator: ":",
+  separator: ":",
 });
 </script>
 

@@ -1,8 +1,5 @@
 ﻿<template>
-  <div
-    ref="rootEl"
-    class="overlay-container"
-  >
+  <div ref="rootEl" class="overlay-container">
     <slot />
   </div>
 </template>

@@ -1,37 +1,22 @@
 ﻿<template>
-  <article
-    v-show="isShowing"
-    class="dialog-confirm"
-  >
+  <article v-show="isShowing" class="dialog-confirm">
     <div class="dialog-overlay" />
     <section class="dialog-container">
       <section class="container-header">
         <slot name="titleIcon">
-          <BaseIcon
-            v-if="!!titleIcon"
-            v-bind="titleIcon"
-            class="mr-1"
-          />
+          <BaseIcon v-if="!!titleIcon" v-bind="titleIcon" class="mr-1" />
         </slot>
         <slot name="title">
           <span>{{ title }}</span>
         </slot>
-        <BaseButton
-          :icon="Icon.Close"
-          class="button-close"
-          @click="handleClose"
-        />
+        <BaseButton :icon="Icon.Close" class="button-close" @click="handleClose" />
       </section>
       <section class="container-body">
         <slot name="body" />
       </section>
       <section class="container-footer">
         <slot name="footer">
-          <BaseButton
-            class="toolbar"
-            text="Cancel"
-            @click="handleCancel"
-          />
+          <BaseButton class="toolbar" text="Cancel" @click="handleCancel" />
           <slot name="afterCancel" />
         </slot>
       </section>
@@ -45,31 +30,31 @@ import { BaseButton, BaseIcon, Icon } from "ui/index";
 import type { IPropsBaseIcon } from "ui/interfaces";
 
 export interface IPropsDialogConfirm {
-	title?: string;
-	titleIcon?: IPropsBaseIcon;
-	modelValue?: boolean;
+  title?: string;
+  titleIcon?: IPropsBaseIcon;
+  modelValue?: boolean;
 }
 
 const props = withDefaults(defineProps<IPropsDialogConfirm>(), {
-	title: undefined,
-	titleIcon: undefined,
-	modelValue: true,
+  title: undefined,
+  titleIcon: undefined,
+  modelValue: true,
 });
 const emit = defineEmits(["update:modelValue"]);
 const isShowing = computed({
-	get() {
-		return props.modelValue;
-	},
-	set(value) {
-		emit("update:modelValue", value);
-	},
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit("update:modelValue", value);
+  },
 });
 
 function handleClose() {
-	isShowing.value = false;
+  isShowing.value = false;
 }
 function handleCancel() {
-	isShowing.value = false;
+  isShowing.value = false;
 }
 </script>
 

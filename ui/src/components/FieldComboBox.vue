@@ -1,76 +1,28 @@
 ﻿<template>
-  <BaseField
-    ref="fieldEl"
-    v-model="displayValue"
-    v-mousedown-document="onMouseDownDocument"
-    v-scroll-document="onScrollDocument"
-    class="field-combo-box"
-    :class="componentCls"
-    @keydown.delete="onKeyBackspace"
-    @input:field="onInputField"
-    @click:field="onClickField"
-    @keydown.tab="onTabField"
-  >
+  <BaseField ref="fieldEl" v-model="displayValue" v-mousedown-document="onMouseDownDocument" v-scroll-document="onScrollDocument" class="field-combo-box" :class="componentCls" @keydown.delete="onKeyBackspace" @input:field="onInputField" @click:field="onClickField" @keydown.tab="onTabField">
     <template #beforeItems>
       <div v-if="multiSelect">
         <slot name="itemsDisplay">
-          <BaseItems
-            v-for="(selection, index) in selections"
-            v-show="isTagVisible(selection, index)"
-            :key="selection[optionsAvailable.idField]"
-            @remove:selection="onClickItemRemove(selection)"
-          >
+          <BaseItems v-for="(selection, index) in selections" v-show="isTagVisible(selection, index)" :key="selection[optionsAvailable.idField]" @remove:selection="onClickItemRemove(selection)">
             {{ selection[displayFieldFm] }}
           </BaseItems>
         </slot>
-        <div
-          v-show="showExpandTags"
-          class="field-tags-wrapper-collapse"
-          @click="onClickExpandTags"
-        >
+        <div v-show="showExpandTags" class="field-tags-wrapper-collapse" @click="onClickExpandTags">
           <span>+ {{ collapsedTagCount }}</span>
         </div>
-        <div
-          v-show="showCollapseTags"
-          class="field-tags-wrapper-expand"
-          @click="onClickCollapseTags"
-        >
+        <div v-show="showCollapseTags" class="field-tags-wrapper-expand" @click="onClickCollapseTags">
           <span>- {{ collapsedTagCount }}</span>
         </div>
       </div>
     </template>
     <template #afterItems>
-      <BaseIcon
-        class="field-combo-box-picker"
-        :icon="Icon.PickerDown"
-        @click="onClickPicker"
-      />
-      <BaseOverlay
-        ref="dropdownListEl"
-        v-visible="isExpanded"
-        class="field-combo-box-list-wrapper"
-        :style="dropdownListStyle"
-      >
-        <slot
-          name="list"
-          :expanded="isExpanded"
-          :options="optionsAvailable"
-          :selections="selections"
-        >
+      <BaseIcon class="field-combo-box-picker" :icon="Icon.PickerDown" @click="onClickPicker" />
+      <BaseOverlay ref="dropdownListEl" v-visible="isExpanded" class="field-combo-box-list-wrapper" :style="dropdownListStyle">
+        <slot name="list" :expanded="isExpanded" :options="optionsAvailable" :selections="selections">
           <slot name="listBefore" />
-          <BaseList
-            :selections="selections"
-            :options="optionsAvailable"
-            @update:selections="onUpdateSelections"
-          >
-            <template
-              v-for="(_, slot) of $slots"
-              #[slot]="scope"
-            >
-              <slot
-                :name="slot"
-                v-bind="scope"
-              />
+          <BaseList :selections="selections" :options="optionsAvailable" @update:selections="onUpdateSelections">
+            <template v-for="(_, slot) of $slots" #[slot]="scope">
+              <slot :name="slot" v-bind="scope" />
             </template>
           </BaseList>
           <slot name="listAfter" />
@@ -86,48 +38,48 @@
  * Reference: https://atlassian.design/components/select/examples
  */
 import { computed, ref, unref, watch } from "vue";
-import { hasTarget, isEmpty, makeArray } from "ui/utilities";
-import { BaseField, BaseIcon, BaseItems, BaseList, BaseOverlay, Icon } from "ui/index";
 import { Collection, isCollection } from "ui/classes/Collection";
-import { EnumProp } from "ui/statics/Enums";
+import { BaseField, BaseIcon, BaseItems, BaseList, BaseOverlay, Icon } from "ui/index";
 import type { IModel } from "ui/interfaces";
+import { EnumProp } from "ui/statics/Enums";
+import { hasTarget, isEmpty, makeArray } from "ui/utilities";
 
 export interface IPropsFieldComboBox {
-	modelValue?: string | number | any[];
-	multiSelect?: boolean;
-	options?: any[] | Collection | IModel[];
-	expanded?: boolean;
-	idField?: string;
-	displayField?: string;
-	maxSelectedTags?: number;
-	filterSelections?: boolean;
-	filterFn?: (options: any) => {};
-	/**
+  modelValue?: string | number | any[];
+  multiSelect?: boolean;
+  options?: any[] | Collection | IModel[];
+  expanded?: boolean;
+  idField?: string;
+  displayField?: string;
+  maxSelectedTags?: number;
+  filterSelections?: boolean;
+  filterFn?: (options: any) => {};
+  /**
    * This must be an array of objects, with at least the id property defined
    * @typedef Group
    * @property {String|Number} key
    * @property {String} [display=id]
    * This is the value that's used when displaying the group.  By default, it uses the id
    */
-	groups?: any[];
-	listHeight?: string;
+  groups?: any[];
+  listHeight?: string;
 }
 
 interface IUpdateSelection {
-	option?: any;
-	remove?: boolean;
-	shouldBlur?: boolean;
+  option?: any;
+  remove?: boolean;
+  shouldBlur?: boolean;
 }
 
 const props = withDefaults(defineProps<IPropsFieldComboBox>(), {
-	modelValue: undefined,
-	options: () => [],
-	idField: "",
-	displayField: "",
-	maxSelectedTags: 2,
-	filterFn: undefined,
-	groups: undefined,
-	listHeight: "144px",
+  modelValue: undefined,
+  options: () => [],
+  idField: "",
+  displayField: "",
+  maxSelectedTags: 2,
+  filterFn: undefined,
+  groups: undefined,
+  listHeight: "144px",
 });
 const emit = defineEmits(["update:expanded", "update:modelValue", "update:selected"]);
 const SearchFilter = "searchFilter";
@@ -146,149 +98,155 @@ const selections = ref<any[]>([]);
 const collapsedTagCount = computed(() => selections.value.length - props.maxSelectedTags);
 const showExpandTags = computed(() => collapsedTagCount.value > 0 && !showCollapseTags.value);
 const dropdownListStyle = computed(() => {
-	return {
-		height: props.listHeight,
-	};
+  return {
+    height: props.listHeight,
+  };
 });
 
 const optionsAvailable = computed(() => {
-	const { groups, options } = props;
-	let { filterFn, displayField, idField } = props;
-	let optionsCollection: Collection;
-	/* If we don't do this, we run the risk of sharing the same collection and adding filters that could
+  const { groups, options } = props;
+  let { filterFn, displayField, idField } = props;
+  let optionsCollection: Collection;
+  /* If we don't do this, we run the risk of sharing the same collection and adding filters that could
    * cause side effects elsewhere... we need our own copy for this component */
-	if (isCollection(options)) {
-		optionsCollection = options.clone();
-	}
-	else {
-		optionsCollection = new Collection({
-			[EnumProp.Data]: options as IModel[],
-		});
-	}
-	// If this is explicitly set, we prefer it
-	if (idField) {
-		optionsCollection.idField = idField;
-	}
-	else {
-		idField = optionsCollection.idField;
-	}
-	// If this is explicitly set, we prefer it
-	if (displayField) {
-		optionsCollection[EnumProp.DisplayField] = displayField;
-	}
-	else {
-		displayField = optionsCollection[EnumProp.DisplayField];
-	}
-	const search = unref($search);
-	optionsCollection.removeFilters([SearchFilter, SelectionsFilter], true);
-	if (search) {
-		if (!filterFn) {
-			const searchRe = new RegExp(search, "i");
-			filterFn = (option) => searchRe.test(option[displayField]);
-		}
-		optionsCollection.addFilters([{
-			id: SearchFilter,
-			fn: filterFn,
-		}], {
-			suppress: true,
-		});
-	}
-	if (props.multiSelect && props.filterSelections) {
-		// TODO: Selections here triggers this entire computed to be called, which is inefficient
-		const selectionValues = unref(selections);
-		if (!isEmpty(selectionValues)) {
-			optionsCollection.addFilters([{
-				id: SelectionsFilter,
-				fn: (option: any) => {
-					let include = true;
-					for (const selection of selectionValues) {
-						if (selection[idField] === option[idField]) {
-							include = false;
-							break;
-						}
-					}
-					return include;
-				},
-			}], {
-				suppress: true,
-			});
-		}
-	}
-	optionsCollection[EnumProp.Groups] = groups;
-	return optionsCollection;
+  if (isCollection(options)) {
+    optionsCollection = options.clone();
+  } else {
+    optionsCollection = new Collection({
+      [EnumProp.Data]: options as IModel[],
+    });
+  }
+  // If this is explicitly set, we prefer it
+  if (idField) {
+    optionsCollection.idField = idField;
+  } else {
+    idField = optionsCollection.idField;
+  }
+  // If this is explicitly set, we prefer it
+  if (displayField) {
+    optionsCollection[EnumProp.DisplayField] = displayField;
+  } else {
+    displayField = optionsCollection[EnumProp.DisplayField];
+  }
+  const search = unref($search);
+  optionsCollection.removeFilters([SearchFilter, SelectionsFilter], true);
+  if (search) {
+    if (!filterFn) {
+      const searchRe = new RegExp(search, "i");
+      filterFn = (option) => searchRe.test(option[displayField]);
+    }
+    optionsCollection.addFilters(
+      [
+        {
+          id: SearchFilter,
+          fn: filterFn,
+        },
+      ],
+      {
+        suppress: true,
+      }
+    );
+  }
+  if (props.multiSelect && props.filterSelections) {
+    // TODO: Selections here triggers this entire computed to be called, which is inefficient
+    const selectionValues = unref(selections);
+    if (!isEmpty(selectionValues)) {
+      optionsCollection.addFilters(
+        [
+          {
+            id: SelectionsFilter,
+            fn: (option: any) => {
+              let include = true;
+              for (const selection of selectionValues) {
+                if (selection[idField] === option[idField]) {
+                  include = false;
+                  break;
+                }
+              }
+              return include;
+            },
+          },
+        ],
+        {
+          suppress: true,
+        }
+      );
+    }
+  }
+  optionsCollection[EnumProp.Groups] = groups;
+  return optionsCollection;
 });
 const displayFieldFm = computed(() => optionsAvailable.value[EnumProp.DisplayField]);
 const displayValue = computed({
-	get() {
-		const search = unref($search);
-		if (isEmpty(search)) {
-			return props.multiSelect ? "" : selections.value[0]?.[displayFieldFm.value];
-		}
-		return search;
-	},
-	// User is typing
-	set(value) {
-		$search.value = value;
-	},
+  get() {
+    const search = unref($search);
+    if (isEmpty(search)) {
+      return props.multiSelect ? "" : selections.value[0]?.[displayFieldFm.value];
+    }
+    return search;
+  },
+  // User is typing
+  set(value) {
+    $search.value = value;
+  },
 });
 const componentCls = computed(() => (props.multiSelect ? "multi-select" : ""));
 
 selections.value = getSelections();
 
 function getSelections() {
-	const selections: any[] = [];
-	const { idField } = optionsAvailable.value;
-	let { modelValue } = props;
-	if (isEmpty(modelValue)) {
-		return selections;
-	}
-	modelValue = makeArray(modelValue);
-	modelValue.forEach((selectedValue) => {
-		const foundOption = props.options?.find((option) => option[idField] === selectedValue);
-		if (foundOption) {
-			selections.push(foundOption);
-		}
-	});
-	return selections;
+  const selections: any[] = [];
+  const { idField } = optionsAvailable.value;
+  let { modelValue } = props;
+  if (isEmpty(modelValue)) {
+    return selections;
+  }
+  modelValue = makeArray(modelValue);
+  modelValue.forEach((selectedValue) => {
+    const foundOption = props.options?.find((option) => option[idField] === selectedValue);
+    if (foundOption) {
+      selections.push(foundOption);
+    }
+  });
+  return selections;
 }
 function updateExpanded(value = !isExpanded.value) {
-	isExpanded.value = value;
-	if (value) {
-		const $dropdownListEl = dropdownListEl.value.$el;
-		const { style: dropdownStyle } = $dropdownListEl;
-		const { height } = $dropdownListEl.getBoundingClientRect();
-		const boundingClientRect = fieldEl.value.inputWrapper.getBoundingClientRect();
-		const { left, width, bottom } = boundingClientRect;
-		let { top } = boundingClientRect;
-		if (innerHeight < bottom + height + ListPadding) {
-			top -= height;
-		}
-		else {
-			top = bottom + ListPadding;
-		}
-		dropdownStyle.top = `${top + scrollY}px`;
-		dropdownStyle.left = `${left - 2}px`;
-		dropdownStyle.width = `${width + 4}px`;
-	}
-	emit("update:expanded", value);
+  isExpanded.value = value;
+  if (value) {
+    const $dropdownListEl = dropdownListEl.value.$el;
+    const { style: dropdownStyle } = $dropdownListEl;
+    const { height } = $dropdownListEl.getBoundingClientRect();
+    const boundingClientRect = fieldEl.value.inputWrapper.getBoundingClientRect();
+    const { left, width, bottom } = boundingClientRect;
+    let { top } = boundingClientRect;
+    if (innerHeight < bottom + height + ListPadding) {
+      top -= height;
+    } else {
+      top = bottom + ListPadding;
+    }
+    dropdownStyle.top = `${top + scrollY}px`;
+    dropdownStyle.left = `${left - 2}px`;
+    dropdownStyle.width = `${width + 4}px`;
+  }
+  emit("update:expanded", value);
 }
 function onKeyBackspace() {
-	if (!props.multiSelect) {
-		return;
-	}
-	let modelValue = props.modelValue as any[];
-	if (isEmpty(modelValue) || !isEmpty($search.value)) {
-		return;
-	}
-	modelValue = modelValue[modelValue.length - 1];
-	const { idField } = optionsAvailable.value;
-	updateSelections({
-		option: props.options?.find((item) => item[idField] === modelValue),
-		remove: true,
-	});
+  if (!props.multiSelect) {
+    return;
+  }
+  let modelValue = props.modelValue as any[];
+  if (isEmpty(modelValue) || !isEmpty($search.value)) {
+    return;
+  }
+  modelValue = modelValue[modelValue.length - 1];
+  const { idField } = optionsAvailable.value;
+  updateSelections({
+    option: props.options?.find((item) => item[idField] === modelValue),
+    remove: true,
+  });
 }
 function onClickField() {
-	updateExpanded();
+  updateExpanded();
 }
 /**
  * When the user does any sort of input for the single select, we need to update
@@ -298,94 +256,102 @@ function onClickField() {
  * @param {String} value
  */
 function onInputField(value: string) {
-	if (props.multiSelect) {
-		return;
-	}
-	if (isEmpty(value)) {
-		updateSelections({
-			shouldBlur: false,
-		});
-	}
+  if (props.multiSelect) {
+    return;
+  }
+  if (isEmpty(value)) {
+    updateSelections({
+      shouldBlur: false,
+    });
+  }
 }
 function onTabField() {
-	blurField();
+  blurField();
 }
 function blurField() {
-	updateExpanded(false);
-	$search.value = null;
+  updateExpanded(false);
+  $search.value = null;
 }
 function onClickPicker() {
-	updateExpanded();
+  updateExpanded();
 }
 function onClickItemRemove(option: any) {
-	updateSelections({
-		option,
-		remove: true,
-	});
+  updateSelections({
+    option,
+    remove: true,
+  });
 }
 function onMouseDownDocument({ target }: { target: HTMLElement }) {
-	if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
-		blurField();
-	}
+  if (isExpanded.value && !(hasTarget(dropdownListEl.value.$el, target) || hasTarget(fieldEl.value.$el, target))) {
+    blurField();
+  }
 }
 function onScrollDocument({ target }: { target: HTMLElement }) {
-	if (isExpanded.value && !dropdownListEl.value.$el.contains(target)) {
-		updateExpanded(false);
-	}
+  if (isExpanded.value && !dropdownListEl.value.$el.contains(target)) {
+    updateExpanded(false);
+  }
 }
 function updateSelections({ option, remove, shouldBlur = !props.multiSelect }: IUpdateSelection = {}) {
-	let updateValue = null;
-	const { multiSelect } = props;
-	let { modelValue } = props;
-	const selectedId = optionsAvailable.value.getOptionId(option);
-	if (multiSelect) {
-		modelValue = makeArray(modelValue);
-		if (remove) {
-			updateValue = modelValue.filter((item) => item !== selectedId);
-		}
-		else {
-			updateValue = modelValue.concat(selectedId);
-		}
-	}
-	else if (!remove) {
-		updateValue = selectedId;
-	}
-	if (shouldBlur) {
-		blurField();
-	}
-	emit("update:modelValue", updateValue);
+  let updateValue = null;
+  const { multiSelect } = props;
+  let { modelValue } = props;
+  const selectedId = optionsAvailable.value.getOptionId(option);
+  if (multiSelect) {
+    modelValue = makeArray(modelValue);
+    if (remove) {
+      updateValue = modelValue.filter((item) => item !== selectedId);
+    } else {
+      updateValue = modelValue.concat(selectedId);
+    }
+  } else if (!remove) {
+    updateValue = selectedId;
+  }
+  if (shouldBlur) {
+    blurField();
+  }
+  emit("update:modelValue", updateValue);
 }
 function onUpdateSelections(option: any, remove: boolean) {
-	updateSelections({
-		option,
-		remove,
-	});
+  updateSelections({
+    option,
+    remove,
+  });
 }
 function onClickCollapseTags() {
-	showCollapseTags.value = false;
+  showCollapseTags.value = false;
 }
 function onClickExpandTags() {
-	showCollapseTags.value = true;
+  showCollapseTags.value = true;
 }
 function isTagVisible(selection: any, index: number) {
-	return showCollapseTags.value || index < props.maxSelectedTags;
+  return showCollapseTags.value || index < props.maxSelectedTags;
 }
 
 // We don't use watchEffect here because of the logic in getSelections... it requires some breathing room
-watch(() => props.modelValue, () => {
-	selections.value = getSelections();
-	emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
-}, {
-	immediate: true,
-});
-watch(() => props.expanded, (value) => updateExpanded(value));
-watch(() => props.multiSelect, (value) => {
-	if (!value) {
-		updateSelections({
-			option: selections.value?.[0],
-		});
-	}
-});
+watch(
+  () => props.modelValue,
+  () => {
+    selections.value = getSelections();
+    emit("update:selected", props.multiSelect ? selections.value : selections.value[0]);
+  },
+  {
+    immediate: true,
+  }
+);
+watch(
+  () => props.expanded,
+  (value) => updateExpanded(value)
+);
+watch(
+  () => props.multiSelect,
+  (value) => {
+    if (!value) {
+      updateSelections({
+        option: selections.value?.[0],
+      });
+    }
+  }
+);
 
 defineExpose([getSelections]);
 </script>

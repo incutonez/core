@@ -1,53 +1,24 @@
 ﻿<template>
   <ul class="base-list">
-    <li
-      v-for="option in records"
-      :key="option.fullPath"
-      :class="records.getOptionCls(option, selections)"
-      @mousedown="onMouseDownListItem($event, option)"
-    >
+    <li v-for="option in records" :key="option.fullPath" :class="records.getOptionCls(option, selections)" @mousedown="onMouseDownListItem($event, option)">
       <template v-if="isGrouped">
         <div class="group">
-          <slot
-            name="groupDisplay"
-            :group="option"
-          >
-            Group: {{ records.getOptionDisplay(option) }}
-          </slot>
+          <slot name="groupDisplay" :group="option"> Group: {{ records.getOptionDisplay(option) }} </slot>
         </div>
-        <BaseList
-          :options="option"
-          :selections="selections"
-          @update:selections="onUpdateSelections"
-          @click:item="onClickItem"
-        >
-          <template
-            v-for="(_, slot) of $slots"
-            #[slot]="scope"
-          >
-            <slot
-              :name="slot"
-              v-bind="scope"
-            />
+        <BaseList :options="option" :selections="selections" @update:selections="onUpdateSelections" @click:item="onClickItem">
+          <template v-for="(_, slot) of $slots" #[slot]="scope">
+            <slot :name="slot" v-bind="scope" />
           </template>
         </BaseList>
       </template>
       <template v-else>
-        <slot
-          name="listItemDisplay"
-          :option="option"
-        >
+        <slot name="listItemDisplay" :option="option">
           {{ records.getOptionDisplay(option) }}
         </slot>
       </template>
     </li>
     <slot name="emptyList">
-      <li
-        v-if="!records.length"
-        class="list-item-empty"
-      >
-        No Records
-      </li>
+      <li v-if="!records.length" class="list-item-empty">No Records</li>
     </slot>
   </ul>
 </template>
@@ -58,40 +29,42 @@ import { Collection, isCollection } from "ui/classes/Collection";
 import { EnumProp } from "ui/statics/Enums";
 
 export interface IPropsBaseList {
-	/**
+  /**
    * @type {Collection}
    */
-	options?: any | any[];
-	selections?: any[];
+  options?: any | any[];
+  selections?: any[];
 }
 
 const SelectedCls = "list-item-selected";
 const props = withDefaults(defineProps<IPropsBaseList>(), {
-	options: () => [],
-	selections: () => [],
+  options: () => [],
+  selections: () => [],
 });
 const emit = defineEmits(["update:selections", "click:item"]);
 const records = ref<Collection>();
 watchEffect(() => {
-	const { options } = props;
-	// TODO: Figure out better way to prevent rendering from happening on every click
-	// We always want to be dealing with our class, so we can normalize the functionality
-	records.value = isCollection(options) ? options : new Collection({
-		[EnumProp.Data]: options,
-	});
+  const { options } = props;
+  // TODO: Figure out better way to prevent rendering from happening on every click
+  // We always want to be dealing with our class, so we can normalize the functionality
+  records.value = isCollection(options)
+    ? options
+    : new Collection({
+        [EnumProp.Data]: options,
+      });
 });
 const isGrouped = computed(() => records.value?.isGrouped);
 function emitUpdate(args: any[]) {
-	emit("update:selections", ...args);
+  emit("update:selections", ...args);
 }
 function emitClick(args: any[]) {
-	emit("click:item", ...args);
+  emit("click:item", ...args);
 }
 function onUpdateSelections(...args: any[]) {
-	emitUpdate(args);
+  emitUpdate(args);
 }
 function onClickItem(...args: any[]) {
-	emitClick(args);
+  emitClick(args);
 }
 
 /**
@@ -100,14 +73,14 @@ function onClickItem(...args: any[]) {
  * been lost.
  */
 function onMouseDownListItem(event: MouseEvent, option: any) {
-	// We prevent focus from being lost in the parent component
-	event.stopPropagation();
-	event.preventDefault();
-	if (isGrouped.value) {
-		return;
-	}
-	emitUpdate([option, (event.target as HTMLLIElement).classList.contains(SelectedCls)]);
-	emitClick([option]);
+  // We prevent focus from being lost in the parent component
+  event.stopPropagation();
+  event.preventDefault();
+  if (isGrouped.value) {
+    return;
+  }
+  emitUpdate([option, (event.target as HTMLLIElement).classList.contains(SelectedCls)]);
+  emitClick([option]);
 }
 </script>
 

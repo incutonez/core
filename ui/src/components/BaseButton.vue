@@ -1,16 +1,7 @@
 ﻿<template>
-  <button
-    ref="element"
-    class="base-button"
-    :class="elementCls"
-    @pointerdown="onMouseDownButton"
-    @pointerup="onMouseUpButton"
-  >
+  <button ref="element" class="base-button" :class="elementCls" @pointerdown="onMouseDownButton" @pointerup="onMouseUpButton">
     <slot name="icon">
-      <BaseIcon
-        v-if="icon"
-        :icon="icon"
-      />
+      <BaseIcon v-if="icon" :icon="icon" />
     </slot>
     <slot>
       <span class="base-button-text">{{ text }}</span>
@@ -24,10 +15,10 @@ import { computed, ref, watch } from "vue";
 import BaseIcon from "ui/components/BaseIcon.vue";
 
 export interface IPropsBaseButton {
-	text?: string;
-	icon?: string | Object;
-	toggleable?: boolean;
-	toggled?: boolean;
+  text?: string;
+  icon?: string | Object;
+  toggleable?: boolean;
+  toggled?: boolean;
 }
 
 const props = defineProps<IPropsBaseButton>();
@@ -40,20 +31,20 @@ const toggled = ref(props.toggled);
  * but the user keeps holding it down and clicks outside of the button.
  * Reference: https://stackoverflow.com/a/71643994/1253609 */
 function onMouseDownButton({ target, pointerId }: PointerEvent) {
-	(target as Element)?.setPointerCapture(pointerId);
+  (target as Element)?.setPointerCapture(pointerId);
 }
 function shouldBlur() {
-	if (!toggled.value) {
-		element.value?.blur();
-	}
+  if (!toggled.value) {
+    element.value?.blur();
+  }
 }
 function onMouseUpButton({ target, pointerId }: PointerEvent) {
-	(target as Element)?.releasePointerCapture(pointerId);
-	if (props.toggleable) {
-		toggled.value = !toggled.value;
-		emit("update:toggled", toggled.value);
-	}
-	shouldBlur();
+  (target as Element)?.releasePointerCapture(pointerId);
+  if (props.toggleable) {
+    toggled.value = !toggled.value;
+    emit("update:toggled", toggled.value);
+  }
+  shouldBlur();
 }
 
 /**
@@ -61,19 +52,25 @@ function onMouseUpButton({ target, pointerId }: PointerEvent) {
  * it's possible we don't bind to that, and if a binding isn't present, then we still have our local value
  */
 watch(toggled, () => shouldBlur());
-watch(() => props.toggled, (current) => (toggled.value = current));
-watch(() => props.toggleable, (current) => {
-	if (!current) {
-		// Reset the toggleState
-		toggled.value = false;
-	}
-});
+watch(
+  () => props.toggled,
+  (current) => (toggled.value = current)
+);
+watch(
+  () => props.toggleable,
+  (current) => {
+    if (!current) {
+      // Reset the toggleState
+      toggled.value = false;
+    }
+  }
+);
 const elementCls = computed(() => {
-	const cls = [];
-	if (toggled.value) {
-		cls.push("toggled");
-	}
-	return cls;
+  const cls = [];
+  if (toggled.value) {
+    cls.push("toggled");
+  }
+  return cls;
 });
 </script>
 
