@@ -15,7 +15,7 @@
       >
         <slot name="beforeList" />
         <BaseList
-          class="shadow-top bg-slate-100"
+          class="bg-slate-100 shadow-top"
           :class="listCls"
           :options="options"
           @click:item="onClickMenuItem"

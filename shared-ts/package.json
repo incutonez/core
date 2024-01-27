@@ -1,0 +1,28 @@
+{
+  "name": "shared-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx tsc --project tsconfig.build.json",
+    "build": "npx rimraf dist && npm run lint && npx tsc-alias"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "just-compare": "^2.3.0",
+    "just-is-empty": "^3.4.1",
+    "just-safe-get": "^4.2.0",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.2.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.0",
+    "@types/lodash": "^4.14.202",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  }
+}
