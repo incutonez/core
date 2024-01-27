@@ -1,5 +1,9 @@
 ﻿<template>
-  <article ref="root" class="tooltip-base" :class="tooltipCls">
+  <article
+    ref="root"
+    class="tooltip-base"
+    :class="tooltipCls"
+  >
     <slot>
       {{ value }}
     </slot>

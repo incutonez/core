@@ -1,7 +1,12 @@
 <template>
   <BaseField ref="componentEl">
     <template #beforeItems>
-      <BaseField v-model="color" class="field-color" input-type="color" input-cls="w-5 h-full !p-0 cursor-pointer" />
+      <BaseField
+        v-model="color"
+        class="field-color"
+        input-type="color"
+        input-cls="w-5 h-full !p-0 cursor-pointer"
+      />
     </template>
   </BaseField>
 </template>

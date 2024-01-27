@@ -1,24 +1,53 @@
 ﻿<template>
   <ul class="base-list">
-    <li v-for="option in records" :key="option.fullPath" :class="records.getOptionCls(option, selections)" @mousedown="onMouseDownListItem($event, option)">
+    <li
+      v-for="option in records"
+      :key="option.fullPath"
+      :class="records.getOptionCls(option, selections)"
+      @mousedown="onMouseDownListItem($event, option)"
+    >
       <template v-if="isGrouped">
         <div class="group">
-          <slot name="groupDisplay" :group="option"> Group: {{ records.getOptionDisplay(option) }} </slot>
+          <slot
+            name="groupDisplay"
+            :group="option"
+          >
+            Group: {{ records.getOptionDisplay(option) }}
+          </slot>
         </div>
-        <BaseList :options="option" :selections="selections" @update:selections="onUpdateSelections" @click:item="onClickItem">
-          <template v-for="(_, slot) of $slots" #[slot]="scope">
-            <slot :name="slot" v-bind="scope" />
+        <BaseList
+          :options="option"
+          :selections="selections"
+          @update:selections="onUpdateSelections"
+          @click:item="onClickItem"
+        >
+          <template
+            v-for="(_, slot) of $slots"
+            #[slot]="scope"
+          >
+            <slot
+              :name="slot"
+              v-bind="scope"
+            />
           </template>
         </BaseList>
       </template>
       <template v-else>
-        <slot name="listItemDisplay" :option="option">
+        <slot
+          name="listItemDisplay"
+          :option="option"
+        >
           {{ records.getOptionDisplay(option) }}
         </slot>
       </template>
     </li>
     <slot name="emptyList">
-      <li v-if="!records.length" class="list-item-empty">No Records</li>
+      <li
+        v-if="!records.length"
+        class="list-item-empty"
+      >
+        No Records
+      </li>
     </slot>
   </ul>
 </template>
@@ -50,8 +79,8 @@ watchEffect(() => {
   records.value = isCollection(options)
     ? options
     : new Collection({
-        [EnumProp.Data]: options,
-      });
+      [EnumProp.Data]: options,
+    });
 });
 const isGrouped = computed(() => records.value?.isGrouped);
 function emitUpdate(args: any[]) {

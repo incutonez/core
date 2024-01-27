@@ -1,7 +1,16 @@
 ﻿<template>
-  <button ref="element" class="base-button" :class="elementCls" @pointerdown="onMouseDownButton" @pointerup="onMouseUpButton">
+  <button
+    ref="element"
+    class="base-button"
+    :class="elementCls"
+    @pointerdown="onMouseDownButton"
+    @pointerup="onMouseUpButton"
+  >
     <slot name="icon">
-      <BaseIcon v-if="icon" :icon="icon" />
+      <BaseIcon
+        v-if="icon"
+        :icon="icon"
+      />
     </slot>
     <slot>
       <span class="base-button-text">{{ text }}</span>
@@ -54,7 +63,7 @@ function onMouseUpButton({ target, pointerId }: PointerEvent) {
 watch(toggled, () => shouldBlur());
 watch(
   () => props.toggled,
-  (current) => (toggled.value = current)
+  (current) => (toggled.value = current),
 );
 watch(
   () => props.toggleable,
@@ -63,7 +72,7 @@ watch(
       // Reset the toggleState
       toggled.value = false;
     }
-  }
+  },
 );
 const elementCls = computed(() => {
   const cls = [];

@@ -1,8 +1,15 @@
 ﻿<template>
-  <BaseDialog title="Field Number" class="header-blue">
+  <BaseDialog
+    title="Field Number"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body">
-        <FieldNumber v-model="value" label="Decimal" :min-value="minValue" />
+        <FieldNumber
+          v-model="value"
+          label="Decimal"
+          :min-value="minValue"
+        />
       </section>
     </template>
   </BaseDialog>

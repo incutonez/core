@@ -1,7 +1,10 @@
 ﻿<template>
   <div class="base-icon">
     <slot>
-      <FontAwesomeIcon :fixed-width="true" :icon="icon" />
+      <FontAwesomeIcon
+        :fixed-width="true"
+        :icon="icon"
+      />
     </slot>
     <slot name="tooltip" />
   </div>

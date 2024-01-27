@@ -7,10 +7,29 @@
         </slot>
         <div class="base-dialog-header-toolbar">
           <slot name="toolbar" />
-          <BaseIcon v-if="minimizable" :icon="Icon.Minus" class="base-dialog-minimize-icon toolbar" @click="onClickMinimize" />
-          <BaseIcon v-show="showMaximized" :icon="Icon.Maximize" class="base-dialog-maximize-icon toolbar" @click="onClickMaximize" />
-          <BaseIcon v-show="showRestoreDown" :icon="Icon.Restore" class="base-dialog-maximize-icon toolbar" @click="onClickRestoreDown" />
-          <BaseIcon :icon="Icon.Close" class="base-dialog-close-icon toolbar" @click="onClickClose" />
+          <BaseIcon
+            v-if="minimizable"
+            :icon="Icon.Minus"
+            class="base-dialog-minimize-icon toolbar"
+            @click="onClickMinimize"
+          />
+          <BaseIcon
+            v-show="showMaximized"
+            :icon="Icon.Maximize"
+            class="base-dialog-maximize-icon toolbar"
+            @click="onClickMaximize"
+          />
+          <BaseIcon
+            v-show="showRestoreDown"
+            :icon="Icon.Restore"
+            class="base-dialog-maximize-icon toolbar"
+            @click="onClickRestoreDown"
+          />
+          <BaseIcon
+            :icon="Icon.Close"
+            class="base-dialog-close-icon toolbar"
+            @click="onClickClose"
+          />
         </div>
       </header>
       <slot name="body" />
@@ -65,7 +84,7 @@ function onClickRestoreDown() {
 watch(opened, (value) => emit("update:open", value));
 watch(
   () => props.open,
-  (value) => (opened.value = value)
+  (value) => (opened.value = value),
 );
 </script>
 

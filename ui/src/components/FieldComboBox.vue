@@ -1,28 +1,76 @@
 ﻿<template>
-  <BaseField ref="fieldEl" v-model="displayValue" v-mousedown-document="onMouseDownDocument" v-scroll-document="onScrollDocument" class="field-combo-box" :class="componentCls" @keydown.delete="onKeyBackspace" @input:field="onInputField" @click:field="onClickField" @keydown.tab="onTabField">
+  <BaseField
+    ref="fieldEl"
+    v-model="displayValue"
+    v-mousedown-document="onMouseDownDocument"
+    v-scroll-document="onScrollDocument"
+    class="field-combo-box"
+    :class="componentCls"
+    @keydown.delete="onKeyBackspace"
+    @input:field="onInputField"
+    @click:field="onClickField"
+    @keydown.tab="onTabField"
+  >
     <template #beforeItems>
       <div v-if="multiSelect">
         <slot name="itemsDisplay">
-          <BaseItems v-for="(selection, index) in selections" v-show="isTagVisible(selection, index)" :key="selection[optionsAvailable.idField]" @remove:selection="onClickItemRemove(selection)">
+          <BaseItems
+            v-for="(selection, index) in selections"
+            v-show="isTagVisible(selection, index)"
+            :key="selection[optionsAvailable.idField]"
+            @remove:selection="onClickItemRemove(selection)"
+          >
             {{ selection[displayFieldFm] }}
           </BaseItems>
         </slot>
-        <div v-show="showExpandTags" class="field-tags-wrapper-collapse" @click="onClickExpandTags">
+        <div
+          v-show="showExpandTags"
+          class="field-tags-wrapper-collapse"
+          @click="onClickExpandTags"
+        >
           <span>+ {{ collapsedTagCount }}</span>
         </div>
-        <div v-show="showCollapseTags" class="field-tags-wrapper-expand" @click="onClickCollapseTags">
+        <div
+          v-show="showCollapseTags"
+          class="field-tags-wrapper-expand"
+          @click="onClickCollapseTags"
+        >
           <span>- {{ collapsedTagCount }}</span>
         </div>
       </div>
     </template>
     <template #afterItems>
-      <BaseIcon class="field-combo-box-picker" :icon="Icon.PickerDown" @click="onClickPicker" />
-      <BaseOverlay ref="dropdownListEl" v-visible="isExpanded" class="field-combo-box-list-wrapper" :style="dropdownListStyle">
-        <slot name="list" :expanded="isExpanded" :options="optionsAvailable" :selections="selections">
+      <BaseIcon
+        class="field-combo-box-picker"
+        :icon="Icon.PickerDown"
+        @click="onClickPicker"
+      />
+      <BaseOverlay
+        ref="dropdownListEl"
+        v-visible="isExpanded"
+        class="field-combo-box-list-wrapper"
+        :style="dropdownListStyle"
+      >
+        <slot
+          name="list"
+          :expanded="isExpanded"
+          :options="optionsAvailable"
+          :selections="selections"
+        >
           <slot name="listBefore" />
-          <BaseList :selections="selections" :options="optionsAvailable" @update:selections="onUpdateSelections">
-            <template v-for="(_, slot) of $slots" #[slot]="scope">
-              <slot :name="slot" v-bind="scope" />
+          <BaseList
+            :selections="selections"
+            :options="optionsAvailable"
+            @update:selections="onUpdateSelections"
+          >
+            <template
+              v-for="(_, slot) of $slots"
+              #[slot]="scope"
+            >
+              <slot
+                :name="slot"
+                v-bind="scope"
+              />
             </template>
           </BaseList>
           <slot name="listAfter" />
@@ -111,7 +159,8 @@ const optionsAvailable = computed(() => {
    * cause side effects elsewhere... we need our own copy for this component */
   if (isCollection(options)) {
     optionsCollection = options.clone();
-  } else {
+  }
+  else {
     optionsCollection = new Collection({
       [EnumProp.Data]: options as IModel[],
     });
@@ -119,13 +168,15 @@ const optionsAvailable = computed(() => {
   // If this is explicitly set, we prefer it
   if (idField) {
     optionsCollection.idField = idField;
-  } else {
+  }
+  else {
     idField = optionsCollection.idField;
   }
   // If this is explicitly set, we prefer it
   if (displayField) {
     optionsCollection[EnumProp.DisplayField] = displayField;
-  } else {
+  }
+  else {
     displayField = optionsCollection[EnumProp.DisplayField];
   }
   const search = unref($search);
@@ -136,15 +187,13 @@ const optionsAvailable = computed(() => {
       filterFn = (option) => searchRe.test(option[displayField]);
     }
     optionsCollection.addFilters(
-      [
-        {
-          id: SearchFilter,
-          fn: filterFn,
-        },
-      ],
+      [{
+        id: SearchFilter,
+        fn: filterFn,
+      }],
       {
         suppress: true,
-      }
+      },
     );
   }
   if (props.multiSelect && props.filterSelections) {
@@ -152,24 +201,22 @@ const optionsAvailable = computed(() => {
     const selectionValues = unref(selections);
     if (!isEmpty(selectionValues)) {
       optionsCollection.addFilters(
-        [
-          {
-            id: SelectionsFilter,
-            fn: (option: any) => {
-              let include = true;
-              for (const selection of selectionValues) {
-                if (selection[idField] === option[idField]) {
-                  include = false;
-                  break;
-                }
+        [{
+          id: SelectionsFilter,
+          fn: (option: any) => {
+            let include = true;
+            for (const selection of selectionValues) {
+              if (selection[idField] === option[idField]) {
+                include = false;
+                break;
               }
-              return include;
-            },
+            }
+            return include;
           },
-        ],
+        }],
         {
           suppress: true,
-        }
+        },
       );
     }
   }
@@ -221,7 +268,8 @@ function updateExpanded(value = !isExpanded.value) {
     let { top } = boundingClientRect;
     if (innerHeight < bottom + height + ListPadding) {
       top -= height;
-    } else {
+    }
+    else {
       top = bottom + ListPadding;
     }
     dropdownStyle.top = `${top + scrollY}px`;
@@ -300,10 +348,12 @@ function updateSelections({ option, remove, shouldBlur = !props.multiSelect }: I
     modelValue = makeArray(modelValue);
     if (remove) {
       updateValue = modelValue.filter((item) => item !== selectedId);
-    } else {
+    }
+    else {
       updateValue = modelValue.concat(selectedId);
     }
-  } else if (!remove) {
+  }
+  else if (!remove) {
     updateValue = selectedId;
   }
   if (shouldBlur) {
@@ -336,11 +386,11 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 watch(
   () => props.expanded,
-  (value) => updateExpanded(value)
+  (value) => updateExpanded(value),
 );
 watch(
   () => props.multiSelect,
@@ -350,7 +400,7 @@ watch(
         option: selections.value?.[0],
       });
     }
-  }
+  },
 );
 
 defineExpose([getSelections]);

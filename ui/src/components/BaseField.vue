@@ -1,16 +1,48 @@
 ﻿<template>
-  <div class="base-field" :class="labelAlign">
-    <BaseLabel v-if="!!label" :value="label" :class="labelWidth" :for="id" />
-    <div class="relative" :class="inputWidth">
-      <div ref="inputWrapper" class="field-text" :class="inputWrapperCls">
+  <div
+    class="base-field"
+    :class="labelAlign"
+  >
+    <BaseLabel
+      v-if="!!label"
+      :value="label"
+      :class="labelWidth"
+      :for="id"
+    />
+    <div
+      class="relative"
+      :class="inputWidth"
+    >
+      <div
+        ref="inputWrapper"
+        class="field-text"
+        :class="inputWrapperCls"
+      >
         <slot name="beforeItems" />
-        <input v-bind="inputAttrs" :id="id" ref="inputEl" v-model="value" class="field-text-input" :class="inputCls" @mousedown="onMouseDownField" @focus="onFocusField" @blur="onBlurField" @input="onInputField" />
+        <input
+          v-bind="inputAttrs"
+          :id="id"
+          ref="inputEl"
+          v-model="value"
+          class="field-text-input"
+          :class="inputCls"
+          @mousedown="onMouseDownField"
+          @focus="onFocusField"
+          @blur="onBlurField"
+          @input="onInputField"
+        >
         <slot name="afterItems" />
       </div>
-      <section v-show="showErrors" class="flex text-red-800">
+      <section
+        v-show="showErrors"
+        class="flex text-red-800"
+      >
         <BaseIcon :icon="Icon.AlertTriangle" />
         <ul class="ml-1">
-          <li v-for="(fieldError, index) in fieldErrors" :key="index">
+          <li
+            v-for="(fieldError, index) in fieldErrors"
+            :key="index"
+          >
             {{ fieldError }}
           </li>
         </ul>
@@ -153,7 +185,7 @@ function onBlurField() {
   field.validate();
   emit("blur:field");
 }
-watch(fieldRules, async (value) => {
+watch(fieldRules, async(value) => {
   if (value) {
     // We have to wait for the field to receive its new rules before validating
     await nextTick();
@@ -163,7 +195,7 @@ watch(fieldRules, async (value) => {
 
 watch(
   () => props.modelValue,
-  (value) => field.handleChange(value, false)
+  (value) => field.handleChange(value, false),
 );
 watch(
   () => field.meta.valid,
@@ -171,7 +203,7 @@ watch(
     if (field.meta.touched) {
       emit("change:validity", valid);
     }
-  }
+  },
 );
 watch(
   () => field.meta.dirty,
@@ -179,7 +211,7 @@ watch(
     if (field.meta.touched) {
       emit("change:dirty", dirty);
     }
-  }
+  },
 );
 
 defineExpose({

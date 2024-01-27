@@ -3,7 +3,11 @@
     <span class="item-text">
       <slot />
     </span>
-    <BaseIcon :icon="Icon.Close" class="fields-tags-close-icon" @click="onClickRemoveOption" />
+    <BaseIcon
+      :icon="Icon.Close"
+      class="fields-tags-close-icon"
+      @click="onClickRemoveOption"
+    />
   </div>
 </template>
 

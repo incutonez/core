@@ -1,9 +1,22 @@
 ﻿<template>
-  <BaseDialog title="Field Integer" class="header-blue">
+  <BaseDialog
+    title="Field Integer"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body space-y-2">
-        <FieldInteger v-model="value" label="Integer" :label-align="labelAlign" :required="isRequired" :min-value="minValue" />
-        <FieldComboBox v-model="labelAlign" label="Label Align" :options="EnumLabelAlign.options" />
+        <FieldInteger
+          v-model="value"
+          label="Integer"
+          :label-align="labelAlign"
+          :required="isRequired"
+          :min-value="minValue"
+        />
+        <FieldComboBox
+          v-model="labelAlign"
+          label="Label Align"
+          :options="EnumLabelAlign.options"
+        />
       </section>
     </template>
   </BaseDialog>

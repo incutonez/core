@@ -1,16 +1,51 @@
 ﻿<template>
-  <BaseDialog title="Virtual Scroll" class="header-blue">
+  <BaseDialog
+    title="Virtual Scroll"
+    class="header-blue"
+  >
     <template #body>
       <div class="flex flex-1 flex-col overflow-hidden p-2">
         <div class="mb-4 flex space-x-2">
-          <BaseField label="Total" :model-value="dataTotal" :input-attrs-cfg="inputAttrs" input-width="w-20" label-width="w-auto" />
-          <BaseField label="Loaded" :model-value="totalLoaded" input-width="w-20" label-width="w-auto" :input-attrs-cfg="inputAttrs" />
-          <BaseField v-model="goto" label="Goto" input-width="w-20" label-width="w-auto" @keydown.enter="onEnterGoto" />
-          <BaseButton text="Refresh" class="default" @click="onClickRefreshButton" />
+          <BaseField
+            label="Total"
+            :model-value="dataTotal"
+            :input-attrs-cfg="inputAttrs"
+            input-width="w-20"
+            label-width="w-auto"
+          />
+          <BaseField
+            label="Loaded"
+            :model-value="totalLoaded"
+            input-width="w-20"
+            label-width="w-auto"
+            :input-attrs-cfg="inputAttrs"
+          />
+          <BaseField
+            v-model="goto"
+            label="Goto"
+            input-width="w-20"
+            label-width="w-auto"
+            @keydown.enter="onEnterGoto"
+          />
+          <BaseButton
+            text="Refresh"
+            class="default"
+            @click="onClickRefreshButton"
+          />
         </div>
-        <section v-bind="containerProps" class="flex-1">
-          <div v-bind="wrapperProps" class="space-y-2">
-            <div v-for="item in list" :key="item.index" class="h-16 border">
+        <section
+          v-bind="containerProps"
+          class="flex-1"
+        >
+          <div
+            v-bind="wrapperProps"
+            class="space-y-2"
+          >
+            <div
+              v-for="item in list"
+              :key="item.index"
+              class="h-16 border"
+            >
               <span v-if="item.data">{{ item.data.index }}: {{ item.data.name }}</span>
             </div>
           </div>

@@ -1,8 +1,19 @@
 ﻿<template>
-  <BaseDialog title="Field Text" class="header-blue">
+  <BaseDialog
+    title="Field Text"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body">
-        <BaseField v-model="value" label="First Name" :required="isRequired" :min-length="minLength" :max-length="maxLength" @change:validity="onChangeValidity" @change:dirty="onChangeDirty" />
+        <BaseField
+          v-model="value"
+          label="First Name"
+          :required="isRequired"
+          :min-length="minLength"
+          :max-length="maxLength"
+          @change:validity="onChangeValidity"
+          @change:dirty="onChangeDirty"
+        />
       </section>
     </template>
   </BaseDialog>

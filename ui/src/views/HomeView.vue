@@ -1,14 +1,30 @@
 ﻿<template>
   <article class="home-view">
-    <BaseButton class="default w-min" text="Show Modal" @click="onClickShowModal" />
-    <DialogConfirm v-model="showDialog" title="Warning!" :title-icon="{ icon: Icon.AlertTriangle }">
+    <BaseButton
+      class="default w-min"
+      text="Show Modal"
+      @click="onClickShowModal"
+    />
+    <DialogConfirm
+      v-model="showDialog"
+      title="Warning!"
+      :title-icon="{ icon: Icon.AlertTriangle }"
+    >
       <template #body>
         <div>Hello World!</div>
         <div>Are you sure?</div>
       </template>
       <template #afterCancel>
-        <BaseButton text="Global Err" class="danger" @click="handleGlobalError" />
-        <BaseButton text="Local Err" class="danger" @click="handleLocalError" />
+        <BaseButton
+          text="Global Err"
+          class="danger"
+          @click="handleGlobalError"
+        />
+        <BaseButton
+          text="Local Err"
+          class="danger"
+          @click="handleLocalError"
+        />
       </template>
     </DialogConfirm>
     <BaseButton>
@@ -48,7 +64,8 @@ function handleGlobalError() {
 function handleLocalError() {
   try {
     handleGlobalError();
-  } catch (ex) {
+  }
+  catch (ex) {
     globalError.message = "Caught in HomeView and now showing in App";
     globalError.title = "Locally Caught";
   }

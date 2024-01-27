@@ -3,18 +3,39 @@
     <!-- TODOJEF: This doesn't work... create issue on GH? -->
     <KeepAlive :include="cachedDialogs">
       <main class="flex flex-1 flex-col overflow-auto bg-slate-800">
-        <Component :is="Component" :key="route.fullPath" :class="cmpCls" @click:close="onClickCloseDialog" @click:minimize="onClickMinimizeDialog" />
+        <Component
+          :is="Component"
+          :key="route.fullPath"
+          :class="cmpCls"
+          @click:close="onClickCloseDialog"
+          @click:minimize="onClickMinimizeDialog"
+        />
       </main>
     </KeepAlive>
   </RouterView>
   <footer class="box-border flex items-stretch bg-slate-700">
-    <BaseButtonMenu text="Start" class="default" list-cls="h-64 overflow-auto" :options="ComponentList" @click:item="onClickStartItem">
+    <BaseButtonMenu
+      text="Start"
+      class="default"
+      list-cls="h-64 overflow-auto"
+      :options="ComponentList"
+      @click:item="onClickStartItem"
+    >
       <template #beforeList>
-        <section class="bg-slate-100 p-2">Version: {{ PackageJson.version }}</section>
+        <section class="bg-slate-100 p-2">
+          Version: {{ PackageJson.version }}
+        </section>
       </template>
     </BaseButtonMenu>
     <section class="mx-2 flex flex-1 space-x-2">
-      <BaseButton v-for="dialog in activeDialogs" :key="dialog.name" :text="dialog.name" class="border-b-2 border-gray-300 px-2 hover:bg-slate-600" :class="dialog.activeCls" @click="onClickToggleDialog(dialog)" />
+      <BaseButton
+        v-for="dialog in activeDialogs"
+        :key="dialog.name"
+        :text="dialog.name"
+        class="border-b-2 border-gray-300 px-2 hover:bg-slate-600"
+        :class="dialog.activeCls"
+        @click="onClickToggleDialog(dialog)"
+      />
       <IconDelete />
     </section>
     <section class="flex flex-col items-stretch px-2 py-0.5 text-xs text-stone-200">
@@ -22,7 +43,11 @@
       <span class="flex-1">{{ dateTime.toMMDDYYYY() }}</span>
     </section>
   </footer>
-  <DialogConfirm v-model="showErrorDialog" :title="globalError.title" :title-icon="{ icon: Icon.AlertTriangle }">
+  <DialogConfirm
+    v-model="showErrorDialog"
+    :title="globalError.title"
+    :title-icon="{ icon: Icon.AlertTriangle }"
+  >
     <template #body>
       <div>{{ globalError.message }}</div>
     </template>

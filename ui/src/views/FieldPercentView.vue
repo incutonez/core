@@ -1,8 +1,15 @@
 ﻿<template>
-  <BaseDialog title="Field Percent" class="header-blue">
+  <BaseDialog
+    title="Field Percent"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body">
-        <FieldPercent v-model="value" label="Percent" input-width="w-16" />
+        <FieldPercent
+          v-model="value"
+          label="Percent"
+          input-width="w-16"
+        />
       </section>
     </template>
   </BaseDialog>

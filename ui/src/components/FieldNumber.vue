@@ -1,7 +1,22 @@
 ﻿<template>
-  <BaseField ref="fieldEl" v-bind="$props" class="field-number" input-type="number" :parse-value="parseNumber" @keydown.down.prevent @keydown.up.prevent @wheel.prevent>
-    <template v-for="(_, slot) of $slots" #[slot]="scope">
-      <slot :name="slot" v-bind="scope" />
+  <BaseField
+    ref="fieldEl"
+    v-bind="$props"
+    class="field-number"
+    input-type="number"
+    :parse-value="parseNumber"
+    @keydown.down.prevent
+    @keydown.up.prevent
+    @wheel.prevent
+  >
+    <template
+      v-for="(_, slot) of $slots"
+      #[slot]="scope"
+    >
+      <slot
+        :name="slot"
+        v-bind="scope"
+      />
     </template>
   </BaseField>
 </template>

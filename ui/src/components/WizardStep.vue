@@ -1,8 +1,18 @@
 ﻿<template>
-  <li class="wizard-step" :class="cssClass" @click="onClickStep">
+  <li
+    class="wizard-step"
+    :class="cssClass"
+    @click="onClickStep"
+  >
     <div class="step-index">
-      <BaseIcon v-if="isCompleted" :icon="Icon.Check" />
-      <BaseIcon v-else-if="isInvalid" :icon="Icon.Close" />
+      <BaseIcon
+        v-if="isCompleted"
+        :icon="Icon.Check"
+      />
+      <BaseIcon
+        v-else-if="isInvalid"
+        :icon="Icon.Close"
+      />
       <span v-else>
         {{ index }}
       </span>

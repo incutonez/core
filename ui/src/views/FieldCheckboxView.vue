@@ -1,8 +1,14 @@
 ﻿<template>
-  <BaseDialog title="Field CheckBox" class="header-blue">
+  <BaseDialog
+    title="Field CheckBox"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body">
-        <FieldCheckBox v-model="value" label="Check Box" />
+        <FieldCheckBox
+          v-model="value"
+          label="Check Box"
+        />
       </section>
     </template>
   </BaseDialog>

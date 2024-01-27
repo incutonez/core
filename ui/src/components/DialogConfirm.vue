@@ -1,22 +1,37 @@
 ﻿<template>
-  <article v-show="isShowing" class="dialog-confirm">
+  <article
+    v-show="isShowing"
+    class="dialog-confirm"
+  >
     <div class="dialog-overlay" />
     <section class="dialog-container">
       <section class="container-header">
         <slot name="titleIcon">
-          <BaseIcon v-if="!!titleIcon" v-bind="titleIcon" class="mr-1" />
+          <BaseIcon
+            v-if="!!titleIcon"
+            v-bind="titleIcon"
+            class="mr-1"
+          />
         </slot>
         <slot name="title">
           <span>{{ title }}</span>
         </slot>
-        <BaseButton :icon="Icon.Close" class="button-close" @click="handleClose" />
+        <BaseButton
+          :icon="Icon.Close"
+          class="button-close"
+          @click="handleClose"
+        />
       </section>
       <section class="container-body">
         <slot name="body" />
       </section>
       <section class="container-footer">
         <slot name="footer">
-          <BaseButton class="toolbar" text="Cancel" @click="handleCancel" />
+          <BaseButton
+            class="toolbar"
+            text="Cancel"
+            @click="handleCancel"
+          />
           <slot name="afterCancel" />
         </slot>
       </section>

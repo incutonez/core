@@ -1,5 +1,10 @@
 ﻿<template>
-  <BaseField input-type="checkbox" input-width="w-auto" class="checkbox" :parse-value="parseBoolean" />
+  <BaseField
+    input-type="checkbox"
+    input-width="w-auto"
+    class="checkbox"
+    :parse-value="parseBoolean"
+  />
 </template>
 
 <script setup lang="ts">

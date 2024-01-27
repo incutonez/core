@@ -1,11 +1,29 @@
 ﻿<template>
-  <BaseDialog title="Field Text" class="header-blue">
+  <BaseDialog
+    title="Field Text"
+    class="header-blue"
+  >
     <template #body>
       <div class="flex justify-center">
         <ul class="wizard-steps">
-          <WizardStep v-model="firstStep.state" :index="firstStep.index" :title="firstStep.title" @click:step="onClickStep(firstStep)" />
-          <WizardStep v-model="secondStep.state" :index="secondStep.index" :title="secondStep.title" @click:step="onClickStep(secondStep)" />
-          <WizardStep v-model="thirdStep.state" :index="thirdStep.index" :title="thirdStep.title" @click:step="onClickStep(thirdStep)" />
+          <WizardStep
+            v-model="firstStep.state"
+            :index="firstStep.index"
+            :title="firstStep.title"
+            @click:step="onClickStep(firstStep)"
+          />
+          <WizardStep
+            v-model="secondStep.state"
+            :index="secondStep.index"
+            :title="secondStep.title"
+            @click:step="onClickStep(secondStep)"
+          />
+          <WizardStep
+            v-model="thirdStep.state"
+            :index="thirdStep.index"
+            :title="thirdStep.title"
+            @click:step="onClickStep(thirdStep)"
+          />
         </ul>
       </div>
     </template>

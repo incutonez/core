@@ -1,8 +1,16 @@
 ﻿<template>
-  <BaseDialog title="Field Color" class="header-blue">
+  <BaseDialog
+    title="Field Color"
+    class="header-blue"
+  >
     <template #body>
       <section class="base-dialog-body">
-        <FieldColor v-model="value" :required="isRequired" @change:validity="onChangeValidity" @change:dirty="onChangeDirty" />
+        <FieldColor
+          v-model="value"
+          :required="isRequired"
+          @change:validity="onChangeValidity"
+          @change:dirty="onChangeDirty"
+        />
       </section>
     </template>
   </BaseDialog>

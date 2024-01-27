@@ -1,10 +1,25 @@
 ﻿<template>
-  <BaseButton ref="rootEl" v-model:toggled="menuShowing" v-mousedown-document="onClickDocument" :toggleable="true" @click="onClickButton">
+  <BaseButton
+    ref="rootEl"
+    v-model:toggled="menuShowing"
+    v-mousedown-document="onClickDocument"
+    :toggleable="true"
+    @click="onClickButton"
+  >
     <template #menu>
       <!-- TODO: https://forum.vuejs.org/t/using-teleports-composition/128878 -->
-      <BaseOverlay v-show="menuShowing" ref="listEl" class="z-10 w-48">
+      <BaseOverlay
+        v-show="menuShowing"
+        ref="listEl"
+        class="z-10 w-48"
+      >
         <slot name="beforeList" />
-        <BaseList class="bg-slate-100 shadow-top" :class="listCls" :options="options" @click:item="onClickMenuItem" />
+        <BaseList
+          class="bg-slate-100 shadow-top"
+          :class="listCls"
+          :options="options"
+          @click:item="onClickMenuItem"
+        />
         <slot name="afterList" />
       </BaseOverlay>
     </template>
